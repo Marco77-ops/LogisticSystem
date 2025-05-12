@@ -1,0 +1,14 @@
+server:
+  port: 8084
+
+spring:
+  kafka:
+    bootstrap-servers: kafka:9092
+    streams:
+      application-id: analytics-service
+      default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      default-value-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
