@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class ShipmentCreatedEvent extends AbstractEvent {
-    private  String shipmentId;
-    private  String destination;
-    private  LocalDateTime createdAt;
+    private String shipmentId;
+    private String destination;
+    private LocalDateTime createdAt;
 
     public ShipmentCreatedEvent() {
         super();

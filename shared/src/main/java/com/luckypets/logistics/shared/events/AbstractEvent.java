@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 
 public abstract class AbstractEvent implements BaseEvent {
-    private  Instant timestamp;
-    private  String version;
-    private  String correlationId;
+    private Instant timestamp;
+    private String version;
+    private String correlationId;
 
 
     public AbstractEvent() {}

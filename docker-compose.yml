@@ -80,6 +80,16 @@ services:
       - kafka
     restart: on-failure
 
+  notificationservice:
+    build:
+      context: .
+      dockerfile: notificationservice/Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      - kafka
+    restart: on-failure
+
 
 volumes:
   pgdata:

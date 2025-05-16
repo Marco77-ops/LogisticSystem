@@ -6,8 +6,8 @@
 
 	<parent>
 		<groupId>com.luckypets.logistics</groupId>
-		<artifactId>logistics-system</artifactId>
-		<version>1.0.0</version>
+		<artifactId>logisticsystem</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -37,9 +37,14 @@
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.luckypets.logistics</groupId>
 			<artifactId>shared</artifactId>
-			<version>1.0.0</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

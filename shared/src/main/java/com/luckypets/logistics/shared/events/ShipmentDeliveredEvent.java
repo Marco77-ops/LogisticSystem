@@ -3,16 +3,20 @@ package com.luckypets.logistics.shared.events;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class ShipmentDeliveredEvent extends AbstractEvent {
-    private String shipmentId;
-    private String destination;
-    private String location;
-    private Instant timestamp;
+    private final String shipmentId;
+    private final String destination;
+    private final String location;
+    private final LocalDateTime deliveredAt;
 
-    // Default-Konstruktor für Tests
     public ShipmentDeliveredEvent() {
-        super(null);
+        super();
+        this.shipmentId = null;
+        this.destination = null;
+        this.location = null;
+        this.deliveredAt = null;
     }
 
     @JsonCreator
@@ -20,47 +24,30 @@ public class ShipmentDeliveredEvent extends AbstractEvent {
             @JsonProperty("shipmentId") String shipmentId,
             @JsonProperty("destination") String destination,
             @JsonProperty("location") String location,
-            @JsonProperty("timestamp") Instant timestamp,
+            @JsonProperty("deliveredAt") LocalDateTime deliveredAt,
             @JsonProperty("correlationId") String correlationId
     ) {
         super(correlationId);
         this.shipmentId = shipmentId;
         this.destination = destination;
         this.location = location;
-        this.timestamp = timestamp;
+        this.deliveredAt = deliveredAt;
     }
 
-    // Getter und Setter
     public String getShipmentId() {
         return shipmentId;
-    }
-
-    public void setShipmentId(String shipmentId) {
-        this.shipmentId = shipmentId;
     }
 
     public String getDestination() {
         return destination;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
     public String getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
+    public LocalDateTime getDeliveredAt() {
+        return deliveredAt;
     }
 
     @Override

@@ -4,8 +4,8 @@
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.luckypets.logistics</groupId>
-    <artifactId>logistics-system</artifactId>
-    <version>1.0.0</version>
+    <artifactId>logisticsystem</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
@@ -34,11 +34,12 @@
         <module>scanservice</module>
         <module>deliveryservice</module>
         <module>analyticservice</module>
+        <module>notificationservice</module>
     </modules>
 
     <properties>
         <java.version>17</java.version>
-        <spring.boot.version>3.4.4</spring.boot.version>
+        <spring.boot.version>3.2.3</spring.boot.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
     </properties>
 

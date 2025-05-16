@@ -5,6 +5,8 @@
     <file url="file://$PROJECT_DIR$/analyticservice/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/deliveryservice/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/deliveryservice/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/notificationservice/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/notificationservice/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/scanservice/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shared/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shipmentservice/src/main/java" charset="UTF-8" />
