@@ -1,0 +1,3 @@
+com\luckypets\logistics\deliveryservice\controller\DeliveryControllerTest.class
+com\luckypets\logistics\deliveryservice\kafka\ShipmentDeliveredEventProducerTest.class
+com\luckypets\logistics\deliveryservice\listener\ShipmentScannedListenerTest.class
