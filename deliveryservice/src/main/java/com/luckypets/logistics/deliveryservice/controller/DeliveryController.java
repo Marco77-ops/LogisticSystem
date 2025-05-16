@@ -46,7 +46,5 @@ public class DeliveryController {
     }
 
     public record ShipmentDto(String shipmentId, String status) {}
-
-    /** Einfaches DTO für die Statusantwort */
     public record ShipmentStatusDto(String shipmentId, String status) {}
 }

@@ -1,0 +1,15 @@
+package com.luckypets.logistics.shipmentservice.service;
+
+import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
+import com.luckypets.logistics.shipmentservice.persistence.ShipmentEntity;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ShipmentService {
+    ShipmentEntity createShipment(ShipmentRequest request);
+    Optional<ShipmentEntity> getShipmentById(String shipmentId);
+    List<ShipmentEntity> getAllShipments();
+    boolean deleteShipment(String shipmentId); // Gibt true zurück, wenn erfolgreich, false wenn nicht gefunden
+    // Fügen Sie hier ggf. eine updateShipment Methode hinzu
+}

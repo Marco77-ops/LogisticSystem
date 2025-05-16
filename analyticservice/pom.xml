@@ -15,6 +15,9 @@
 
 	<properties>
 		<kafka.version>3.7.0</kafka.version> <!-- Align with Spring Boot's Kafka version -->
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+                <java.version>17</java.version> <!-- Oder Ihre Ziel-Java-Version -->
 	</properties>
 
 	<dependencies>
@@ -66,36 +69,36 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams-test-utils</artifactId>
 			<scope>test</scope>
-			<version>3.8.1</version>
+			<version>3.8.1</version> <!-- Explizite Version beibehalten -->
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-streams-test-utils</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-
-		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-clients</artifactId>
-			<scope>test</scope>
-		</dependency>
+		
+		<!-- kafka-clients wird transitiv von spring-kafka und kafka-streams bereitgestellt.
+		     Wenn eine spezifische Version für Tests benötigt wird, die von der transitiven abweicht,
+		     kann sie hier mit <scope>test</scope> deklariert werden.
+		     Andernfalls ist die explizite Deklaration hier (besonders ohne Scope) oft redundant
+		     oder führt zu Konflikten, wie die Warnung gezeigt hat.
+		     Wir nehmen die redundante Test-Deklaration raus, da die Compile-Version sowieso verfügbar ist.
+		     Sollte es spezifische Gründe für eine Test-Version geben, müsste man das genauer prüfen.
+		-->
+		<!--
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
+			<scope>test</scope>
 		</dependency>
+		-->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId> 
+            <!-- Die Version wird über kafka.version Property oder spring-boot-dependencies-starter verwaltet -->
+		</dependency>
+
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>RELEASE</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>7.11.0</version>
-			<scope>compile</scope>
+			<version>7.11.0</version> <!-- Feste Version verwenden -->
+			<!-- <scope>compile</scope> TestNG ist ein Testframework, Scope sollte test sein -->
+            <scope>test</scope> 
 		</dependency>
 	</dependencies>
 

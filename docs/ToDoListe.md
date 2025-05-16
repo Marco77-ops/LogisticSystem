@@ -23,7 +23,7 @@
 
 ### 🧱 Unit-Tests
 - [X] ShipmentService: Logik-Tests (z. B. Erstellung)
-- [ ] ScanService: Validierung & Event-Generierung
+- [X] ScanService: Validierung & Event-Generierung
 - [ ] DeliveryService: Zielort-Erkennung, Delivered-Status
 - [ ] Event-Klassen: Serialisierung, Validierung
 

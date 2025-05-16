@@ -1,45 +1,58 @@
 package com.luckypets.logistics.shipmentservice.controller;
 
-import com.luckypets.logistics.shipmentservice.kafka.ShipmentEventProducer;
-import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
+import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
+import com.luckypets.logistics.shipmentservice.persistence.ShipmentEntity;
+import com.luckypets.logistics.shipmentservice.service.ShipmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/shipments")
+@RequestMapping("/api/v1/shipments")
 public class ShipmentController {
 
     private static final Logger logger = LoggerFactory.getLogger(ShipmentController.class);
 
-    private final ShipmentEventProducer producer;
+    private final ShipmentService shipmentService;
 
-    public ShipmentController(ShipmentEventProducer producer) {
-        this.producer = producer;
+    public ShipmentController(ShipmentService shipmentService) {
+        this.shipmentService = shipmentService;
     }
 
     @PostMapping
-    public String createShipment(@RequestParam("destination") String destination) {
-        if (destination == null || destination.isBlank()) {
-            throw new IllegalArgumentException("Zieladresse darf nicht leer sein.");
-        }
+    public ResponseEntity<ShipmentEntity> createShipment(@RequestBody ShipmentRequest request) {
+        logger.info("Creating shipment with origin: {} and destination: {}", request.getOrigin(), request.getDestination());
+        ShipmentEntity createdShipment = shipmentService.createShipment(request);
+        return new ResponseEntity<>(createdShipment, HttpStatus.CREATED);
+    }
 
-        logger.info("Erzeuge ShipmentCreatedEvent für Ziel: {}", destination);
+    @GetMapping("/{id}")
+    public ResponseEntity<ShipmentEntity> getShipmentById(@PathVariable("id") String shipmentId) {
+        logger.info("Fetching shipment with ID: {}", shipmentId);
+        Optional<ShipmentEntity> shipment = shipmentService.getShipmentById(shipmentId);
+        return shipment
+                .map(s -> new ResponseEntity<>(s, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
-        String shipmentId = UUID.randomUUID().toString();
-        String correlationId = UUID.randomUUID().toString();
+    @GetMapping
+    public ResponseEntity<List<ShipmentEntity>> getAllShipments() {
+        logger.info("Fetching all shipments");
+        List<ShipmentEntity> shipments = shipmentService.getAllShipments();
+        return new ResponseEntity<>(shipments, HttpStatus.OK);
+    }
 
-        ShipmentCreatedEvent event = new ShipmentCreatedEvent(
-                UUID.randomUUID().toString(),
-                destination,
-                LocalDateTime.now(),
-                correlationId
-        );
-
-        producer.sendShipmentCreatedEvent(event);
-        return "ShipmentCreatedEvent gesendet für shipmentId: " + shipmentId + " und Ziel: " + destination;
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteShipment(@PathVariable("id") String shipmentId) {
+        logger.info("Deleting shipment with ID: {}", shipmentId);
+        boolean deleted = shipmentService.deleteShipment(shipmentId);
+        return deleted 
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

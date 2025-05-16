@@ -83,22 +83,22 @@ class ShipmentEventProducerTest {
     void sendShipmentCreatedEvent_handlesSendFailure() {
         // Arrange
         CompletableFuture<SendResult<String, ShipmentCreatedEvent>> future = new CompletableFuture<>();
-        future.completeExceptionally(new RuntimeException("Test Kafka send failure")); // Simuliere einen Fehler
+        // Simuliere einen Fehler beim Senden an Kafka
+        future.completeExceptionally(new RuntimeException("Test Kafka send failure"));
 
         when(mockKafkaTemplate.send(any(String.class), any(String.class), any(ShipmentCreatedEvent.class)))
                 .thenReturn(future);
 
         // Act
+        // Dieser Aufruf sollte KEINE Exception werfen, wenn der Producer den Fehler korrekt behandelt
         shipmentEventProducer.sendShipmentCreatedEvent(testEvent);
 
         // Assert
         // Verifiziere, dass die send Methode aufgerufen wurde.
-        // Die Fehlerbehandlung innerhalb von sendShipmentCreatedEvent (Loggen der Exception) wird hier nicht direkt überprüft,
-        // aber wir stellen sicher, dass der Aufruf an Kafka erfolgt und die Exception innerhalb des Producers gehandhabt wird,
-        // ohne den Test zum Absturz zu bringen.
         verify(mockKafkaTemplate).send(any(String.class), any(String.class), any(ShipmentCreatedEvent.class));
-        // Man könnte hier mit einem gemockten Logger prüfen, ob der Fehler geloggt wurde,
-        // aber das macht den Test komplexer. Wichtig ist, dass der Kontrollfluss im Fehlerfall
-        // wie erwartet ist und keine Exception aus der Methode `sendShipmentCreatedEvent` weitergeworfen wird.
+        // Die Erwartung ist, dass der Producer die Exception fängt und z.B. loggt,
+        // anstatt sie weiterzuwerfen und diesen Test zum Fehlschlagen zu bringen.
+        // Wenn dieser Test fehlschlägt, weil eine Exception von 'sendShipmentCreatedEvent' geworfen wird,
+        // dann muss die Fehlerbehandlung im 'ShipmentEventProducer' selbst verbessert werden.
     }
 }
