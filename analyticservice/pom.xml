@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>com.luckypets.logistics</groupId>
 			<artifactId>shared</artifactId>
-			<version>1.0.0</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Jackson -->
@@ -71,7 +71,7 @@
 			<scope>test</scope>
 			<version>3.8.1</version> <!-- Explizite Version beibehalten -->
 		</dependency>
-		
+
 		<!-- kafka-clients wird transitiv von spring-kafka und kafka-streams bereitgestellt.
 		     Wenn eine spezifische Version für Tests benötigt wird, die von der transitiven abweicht,
 		     kann sie hier mit <scope>test</scope> deklariert werden.

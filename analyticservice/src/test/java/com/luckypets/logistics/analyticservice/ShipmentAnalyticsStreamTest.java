@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.kafka.support.serializer.JsonSerde;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Properties;
 
@@ -67,12 +69,12 @@ class ShipmentAnalyticsStreamTest {
         // Given
         Instant baseTime = Instant.parse("2024-01-01T10:00:00Z");
         String location = "Berlin";
-        
+
         ShipmentDeliveredEvent event1 = new ShipmentDeliveredEvent(
                 "shipment-1",
                 "Berlin",
                 location,
-                baseTime,
+                LocalDateTime.ofInstant(baseTime, ZoneOffset.UTC),
                 "corr-1"
         );
 
@@ -80,7 +82,7 @@ class ShipmentAnalyticsStreamTest {
                 "shipment-2",
                 "Berlin",
                 location,
-                baseTime.plusSeconds(1000),
+                LocalDateTime.ofInstant(baseTime.plusSeconds(1000), ZoneOffset.UTC),
                 "corr-2"
         );
 
@@ -91,10 +93,10 @@ class ShipmentAnalyticsStreamTest {
         // Then
         List<TestRecord<String, ShipmentAnalyticsEvent>> outputRecords = outputTopic.readRecordsToList();
         assertFalse(outputRecords.isEmpty());
-        
+
         TestRecord<String, ShipmentAnalyticsEvent> lastRecord = outputRecords.get(outputRecords.size() - 1);
         ShipmentAnalyticsEvent analyticsEvent = lastRecord.getValue();
-        
+
         assertEquals(location, analyticsEvent.getLocation());
         assertEquals(2L, analyticsEvent.getCount());
         assertNotNull(analyticsEvent.getWindowStart());
@@ -104,12 +106,12 @@ class ShipmentAnalyticsStreamTest {
     void shouldCreateSeparateWindowsForDifferentLocations() {
         // Given
         Instant baseTime = Instant.parse("2024-01-01T10:00:00Z");
-        
+
         ShipmentDeliveredEvent berlinEvent = new ShipmentDeliveredEvent(
                 "shipment-1",
                 "Berlin",
                 "Berlin",
-                baseTime,
+                LocalDateTime.ofInstant(baseTime, ZoneOffset.UTC),
                 "corr-1"
         );
 
@@ -117,7 +119,7 @@ class ShipmentAnalyticsStreamTest {
                 "shipment-2",
                 "Hamburg",
                 "Hamburg",
-                baseTime.plusSeconds(1000),
+                LocalDateTime.ofInstant(baseTime.plusSeconds(1000), ZoneOffset.UTC),
                 "corr-2"
         );
 
@@ -128,11 +130,11 @@ class ShipmentAnalyticsStreamTest {
         // Then
         List<TestRecord<String, ShipmentAnalyticsEvent>> outputRecords = outputTopic.readRecordsToList();
         assertTrue(outputRecords.size() >= 2);
-        
+
         // Überprüfe, dass wir separate Fenster für Berlin und Hamburg haben
         boolean hasBerlin = false;
         boolean hasHamburg = false;
-        
+
         for (TestRecord<String, ShipmentAnalyticsEvent> record : outputRecords) {
             ShipmentAnalyticsEvent event = record.getValue();
             if (event.getLocation().equals("Berlin")) {
@@ -144,7 +146,7 @@ class ShipmentAnalyticsStreamTest {
                 assertEquals(1L, event.getCount());
             }
         }
-        
+
         assertTrue(hasBerlin, "Es sollte ein Analytics-Event für Berlin geben");
         assertTrue(hasHamburg, "Es sollte ein Analytics-Event für Hamburg geben");
     }
@@ -160,14 +162,14 @@ class ShipmentAnalyticsStreamTest {
                 "s1",
                 location,
                 location,
-                time1,
+                LocalDateTime.ofInstant(time1, ZoneOffset.UTC),
                 "c1"
         );
         ShipmentDeliveredEvent late = new ShipmentDeliveredEvent(
                 "s2",
                 location,
                 location,
-                time2,
+                LocalDateTime.ofInstant(time2, ZoneOffset.UTC),
                 "c2"
         );
 

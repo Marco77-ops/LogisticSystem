@@ -38,6 +38,9 @@ public class ShipmentDeliveredEvent extends AbstractEvent {
         return location;
     }
 
+    public LocalDateTime getDeliveredAt() {
+        return deliveredAt;
+    }
 
     @Override
     public String getAggregateId() {

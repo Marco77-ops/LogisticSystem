@@ -34,7 +34,7 @@ public class ShipmentAnalyticsStream {
                 .windowedBy(windows)
                 .count();
 
-        countsPerLocation
+        KStream<String, ShipmentAnalyticsEvent> outputStream = countsPerLocation
                 .toStream()
                 .map((windowedKey, count) -> {
                     ShipmentAnalyticsEvent analyticsEvent = new ShipmentAnalyticsEvent(
@@ -44,9 +44,10 @@ public class ShipmentAnalyticsStream {
                     );
                     return KeyValue.pair(windowedKey.key(), analyticsEvent);
                 })
-                .peek((key, event) -> System.out.println("Analytics: " + event))
-                .to("shipment-analytics", Produced.with(Serdes.String(), outputSerde));
+                .peek((key, event) -> System.out.println("Analytics: " + event));
 
-        return null; // Wird nicht benötigt, aber Spring verlangt eine Rückgabe
+        outputStream.to("shipment-analytics", Produced.with(Serdes.String(), outputSerde));
+
+        return outputStream;
     }
 }
