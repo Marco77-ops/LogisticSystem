@@ -11,10 +11,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShipmentEventProducerTest {
 
@@ -50,8 +48,6 @@ class ShipmentEventProducerTest {
     }
 
     private TestShipmentEventProducer testProducer;
-
-    private ShipmentCreatedEvent testEvent;
     private String testShipmentId;
     private String testCorrelationId;
 
@@ -59,12 +55,6 @@ class ShipmentEventProducerTest {
     void setUp() {
         testShipmentId = UUID.randomUUID().toString();
         testCorrelationId = UUID.randomUUID().toString();
-        testEvent = new ShipmentCreatedEvent(
-                testShipmentId,
-                "Test Destination",
-                LocalDateTime.now(),
-                testCorrelationId
-        );
 
         // Create a new test producer for each test
         testProducer = new TestShipmentEventProducer();
@@ -73,6 +63,14 @@ class ShipmentEventProducerTest {
     @Test
     @DisplayName("sendShipmentCreatedEvent sendet Event erfolgreich an Kafka")
     void sendShipmentCreatedEvent_sendsEventSuccessfully() {
+        // Create local event
+        ShipmentCreatedEvent testEvent = new ShipmentCreatedEvent(
+                testShipmentId,
+                "Test Destination",
+                LocalDateTime.now(),
+                testCorrelationId
+        );
+
         // Act
         testProducer.sendShipmentCreatedEvent(testEvent);
 
@@ -86,6 +84,14 @@ class ShipmentEventProducerTest {
     @Test
     @DisplayName("sendShipmentCreatedEvent behandelt Kafka Sendefehler korrekt")
     void sendShipmentCreatedEvent_handlesSendFailure() {
+        // Create local event
+        ShipmentCreatedEvent testEvent = new ShipmentCreatedEvent(
+                testShipmentId,
+                "Test Destination",
+                LocalDateTime.now(),
+                testCorrelationId
+        );
+
         // Arrange
         testProducer.setSimulateError(true);
 

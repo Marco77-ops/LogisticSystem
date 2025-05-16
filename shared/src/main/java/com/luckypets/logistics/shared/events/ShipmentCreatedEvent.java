@@ -10,9 +10,6 @@ public class ShipmentCreatedEvent extends AbstractEvent {
     private String destination;
     private LocalDateTime createdAt;
 
-    public ShipmentCreatedEvent() {
-        super();
-    }
 
     @JsonCreator
     public ShipmentCreatedEvent(
@@ -35,9 +32,6 @@ public class ShipmentCreatedEvent extends AbstractEvent {
         return destination;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 
     @Override
     public String getAggregateId() {

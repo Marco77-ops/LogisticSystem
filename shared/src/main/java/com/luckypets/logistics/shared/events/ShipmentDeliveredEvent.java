@@ -2,7 +2,6 @@ package com.luckypets.logistics.shared.events;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 public class ShipmentDeliveredEvent extends AbstractEvent {
@@ -11,13 +10,6 @@ public class ShipmentDeliveredEvent extends AbstractEvent {
     private final String location;
     private final LocalDateTime deliveredAt;
 
-    public ShipmentDeliveredEvent() {
-        super();
-        this.shipmentId = null;
-        this.destination = null;
-        this.location = null;
-        this.deliveredAt = null;
-    }
 
     @JsonCreator
     public ShipmentDeliveredEvent(
@@ -46,9 +38,6 @@ public class ShipmentDeliveredEvent extends AbstractEvent {
         return location;
     }
 
-    public LocalDateTime getDeliveredAt() {
-        return deliveredAt;
-    }
 
     @Override
     public String getAggregateId() {
