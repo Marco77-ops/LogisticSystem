@@ -24,12 +24,12 @@
 ### 🧱 Unit-Tests
 - [X] ShipmentService: Logik-Tests (z. B. Erstellung)
 - [X] ScanService: Validierung & Event-Generierung
-- [ ] DeliveryService: Zielort-Erkennung, Delivered-Status
+- [X] DeliveryService: Zielort-Erkennung, Delivered-Status
 - [ ] Event-Klassen: Serialisierung, Validierung
 
 ### 🔄 Integrationstests
 - [ ] Kafka-Producer/Consumer pro Service (z. B. mit EmbeddedKafka)
-- [ ] REST-Endpunkte (MockMvc/WebTestClient)
+- [X] REST-Endpunkte (MockMvc/WebTestClient)
 - [ ] Datenbankintegration (In-Memory oder Testcontainer)
 
 ### 🌐 End-to-End-Tests
@@ -49,8 +49,8 @@
 
 ## 📈 AnalyticService
 
-- [ ] Kafka Streams Topologie finalisieren (Aggregation je Stunde & Ort)
-- [ ] Streams-Test mit `TopologyTestDriver`
+- [X] Kafka Streams Topologie finalisieren (Aggregation je Stunde & Ort)
+- [X] Streams-Test mit `TopologyTestDriver`
 - [ ] REST-Endpunkt zur Anzeige aggregierter Daten
 - [ ] Visualisierung oder Logausgabe vorbereiten
 

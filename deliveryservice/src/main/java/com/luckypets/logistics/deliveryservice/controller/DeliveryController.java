@@ -37,12 +37,12 @@ public class DeliveryController {
 
     }
 
-    /** Nur den Status zurückgeben – sauber gekapselt in einem DTO */
+    /** Nur den Status zurückgeben als String */
     @GetMapping("/{shipmentId}/status")
-    public ShipmentStatusDto getStatus(@PathVariable String shipmentId) {
-        ShipmentEntity shipment = repo.findById(shipmentId)
-                .orElseThrow(() -> new ShipmentNotFoundException(shipmentId));
-        return new ShipmentStatusDto(shipment.getShipmentId(), shipment.getStatus().name());
+    public String getStatus(@PathVariable String shipmentId) {
+        return repo.findById(shipmentId)
+                .map(shipment -> shipment.getStatus().name())
+                .orElse("Unbekannt");
     }
 
     public record ShipmentDto(String shipmentId, String status) {}

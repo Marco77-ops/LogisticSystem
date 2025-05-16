@@ -5,7 +5,9 @@ import com.luckypets.logistics.deliveryservice.persistence.ShipmentRepository;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
 import com.luckypets.logistics.shared.model.ShipmentStatus;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,13 +49,18 @@ class ShipmentScannedListenerTest {
 
     @SuppressWarnings("unchecked") // Diese ist hier für SendResult noch nötig, da der Typ des Futures nicht vollständig spezifiziert ist.
     private CompletableFuture<SendResult<String, ShipmentDeliveredEvent>> mockKafkaSend() {
-        SendResult<String, ShipmentDeliveredEvent> sendResultMock = mock(SendResult.class);
-        RecordMetadata metadataMock = mock(RecordMetadata.class);
-        when(metadataMock.topic()).thenReturn(testDeliveredTopic);
-        when(metadataMock.partition()).thenReturn(0);
-        when(metadataMock.offset()).thenReturn(1L); // Beispiel Offset
-        when(sendResultMock.getRecordMetadata()).thenReturn(metadataMock);
-        return CompletableFuture.completedFuture(sendResultMock);
+        // RecordMetadata ist eine finale Klasse und kann nicht direkt gemockt werden
+        // Stattdessen erstellen wir ein echtes RecordMetadata-Objekt
+        RecordMetadata metadata = new RecordMetadata(
+                new TopicPartition(testDeliveredTopic, 0), 
+                0L, 0L, System.currentTimeMillis(), 0L, 0, 0);
+
+        // Erstelle einen ProducerRecord und einen echten SendResult statt eines Mocks
+        ProducerRecord<String, ShipmentDeliveredEvent> record = new ProducerRecord<>(
+                testDeliveredTopic, "test-key", null);
+        SendResult<String, ShipmentDeliveredEvent> sendResult = new SendResult<>(record, metadata);
+
+        return CompletableFuture.completedFuture(sendResult);
     }
 
     @Test
