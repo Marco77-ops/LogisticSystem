@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/logistics
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/logistics
     username: logistics
     password: logistics
     driver-class-name: org.postgresql.Driver
@@ -13,8 +13,12 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  output:
+    ansi:
+      enabled: ALWAYS
+
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
     consumer:
       group-id: delivery-group
@@ -31,6 +35,17 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.trusted-packages: "com.luckypets.logistics.shared.events"
+
+---
+# Docker profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/logistics
+  kafka:
+    bootstrap-servers: kafka:9092
 
 kafka:
   topic:

@@ -9,8 +9,11 @@ import java.time.ZoneOffset;
 public class DeliveredAtTimestampExtractor implements TimestampExtractor {
     @Override
     public long extract(ConsumerRecord<Object, Object> record, long partitionTime) {
-        if (record.value() instanceof ShipmentDeliveredEvent event && event.getDeliveredAt() != null) {
-            return event.getDeliveredAt().toInstant(ZoneOffset.UTC).toEpochMilli();
+        if (record.value() instanceof ShipmentDeliveredEvent) {
+            ShipmentDeliveredEvent event = (ShipmentDeliveredEvent) record.value();
+            if (event.getDeliveredAt() != null) {
+                return event.getDeliveredAt().toInstant(ZoneOffset.UTC).toEpochMilli();
+            }
         }
         return record.timestamp();
     }

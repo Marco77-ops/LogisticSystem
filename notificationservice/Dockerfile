@@ -1,9 +1,11 @@
-FROM eclipse-temurin:17-jre-alpine
+# ------------ build stage ------------
+FROM maven:3.9.0-eclipse-temurin-17 AS build
+WORKDIR /workspace
+COPY . .
+RUN mvn clean package -pl analyticservice -am -DskipTests
 
+# ------------ runtime stage -----------
+FROM eclipse-temurin:17-jre
 WORKDIR /app
-
-COPY target/notificationservice-*.jar app.jar
-
-EXPOSE 8085
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY --from=build /workspace/analyticservice/target/analyticservice-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "app.jar"]

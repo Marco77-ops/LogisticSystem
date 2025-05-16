@@ -1,0 +1,7 @@
+C:\Users\Marco Kaul\LogisticSystem\notificationservice\src\main\java\com\luckypets\logistics\notificationservice\config\KafkaConsumerConfig.java
+C:\Users\Marco Kaul\LogisticSystem\notificationservice\src\main\java\com\luckypets\logistics\notificationservice\controller\NotificationController.java
+C:\Users\Marco Kaul\LogisticSystem\notificationservice\src\main\java\com\luckypets\logistics\notificationservice\listener\ShipmentEventListener.java
+C:\Users\Marco Kaul\LogisticSystem\notificationservice\src\main\java\com\luckypets\logistics\notificationservice\model\Notification.java
+C:\Users\Marco Kaul\LogisticSystem\notificationservice\src\main\java\com\luckypets\logistics\notificationservice\model\NotificationType.java
+C:\Users\Marco Kaul\LogisticSystem\notificationservice\src\main\java\com\luckypets\logistics\notificationservice\NotificationServiceApplication.java
+C:\Users\Marco Kaul\LogisticSystem\notificationservice\src\main\java\com\luckypets\logistics\notificationservice\repository\NotificationRepository.java

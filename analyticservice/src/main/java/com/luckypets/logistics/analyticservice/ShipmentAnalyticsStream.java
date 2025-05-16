@@ -6,6 +6,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.support.serializer.JsonSerde;
@@ -16,6 +17,22 @@ import java.time.Instant;
 @Configuration
 public class ShipmentAnalyticsStream {
 
+    @org.springframework.beans.factory.annotation.Value("${kafka.topic.delivered:shipment-delivered}")
+    private String deliveredTopic;
+
+    @org.springframework.beans.factory.annotation.Value("${kafka.topic.analytics:shipment-analytics}")
+    private String analyticsTopic;
+
+    public ShipmentAnalyticsStream(
+            @Value("${kafka.topic.delivered:shipment-delivered}") String deliveredTopic,
+            @Value("${kafka.topic.analytics:shipment-analytics}") String analyticsTopic) {
+        this.deliveredTopic = deliveredTopic;
+        this.analyticsTopic = analyticsTopic;
+    }
+
+    public ShipmentAnalyticsStream() {
+    }
+
     @Bean
     public KStream<String, ShipmentAnalyticsEvent> analyticsStream(StreamsBuilder builder) {
         JsonSerde<ShipmentDeliveredEvent> inputSerde = new JsonSerde<>(ShipmentDeliveredEvent.class);
@@ -24,7 +41,7 @@ public class ShipmentAnalyticsStream {
         TimeWindows windows = TimeWindows.ofSizeWithNoGrace(Duration.ofHours(1));
 
         KStream<String, ShipmentDeliveredEvent> inputStream = builder.stream(
-                "shipment-delivered",
+                deliveredTopic,
                 Consumed.with(Serdes.String(), inputSerde)
                         .withTimestampExtractor(new DeliveredAtTimestampExtractor())
         );
@@ -46,7 +63,7 @@ public class ShipmentAnalyticsStream {
                 })
                 .peek((key, event) -> System.out.println("Analytics: " + event));
 
-        outputStream.to("shipment-analytics", Produced.with(Serdes.String(), outputSerde));
+        outputStream.to(analyticsTopic, Produced.with(Serdes.String(), outputSerde));
 
         return outputStream;
     }

@@ -2,10 +2,10 @@
 FROM maven:3.9.0-eclipse-temurin-17 AS build
 WORKDIR /workspace
 COPY . .
-RUN mvn -B clean package -pl shipmentservice -am -DskipTests
+RUN mvn clean package -pl shipmentservice -am -DskipTests
 
 # ------------ runtime stage -----------
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /workspace/shipmentservice/target/shipmentservice-1.0.0.jar app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+COPY --from=build /workspace/shipmentservice/target/shipmentservice-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "app.jar"]

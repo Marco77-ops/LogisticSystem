@@ -18,7 +18,8 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ShipmentAnalyticsStreamTest {
+
+public class ShipmentAnalyticsStreamTest {
 
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, ShipmentDeliveredEvent> inputTopic;
@@ -29,7 +30,7 @@ class ShipmentAnalyticsStreamTest {
     void setUp() {
         // Stream-Topologie erstellen
         StreamsBuilder builder = new StreamsBuilder();
-        analyticsStream = new ShipmentAnalyticsStream();
+        analyticsStream = new ShipmentAnalyticsStream("shipment-delivered", "shipment-analytics");
         analyticsStream.analyticsStream(builder);
         Topology topology = builder.build();
 

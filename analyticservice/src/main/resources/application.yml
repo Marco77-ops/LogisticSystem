@@ -3,12 +3,41 @@ server:
 
 spring:
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:9092
     streams:
       application-id: analytics-service
       default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       default-value-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      properties:
+        reconnect.backoff.ms: 1000
+        reconnect.backoff.max.ms: 10000
+        retry.backoff.ms: 1000
+        request.timeout.ms: 30000
+        connections.max.idle.ms: 600000
+
+  output:
+    ansi:
+      enabled: ALWAYS
 
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+kafka:
+  topic:
+    delivered: shipment-delivered
+    analytics: shipment-analytics
+
+---
+# Docker profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  kafka:
+    bootstrap-servers: kafka:9092
+
+kafka:
+  topic:
+    delivered: shipment-delivered
+    analytics: shipment-analytics

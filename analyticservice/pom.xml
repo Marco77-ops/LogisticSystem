@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.luckypets.logistics</groupId>
-		<artifactId>logistics-system</artifactId>
-		<version>1.0.0</version>
+		<artifactId>logisticsystem</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>analyticservice</artifactId>
@@ -14,7 +14,6 @@
 	<description>Analytics Service for Logistics System</description>
 
 	<properties>
-		<kafka.version>3.7.0</kafka.version> <!-- Align with Spring Boot's Kafka version -->
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
                 <java.version>17</java.version> <!-- Oder Ihre Ziel-Java-Version -->
@@ -43,7 +42,7 @@
 		<dependency>
 			<groupId>com.luckypets.logistics</groupId>
 			<artifactId>shared</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 
 		<!-- Jackson -->
@@ -69,7 +68,6 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams-test-utils</artifactId>
 			<scope>test</scope>
-			<version>3.8.1</version> <!-- Explizite Version beibehalten -->
 		</dependency>
 
 		<!-- kafka-clients wird transitiv von spring-kafka und kafka-streams bereitgestellt.
@@ -87,11 +85,11 @@
 			<scope>test</scope>
 		</dependency>
 		-->
-		<dependency>
+		<!-- Removed explicit kafka-clients dependency as it's transitively provided by spring-kafka and kafka-streams -->
+		<!-- <dependency>
 			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-clients</artifactId> 
-            <!-- Die Version wird über kafka.version Property oder spring-boot-dependencies-starter verwaltet -->
-		</dependency>
+			<artifactId>kafka-clients</artifactId>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.testng</groupId>

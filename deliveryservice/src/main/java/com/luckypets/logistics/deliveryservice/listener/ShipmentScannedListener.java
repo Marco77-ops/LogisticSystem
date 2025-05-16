@@ -65,7 +65,7 @@ public class ShipmentScannedListener {
                     event.getShipmentId(),
                     event.getDestination(),
                     event.getLocation(),
-                    Instant.now(),  // Hier verwenden wir jetzt Instant statt LocalDateTime
+                    LocalDateTime.now(),  // LocalDateTime statt Instant verwenden
                     event.getCorrelationId()
             );
             try {

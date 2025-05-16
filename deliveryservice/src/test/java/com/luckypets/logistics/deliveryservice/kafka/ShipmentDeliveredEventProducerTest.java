@@ -9,7 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -44,7 +44,7 @@ public class ShipmentDeliveredEventProducerTest {
             Objects.requireNonNull(shipmentId, "shipmentId darf nicht null sein"),
             "Hamburg",  // unterschiedliche Werte für bessere Testbarkeit
             "Berlin",
-            Instant.now(),  // Instant statt LocalDateTime
+            LocalDateTime.now(),  // LocalDateTime statt Instant
             "test-correlation-id"
         );
 

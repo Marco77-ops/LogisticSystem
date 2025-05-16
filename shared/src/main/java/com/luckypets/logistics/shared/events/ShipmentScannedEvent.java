@@ -20,7 +20,7 @@ public class ShipmentScannedEvent extends AbstractEvent {
             @JsonProperty("destination") String destination,
             @JsonProperty("correlationId") String correlationId
     ) {
-        super(correlationId); // <- funktioniert jetzt!
+        super(correlationId);
         this.shipmentId = shipmentId;
         this.location = location;
         this.scannedAt = scannedAt;

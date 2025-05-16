@@ -5,8 +5,10 @@ import com.luckypets.logistics.scanservice.repository.ShipmentRepository;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +32,7 @@ public class ScanController {
                                @RequestParam("location") String location) {
 
         Shipment shipment = repository.findById(shipmentId)
-                .orElseThrow(() -> new IllegalArgumentException("Shipment mit ID " + shipmentId + " nicht gefunden"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shipment mit ID " + shipmentId + " nicht gefunden"));
 
         // Hier wird shipmentId als correlationId verwendet (Lieferkette eindeutig)
         String correlationId = shipment.getShipmentId();
@@ -43,7 +45,7 @@ public class ScanController {
                 correlationId
         );
 
-        logger.info("📦 Sende ShipmentScannedEvent: {}", event);
+        logger.info("Sende ShipmentScannedEvent: {}", event);
         kafkaTemplate.send("shipment-scanned", shipmentId, event);
 
         return "ShipmentScannedEvent gesendet für ShipmentId: " + shipmentId;

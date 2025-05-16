@@ -1,5 +1,8 @@
-target/
-**/target/
+.git
+target
+.idea
+*.iml
 *.log
-.idea/
-.git/
+docs
+*.md
+log.txt
