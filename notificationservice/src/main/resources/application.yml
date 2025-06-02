@@ -1,11 +1,11 @@
 server:
-  port: 8083
+  port: 8085
 
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:5432/delivery
-    username: delivery
-    password: delivery_pw
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/notification
+    username: notification
+    password: notification_pw
     driver-class-name: org.postgresql.Driver
     jpa:
       hibernate:
@@ -16,7 +16,7 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
-      group-id: delivery-group
+      group-id: notification-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -38,8 +38,8 @@ spring:
     activate:
       on-profile: docker
   datasource:
-    url: jdbc:postgresql://postgres:5432/delivery
-    username: delivery
-    password: delivery_pw
+    url: jdbc:postgresql://postgres:5432/notification
+    username: notification
+    password: notification_pw
   kafka:
     bootstrap-servers: kafka:9092

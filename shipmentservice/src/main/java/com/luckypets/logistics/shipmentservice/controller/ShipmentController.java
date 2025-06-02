@@ -3,6 +3,7 @@ package com.luckypets.logistics.shipmentservice.controller;
 import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
 import com.luckypets.logistics.shared.model.ShipmentEntity;
 import com.luckypets.logistics.shipmentservice.service.ShipmentService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class ShipmentController {
     }
 
     @PostMapping
-    public ResponseEntity<ShipmentEntity> createShipment(@RequestBody ShipmentRequest request) {
+    public ResponseEntity<ShipmentEntity> createShipment(@Valid @RequestBody ShipmentRequest request) {
         logger.info("Creating shipment with origin: {} and destination: {}", request.getOrigin(), request.getDestination());
         ShipmentEntity createdShipment = shipmentService.createShipment(request);
         return new ResponseEntity<>(createdShipment, HttpStatus.CREATED);
@@ -51,7 +52,7 @@ public class ShipmentController {
     public ResponseEntity<Void> deleteShipment(@PathVariable("id") String shipmentId) {
         logger.info("Deleting shipment with ID: {}", shipmentId);
         boolean deleted = shipmentService.deleteShipment(shipmentId);
-        return deleted 
+        return deleted
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

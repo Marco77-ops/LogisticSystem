@@ -3,18 +3,15 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/logistics
-    username: logistics
-    password: logistics
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/shipment
+    username: shipment
+    password: shipment_pw
     driver-class-name: org.postgresql.Driver
-    jpa:
+  jpa:
       hibernate:
         ddl-auto: update
       show-sql: true
       database-platform: org.hibernate.dialect.PostgreSQLDialect
-  output:
-    ansi:
-      enabled: ALWAYS
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
@@ -24,15 +21,18 @@ spring:
       properties:
         spring.json.trusted-packages: "com.luckypets.logistics.shared.events"
 
+  output:
+    ansi:
+      enabled: ALWAYS
+
 ---
-# Docker profile
 spring:
   config:
     activate:
       on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/shipment
+    username: shipment
+    password: shipment_pw
   kafka:
     bootstrap-servers: kafka:9092
-
-kafka:
-  topic:
-    created: shipment-created

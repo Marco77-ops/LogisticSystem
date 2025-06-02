@@ -36,14 +36,16 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-
     environment:
-      POSTGRES_DB: logistics
-      POSTGRES_USER: logistics
-      POSTGRES_PASSWORD: logistics
-    ports: ["5432:5432"]
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: [ "5432:5432" ]
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
 
   shipmentservice:
     build:
@@ -54,6 +56,10 @@ services:
       kafka:
         condition: service_healthy
     restart: on-failure
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shipment
+      SPRING_DATASOURCE_USERNAME: shipment
+      SPRING_DATASOURCE_PASSWORD: shipment_pw
 
   scanservice:
     build:
@@ -67,9 +73,9 @@ services:
         condition: service_healthy
     restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logistics
-      SPRING_DATASOURCE_USERNAME: logistics
-      SPRING_DATASOURCE_PASSWORD: logistics
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/scan
+      SPRING_DATASOURCE_USERNAME: scan
+      SPRING_DATASOURCE_PASSWORD: scan_pw
 
   deliveryservice:
     build:
@@ -83,9 +89,9 @@ services:
         condition: service_healthy
     restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logistics
-      SPRING_DATASOURCE_USERNAME: logistics
-      SPRING_DATASOURCE_PASSWORD: logistics
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/delivery
+      SPRING_DATASOURCE_USERNAME: delivery
+      SPRING_DATASOURCE_PASSWORD: delivery_pw
 
   analyticservice:
     build:
@@ -111,9 +117,9 @@ services:
         condition: service_healthy
     restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logistics
-      SPRING_DATASOURCE_USERNAME: logistics
-      SPRING_DATASOURCE_PASSWORD: logistics
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notification
+      SPRING_DATASOURCE_USERNAME: notification
+      SPRING_DATASOURCE_PASSWORD: notification_pw
 
 
 volumes:

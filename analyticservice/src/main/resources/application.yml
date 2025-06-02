@@ -3,7 +3,7 @@ server:
 
 spring:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     streams:
       application-id: analytics-service
       default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
@@ -23,21 +23,10 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
-kafka:
-  topic:
-    delivered: shipment-delivered
-    analytics: shipment-analytics
-
 ---
-# Docker profile
 spring:
   config:
     activate:
       on-profile: docker
   kafka:
     bootstrap-servers: kafka:9092
-
-kafka:
-  topic:
-    delivered: shipment-delivered
-    analytics: shipment-analytics
