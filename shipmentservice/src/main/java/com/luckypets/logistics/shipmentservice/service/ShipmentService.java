@@ -1,7 +1,7 @@
 package com.luckypets.logistics.shipmentservice.service;
 
 import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
-import com.luckypets.logistics.shipmentservice.persistence.ShipmentEntity;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 
 import java.util.List;
 import java.util.Optional;

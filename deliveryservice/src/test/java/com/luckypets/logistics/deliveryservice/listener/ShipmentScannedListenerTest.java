@@ -1,9 +1,9 @@
 package com.luckypets.logistics.deliveryservice.listener;
 
-import com.luckypets.logistics.deliveryservice.persistence.ShipmentEntity;
 import com.luckypets.logistics.deliveryservice.persistence.ShipmentRepository;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import com.luckypets.logistics.shared.model.ShipmentStatus;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;

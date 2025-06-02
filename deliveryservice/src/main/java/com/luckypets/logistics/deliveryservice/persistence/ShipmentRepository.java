@@ -1,5 +1,6 @@
 package com.luckypets.logistics.deliveryservice.persistence;
 
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

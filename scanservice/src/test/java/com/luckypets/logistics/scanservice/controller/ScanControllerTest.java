@@ -1,8 +1,8 @@
 package com.luckypets.logistics.scanservice.controller;
 
-import com.luckypets.logistics.scanservice.model.Shipment;
 import com.luckypets.logistics.scanservice.repository.ShipmentRepository;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.containsString;
 
 @WebMvcTest(ScanController.class)
 class ScanControllerTest {
@@ -37,7 +36,7 @@ class ScanControllerTest {
     @DisplayName("POST /scans sendet ShipmentScannedEvent bei gültigem Shipment")
     void scanShipment_validShipment_sendsKafkaEvent() throws Exception {
         // Arrange
-        Shipment mockShipment = new Shipment("123", "Berlin", LocalDateTime.now());
+        ShipmentEntity mockShipment = new ShipmentEntity("123", "Berlin", LocalDateTime.now());
         when(repository.findById("123")).thenReturn(Optional.of(mockShipment));
 
         // Act
@@ -67,6 +66,5 @@ class ScanControllerTest {
                         .param("shipmentId", "999")
                         .param("location", "Hamburg"))
                 .andExpect(status().isBadRequest());
-               // .andExpect(content().string(containsString("Shipment mit ID 999 nicht gefunden")));
     }
 }

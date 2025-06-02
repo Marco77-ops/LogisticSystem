@@ -1,8 +1,8 @@
 package com.luckypets.logistics.scanservice.kafka;
 
-import com.luckypets.logistics.scanservice.model.Shipment;
 import com.luckypets.logistics.scanservice.repository.ShipmentRepository;
 import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,10 +39,10 @@ class ShipmentEventListenerTest {
         listener.handleShipmentCreatedEvent(event);
 
         // Then
-        ArgumentCaptor<Shipment> captor = ArgumentCaptor.forClass(Shipment.class);
+        ArgumentCaptor<ShipmentEntity> captor = ArgumentCaptor.forClass(ShipmentEntity.class);
         verify(repository, times(1)).save(captor.capture());
 
-        Shipment saved = captor.getValue();
+        ShipmentEntity saved = captor.getValue();
         assertThat(saved.getShipmentId()).isEqualTo("shipment-1");
         assertThat(saved.getDestination()).isEqualTo("Berlin");
         assertThat(saved.getCreatedAt()).isEqualTo(LocalDateTime.of(2025, 5, 5, 10, 0));

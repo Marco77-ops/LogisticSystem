@@ -1,7 +1,7 @@
 package com.luckypets.logistics.shipmentservice.controller;
 
 import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
-import com.luckypets.logistics.shipmentservice.persistence.ShipmentEntity;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import com.luckypets.logistics.shipmentservice.service.ShipmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

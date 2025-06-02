@@ -1,13 +1,11 @@
-package com.luckypets.logistics.deliveryservice.persistence;
-
-import com.luckypets.logistics.shared.model.ShipmentStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+package com.luckypets.logistics.shared.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,19 +15,26 @@ public class ShipmentEntity {
     @Id
     private String shipmentId;
 
+    private String origin; // Hinzugefügt, da es im Test verwendet wird
     private String destination;
-
+    private String customerId; // Hinzugefügt, da es im Test verwendet wird
     private String lastLocation;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime lastScannedAt;
-
     private LocalDateTime deliveredAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ShipmentStatus status;
+
+    public ShipmentEntity() {
+    }
+
+    public ShipmentEntity(String shipmentId, String destination, LocalDateTime createdAt) {
+        this.shipmentId = shipmentId;
+        this.destination = destination;
+        this.createdAt = createdAt;
+    }
 
     // Getter & Setter
 
@@ -41,12 +46,28 @@ public class ShipmentEntity {
         this.shipmentId = shipmentId;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
     public String getDestination() {
         return destination;
     }
 
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     public String getLastLocation() {

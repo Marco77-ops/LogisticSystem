@@ -1,9 +1,9 @@
 package com.luckypets.logistics.deliveryservice.listener;
 
-import com.luckypets.logistics.deliveryservice.persistence.ShipmentEntity;
 import com.luckypets.logistics.deliveryservice.persistence.ShipmentRepository;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import com.luckypets.logistics.shared.model.ShipmentStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 

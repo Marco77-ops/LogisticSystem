@@ -1,8 +1,8 @@
 package com.luckypets.logistics.deliveryservice.controller;
 
 import com.luckypets.logistics.deliveryservice.exception.ShipmentNotFoundException;
-import com.luckypets.logistics.deliveryservice.persistence.ShipmentEntity;
 import com.luckypets.logistics.deliveryservice.persistence.ShipmentRepository;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

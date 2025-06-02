@@ -1,8 +1,9 @@
+// scanservice/src/main/java/com/luckypets/logistics/scanservice/controller/ScanController.java
 package com.luckypets.logistics.scanservice.controller;
 
-import com.luckypets.logistics.scanservice.model.Shipment;
 import com.luckypets.logistics.scanservice.repository.ShipmentRepository;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,10 +32,9 @@ public class ScanController {
     public String scanShipment(@RequestParam("shipmentId") String shipmentId,
                                @RequestParam("location") String location) {
 
-        Shipment shipment = repository.findById(shipmentId)
+        ShipmentEntity shipment = repository.findById(shipmentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shipment mit ID " + shipmentId + " nicht gefunden"));
 
-        // Hier wird shipmentId als correlationId verwendet (Lieferkette eindeutig)
         String correlationId = shipment.getShipmentId();
 
         ShipmentScannedEvent event = new ShipmentScannedEvent(

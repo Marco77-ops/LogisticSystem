@@ -1,11 +1,11 @@
 package com.luckypets.logistics.shipmentservice.service;
 
 import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
+import com.luckypets.logistics.shared.model.ShipmentStatus;
 import com.luckypets.logistics.shipmentservice.kafka.ShipmentEventProducer;
 import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
-import com.luckypets.logistics.shipmentservice.persistence.ShipmentEntity;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import com.luckypets.logistics.shipmentservice.persistence.ShipmentRepository;
-import com.luckypets.logistics.shipmentservice.persistence.ShipmentStatus; // Import für ShipmentStatus
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Für @Transactional
 

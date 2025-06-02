@@ -1,7 +1,7 @@
 package com.luckypets.logistics.deliveryservice.controller;
 
-import com.luckypets.logistics.deliveryservice.persistence.ShipmentEntity;
 import com.luckypets.logistics.deliveryservice.persistence.ShipmentRepository;
+import com.luckypets.logistics.shared.model.ShipmentEntity;
 import com.luckypets.logistics.shared.model.ShipmentStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
