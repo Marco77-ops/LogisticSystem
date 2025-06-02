@@ -37,7 +37,7 @@ public class ShipmentScannedListener {
 
     @KafkaListener(topics = "${kafka.topic.scanned}")
     public void onShipmentScanned(ShipmentScannedEvent event) {
-        log.info("🔔 Received scan event: {}", event);
+        log.info("Received scan event: {}", event);
 
         // 1) Lade vorhandenes Shipment oder lege neues an
         ShipmentEntity entity = repository.findById(event.getShipmentId())

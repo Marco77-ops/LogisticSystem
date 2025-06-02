@@ -1,8 +1,12 @@
 package com.luckypets.logistics.deliveryservice.controller;
 
 import com.luckypets.logistics.deliveryservice.exception.ShipmentNotFoundException;
-import com.luckypets.logistics.deliveryservice.persistence.ShipmentRepository;
-import com.luckypets.logistics.shared.model.ShipmentEntity;
+import com.luckypets.logistics.deliveryservice.model.DeliveryRequest;
+import com.luckypets.logistics.deliveryservice.model.DeliveryResponse;
+import com.luckypets.logistics.deliveryservice.service.DeliveryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,40 +15,47 @@ import java.util.List;
 @RequestMapping("/deliveries")
 public class DeliveryController {
 
-    private final ShipmentRepository repo;
+    private static final Logger logger = LoggerFactory.getLogger(DeliveryController.class);
+    private final DeliveryService deliveryService;
 
-    public DeliveryController(ShipmentRepository repo) {
-        this.repo = repo;
+    public DeliveryController(DeliveryService deliveryService) {
+        this.deliveryService = deliveryService;
     }
 
-    /** Alle Shipments aus der DB zurückliefern */
+    /** Get all shipments from the database */
     @GetMapping
-    public List<ShipmentDto> getAll() {
-        return repo.findAll().stream()
-                .map(entity -> new ShipmentDto(entity.getShipmentId(), entity.getStatus().name()))
-                .toList();
+    public List<DeliveryResponse> getAll() {
+        return deliveryService.getAllShipments();
     }
 
     @GetMapping("/{shipmentId}")
-    public ShipmentDto getById(@PathVariable String shipmentId) {
-        if (shipmentId == null || shipmentId.isBlank()) {
-            throw new IllegalArgumentException("shipmentId darf nicht null oder leer sein");
-        }
-        ShipmentEntity shipment = repo.findById(shipmentId)
+    public ResponseEntity<DeliveryResponse> getById(@PathVariable String shipmentId) {
+        return deliveryService.getShipmentById(shipmentId)
+                .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ShipmentNotFoundException(shipmentId));
-        return new ShipmentDto(shipment.getShipmentId(), shipment.getStatus().name());
-
-
     }
 
-    /** Nur den Status zurückgeben als String */
+    /** Return only the status as a string */
     @GetMapping("/{shipmentId}/status")
     public String getStatus(@PathVariable String shipmentId) {
-        return repo.findById(shipmentId)
-                .map(shipment -> shipment.getStatus().name())
-                .orElse("Unbekannt");
+        return deliveryService.getShipmentStatus(shipmentId);
     }
 
-    public record ShipmentDto(String shipmentId, String status) {}
-    public record ShipmentStatusDto(String shipmentId, String status) {}
+    /** Mark a shipment as delivered */
+    @PostMapping("/{shipmentId}/deliver")
+    public ResponseEntity<DeliveryResponse> markAsDelivered(
+            @PathVariable String shipmentId,
+            @RequestBody(required = false) DeliveryRequest request) {
+
+        DeliveryRequest deliveryRequest = request != null ? request : new DeliveryRequest();
+        deliveryRequest.setShipmentId(shipmentId);
+
+        DeliveryResponse response = deliveryService.markAsDelivered(deliveryRequest);
+
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        return ResponseEntity.ok(response);
+    }
 }
