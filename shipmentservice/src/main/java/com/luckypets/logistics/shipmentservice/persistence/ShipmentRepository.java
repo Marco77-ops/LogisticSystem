@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ShipmentRepository extends JpaRepository<ShipmentEntity, String> {
-    // keine weiteren Methoden nötig für Basis-CRUD
 }

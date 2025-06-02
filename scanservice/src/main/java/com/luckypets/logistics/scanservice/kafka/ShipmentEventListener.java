@@ -1,7 +1,7 @@
 
 package com.luckypets.logistics.scanservice.kafka;
 
-import com.luckypets.logistics.scanservice.repository.ShipmentRepository;
+import com.luckypets.logistics.scanservice.persistence.ShipmentRepository;
 import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
 import com.luckypets.logistics.shared.model.ShipmentEntity;
 import org.slf4j.Logger;
