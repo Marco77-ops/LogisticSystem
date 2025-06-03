@@ -42,6 +42,7 @@ class DeliveryServiceImplTest {
     private ShipmentEntity testShipment;
     private static final String SHIPMENT_ID = "SHIP-001";
     private static final String LOCATION = "Berlin";
+    private static final String DESTINATION = "Berlin";
 
     @BeforeEach
     void setUp() {
@@ -50,7 +51,7 @@ class DeliveryServiceImplTest {
         testShipment.setStatus(ShipmentStatus.IN_TRANSIT);
         testShipment.setLastLocation("WAREHOUSE_A");
         testShipment.setOrigin("Munich");
-        testShipment.setDestination(LOCATION);
+        testShipment.setDestination(DESTINATION);
         testShipment.setCreatedAt(LocalDateTime.now().minusDays(1));
     }
 
@@ -169,6 +170,7 @@ class DeliveryServiceImplTest {
         verify(eventProducer).sendShipmentDeliveredEvent(eventCaptor.capture());
         ShipmentDeliveredEvent event = eventCaptor.getValue();
         assertEquals(SHIPMENT_ID, event.getShipmentId());
+        assertEquals(DESTINATION, event.getDestination());
         assertEquals(LOCATION, event.getLocation());
         assertNotNull(event.getCorrelationId());
     }
