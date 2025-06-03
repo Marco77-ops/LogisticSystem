@@ -82,7 +82,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         // Send event
         ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
                 savedShipment.getShipmentId(),
-                savedShipment.getOrigin(),
+                savedShipment.getDestination(),
                 savedShipment.getLastLocation(),
                 LocalDateTime.now(),
                 UUID.randomUUID().toString()
