@@ -47,10 +47,12 @@ docker-compose logs -f shipmentservice
 ```
 
 ## Step 3: Scan the Shipment at Origin
-Scan the shipment at its origin location by sending a POST request to the Scan Service. Replace `{shipmentId}` with the ID from the previous step:
+Scan the shipment at its origin location by sending a POST request to the Scan Service's `/api/v1/scans` endpoint. Replace `{shipmentId}` with the ID from the previous step and include the location in the JSON body:
 
 ```bash
-curl -X POST "http://localhost:8082/scans?shipmentId={shipmentId}&location=Berlin"
+curl -X POST http://localhost:8082/api/v1/scans \
+  -H "Content-Type: application/json" \
+  -d '{"shipmentId":"{shipmentId}","location":"Berlin"}'
 ```
 
 **Explanation:** This records a scan of the shipment at Berlin. The Scan Service will:
@@ -65,10 +67,12 @@ docker-compose logs -f scanservice
 ```
 
 ## Step 4: Scan the Shipment at Destination
-Scan the shipment at its destination location by sending another POST request to the Scan Service:
+Scan the shipment at its destination location by sending another POST request to the Scan Service's `/api/v1/scans` endpoint with a JSON body:
 
 ```bash
-curl -X POST "http://localhost:8082/scans?shipmentId={shipmentId}&location=Munich"
+curl -X POST http://localhost:8082/api/v1/scans \
+  -H "Content-Type: application/json" \
+  -d '{"shipmentId":"{shipmentId}","location":"Munich"}'
 ```
 
 **Explanation:** This records a scan of the shipment at Munich, which is its destination. The Scan Service will:
@@ -140,10 +144,12 @@ You can use the Kafka UI to monitor the topics and messages:
 ## Error Handling Demonstration (Optional)
 To demonstrate error handling, you can try:
 
-1. Scanning a non-existent shipment:
+1. Scanning a non-existent shipment by calling the `/api/v1/scans` endpoint:
 
 ```bash
-curl -X POST "http://localhost:8082/scans?shipmentId=nonexistent&location=Berlin"
+curl -X POST http://localhost:8082/api/v1/scans \
+  -H "Content-Type: application/json" \
+  -d '{"shipmentId":"nonexistent","location":"Berlin"}'
 ```
 
 This should return an error message.
