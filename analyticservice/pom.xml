@@ -3,6 +3,7 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>com.luckypets.logistics</groupId>
 		<artifactId>logisticsystem</artifactId>
@@ -13,17 +14,11 @@
 	<name>analyticservice</name>
 	<description>Analytics Service for Logistics System</description>
 
-	<properties>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-                <java.version>17</java.version> <!-- Oder Ihre Ziel-Java-Version -->
-	</properties>
-
 	<dependencies>
 		<!-- Spring Boot Starter -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
 		<!-- Kafka Streams -->
@@ -45,7 +40,7 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 
-		<!-- Jackson -->
+		<!-- Jackson for JSON processing -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -70,33 +65,17 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- kafka-clients wird transitiv von spring-kafka und kafka-streams bereitgestellt.
-		     Wenn eine spezifische Version für Tests benötigt wird, die von der transitiven abweicht,
-		     kann sie hier mit <scope>test</scope> deklariert werden.
-		     Andernfalls ist die explizite Deklaration hier (besonders ohne Scope) oft redundant
-		     oder führt zu Konflikten, wie die Warnung gezeigt hat.
-		     Wir nehmen die redundante Test-Deklaration raus, da die Compile-Version sowieso verfügbar ist.
-		     Sollte es spezifische Gründe für eine Test-Version geben, müsste man das genauer prüfen.
-		-->
-		<!--
+		<!-- Testcontainers -->
 		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-clients</artifactId>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
-		-->
-		<!-- Removed explicit kafka-clients dependency as it's transitively provided by spring-kafka and kafka-streams -->
-		<!-- <dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-clients</artifactId>
-		</dependency> -->
 
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>7.11.0</version> <!-- Feste Version verwenden -->
-			<!-- <scope>compile</scope> TestNG ist ein Testframework, Scope sollte test sein -->
-            <scope>test</scope> 
+			<groupId>org.testcontainers</groupId>
+			<artifactId>kafka</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

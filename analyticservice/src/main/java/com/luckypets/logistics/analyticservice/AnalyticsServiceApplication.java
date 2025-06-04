@@ -7,9 +7,7 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 @EnableKafkaStreams
 @SpringBootApplication
 public class AnalyticsServiceApplication {
-
         public static void main(String[] args) {
                 SpringApplication.run(AnalyticsServiceApplication.class, args);
         }
-
 }

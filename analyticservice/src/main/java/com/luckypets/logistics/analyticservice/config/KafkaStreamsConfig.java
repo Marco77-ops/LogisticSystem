@@ -1,5 +1,6 @@
-package com.luckypets.logistics.analyticservice;
+package com.luckypets.logistics.analyticservice.config;
 
+import com.luckypets.logistics.shared.events.ShipmentAnalyticsEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -29,9 +30,7 @@ public class KafkaStreamsConfig {
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2);
         props.put("spring.json.trusted.packages", "com.luckypets.logistics.shared.events");
         props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG,
-                com.luckypets.logistics.analyticservice.DeliveredAtTimestampExtractor.class);
-
-
+                "com.luckypets.logistics.analyticservice.timestamp.DeliveredAtTimestampExtractor");
 
         return new KafkaStreamsConfiguration(props);
     }
@@ -39,6 +38,13 @@ public class KafkaStreamsConfig {
     @Bean
     public Serde<ShipmentDeliveredEvent> shipmentDeliveredEventSerde() {
         JsonSerde<ShipmentDeliveredEvent> serde = new JsonSerde<>(ShipmentDeliveredEvent.class);
+        serde.configure(Map.of("spring.json.trusted.packages", "com.luckypets.logistics.shared.events"), false);
+        return serde;
+    }
+
+    @Bean
+    public Serde<ShipmentAnalyticsEvent> shipmentAnalyticsEventSerde() {
+        JsonSerde<ShipmentAnalyticsEvent> serde = new JsonSerde<>(ShipmentAnalyticsEvent.class);
         serde.configure(Map.of("spring.json.trusted.packages", "com.luckypets.logistics.shared.events"), false);
         return serde;
     }

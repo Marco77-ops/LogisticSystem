@@ -7,17 +7,17 @@ import java.time.Instant;
 
 public class ShipmentAnalyticsEvent {
     private final String location;
-    private final long count;
+    private final long deliveryCount;
     private final Instant windowStart;
 
     @JsonCreator
     public ShipmentAnalyticsEvent(
             @JsonProperty("location") String location,
-            @JsonProperty("count") long count,
+            @JsonProperty("deliveryCount") long deliveryCount,
             @JsonProperty("windowStart") Instant windowStart
     ) {
         this.location = location;
-        this.count = count;
+        this.deliveryCount = deliveryCount;
         this.windowStart = windowStart;
     }
 
@@ -25,8 +25,8 @@ public class ShipmentAnalyticsEvent {
         return location;
     }
 
-    public long getCount() {
-        return count;
+    public long getDeliveryCount() {
+        return deliveryCount;
     }
 
     public Instant getWindowStart() {

@@ -5,15 +5,17 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 
 /**
- * Service for building the analytics stream processing topology.
+ * Service for building analytics stream processing topology.
+ * Aggregates delivery events per location and time window.
  */
 public interface AnalyticsService {
 
     /**
-     * Build the analytics stream that aggregates delivered shipments per location.
+     * Builds the analytics stream that processes delivered shipments.
+     * Creates hourly aggregations of deliveries per location.
      *
      * @param builder the StreamsBuilder to use for topology construction
-     * @return the resulting analytics {@link KStream}
+     * @return the resulting analytics KStream
      */
     KStream<String, ShipmentAnalyticsEvent> buildAnalyticsStream(StreamsBuilder builder);
 }

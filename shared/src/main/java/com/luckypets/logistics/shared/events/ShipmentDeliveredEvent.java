@@ -11,6 +11,7 @@ public class ShipmentDeliveredEvent extends AbstractEvent {
     private final LocalDateTime deliveredAt;
 
 
+
     @JsonCreator
     public ShipmentDeliveredEvent(
             @JsonProperty("shipmentId") String shipmentId,
@@ -41,6 +42,8 @@ public class ShipmentDeliveredEvent extends AbstractEvent {
     public LocalDateTime getDeliveredAt() {
         return deliveredAt;
     }
+
+
 
     @Override
     public String getAggregateId() {

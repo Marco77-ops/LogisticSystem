@@ -2,31 +2,86 @@ server:
   port: 8084
 
 spring:
+  application:
+    name: analytics-service
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: analytics-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.luckypets.logistics.shared.events
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 10000
+        max.poll.records: 500
+        max.poll.interval.ms: 300000
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: com.luckypets.logistics.shared.events
+        acks: all
+        retries: 3
+        batch.size: 16384
+        linger.ms: 5
+        buffer.memory: 33554432
+
     streams:
       application-id: analytics-service
       default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-      default-value-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      default-value-serde: org.springframework.kafka.support.serializer.JsonSerde
       properties:
+        processing.guarantee: exactly_once_v2
+        commit.interval.ms: 1000
+        cache.max.bytes.buffering: 10485760
+        state.dir: /tmp/kafka-streams/analytics
         reconnect.backoff.ms: 1000
         reconnect.backoff.max.ms: 10000
         retry.backoff.ms: 1000
         request.timeout.ms: 30000
         connections.max.idle.ms: 600000
 
-  output:
-    ansi:
-      enabled: ALWAYS
-
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.luckypets.logistics: INFO
+    org.apache.kafka: WARN
+    org.springframework.kafka: INFO
+
+# Topic configuration
+kafka:
+  topic:
+    delivered: shipment-delivered
+    analytics: shipment-analytics
 
 ---
 spring:
   config:
     activate:
       on-profile: docker
+
   kafka:
     bootstrap-servers: kafka:9092
+    streams:
+      properties:
+        state.dir: /app/kafka-streams/analytics
+
+logging:
+  level:
+    root: INFO
