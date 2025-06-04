@@ -1,7 +1,19 @@
 # ------------ build stage ------------
 FROM maven:3.9.0-eclipse-temurin-17 AS build
 WORKDIR /workspace
+
+COPY pom.xml .
+COPY scanservice/pom.xml scanservice/
+COPY shared/pom.xml shared/
+COPY shipmentservice/pom.xml shipmentservice/
+COPY deliveryservice/pom.xml deliveryservice/
+COPY analyticservice/pom.xml analyticservice/
+COPY notificationservice/pom.xml notificationservice/
+
+RUN mvn de.qaware.maven:go-offline-maven-plugin:1.2.8:resolve-dependencies
+
 COPY . .
+
 RUN mvn clean package -pl deliveryservice -am -DskipTests
 
 # ------------ runtime stage -----------

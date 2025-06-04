@@ -1,10 +1,12 @@
 package com.luckypets.logistics.shared.events;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ShipmentCreatedEvent extends AbstractEvent {
     private String shipmentId;
     private String destination;
@@ -36,10 +38,6 @@ public class ShipmentCreatedEvent extends AbstractEvent {
         return createdAt;
     }
 
-    @Override
-    public String getAggregateId() {
-        return shipmentId;
-    }
 
     @Override
     public String getEventType() {

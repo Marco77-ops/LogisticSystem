@@ -22,7 +22,6 @@ public class ShipmentEventListener {
     @KafkaListener(topics = "shipment-created", groupId = "scanservice")
     public void handleShipmentCreatedEvent(ShipmentCreatedEvent event) {
         logger.info("Empfangenes ShipmentCreatedEvent: {}", event);
-        // Felder anpassen je nach Event!
         ShipmentEntity shipment = new ShipmentEntity(
                 event.getShipmentId(),
                 event.getDestination(),

@@ -6,12 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 
 public abstract class AbstractEvent implements BaseEvent {
-    private Instant timestamp;
-    private String version;
-    private String correlationId;
+    private final Instant timestamp;
+    private final String version;
+    private final String correlationId;
 
-
-    public AbstractEvent() {}
+    // Default constructor for Jackson
+    protected AbstractEvent() {
+        this.timestamp = Instant.now();
+        this.version = "v1";
+        this.correlationId = null;
+    }
 
     @JsonCreator
     protected AbstractEvent(
@@ -41,5 +45,11 @@ public abstract class AbstractEvent implements BaseEvent {
     @Override
     public String getCorrelationId() {
         return correlationId;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s{correlationId='%s', timestamp=%s, version='%s'}",
+                getClass().getSimpleName(), correlationId, timestamp, version);
     }
 }

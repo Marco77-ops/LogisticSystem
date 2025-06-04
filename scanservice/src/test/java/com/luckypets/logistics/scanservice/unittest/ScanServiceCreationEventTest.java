@@ -19,13 +19,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ScanService Creation Event Unit Tests")
-class ScanServiceCreationEventTest { // ← Test-Endung
+class ScanServiceCreationEventTest {
 
     @Mock
     private ShipmentRepository shipmentRepository;
@@ -69,7 +68,7 @@ class ScanServiceCreationEventTest { // ← Test-Endung
         scanService.scanShipment("SHIP-001", "WAREHOUSE_A");
 
         // Then
-        verify(kafkaTemplate).send(eq("shipment-scanned"), eventCaptor.capture());
+        verify(kafkaTemplate).send(eq("shipment-scanned"), eq("SHIP-001"), eventCaptor.capture());
 
         ShipmentScannedEvent capturedEvent = eventCaptor.getValue();
         assertEquals("SHIP-001", capturedEvent.getShipmentId());
@@ -78,7 +77,6 @@ class ScanServiceCreationEventTest { // ← Test-Endung
         assertNotNull(capturedEvent.getScannedAt());
         assertNotNull(capturedEvent.getCorrelationId());
         assertEquals("ShipmentScannedEvent", capturedEvent.getEventType());
-        assertEquals("SHIP-001", capturedEvent.getAggregateId());
     }
 
     @Test
@@ -96,7 +94,7 @@ class ScanServiceCreationEventTest { // ← Test-Endung
         scanService.scanShipment("SHIP-002", "WAREHOUSE_B");
 
         // Then
-        verify(kafkaTemplate, times(2)).send(eq("shipment-scanned"), eventCaptor.capture());
+        verify(kafkaTemplate, times(2)).send(eq("shipment-scanned"), anyString(), eventCaptor.capture());
 
         var capturedEvents = eventCaptor.getAllValues();
         assertEquals(2, capturedEvents.size());

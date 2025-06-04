@@ -1,12 +1,13 @@
+com\luckypets\logistics\deliveryservice\service\DeliveryService.class
 com\luckypets\logistics\deliveryservice\persistence\ShipmentRepository.class
-com\luckypets\logistics\deliveryservice\controller\DeliveryController$ShipmentDto.class
 com\luckypets\logistics\deliveryservice\DeliveryServiceApplication.class
+com\luckypets\logistics\deliveryservice\model\DeliveryResponse.class
 com\luckypets\logistics\deliveryservice\exception\ShipmentNotFoundException.class
+com\luckypets\logistics\deliveryservice\model\DeliveryRequest.class
 com\luckypets\logistics\deliveryservice\controller\DeliveryController.class
 com\luckypets\logistics\deliveryservice\kafka\ShipmentDeliveredEventProducer.class
-com\luckypets\logistics\deliveryservice\persistence\ShipmentEntity.class
 com\luckypets\logistics\deliveryservice\exception\GlobalExceptionHandler.class
 com\luckypets\logistics\deliveryservice\config\KafkaConsumerConfig.class
-com\luckypets\logistics\deliveryservice\controller\DeliveryController$ShipmentStatusDto.class
+com\luckypets\logistics\deliveryservice\service\DeliveryServiceImpl.class
 com\luckypets\logistics\deliveryservice\listener\ShipmentScannedListener.class
 com\luckypets\logistics\deliveryservice\config\KafkaProducerConfig.class

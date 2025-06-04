@@ -1,3 +1,5 @@
-com\luckypets\logistics\deliveryservice\controller\DeliveryControllerTest.class
-com\luckypets\logistics\deliveryservice\kafka\ShipmentDeliveredEventProducerTest.class
-com\luckypets\logistics\deliveryservice\listener\ShipmentScannedListenerTest.class
+com\luckypets\logistics\deliveryservice\unittest\service\DeliveryServiceImplTest.class
+com\luckypets\logistics\deliveryservice\unittest\kafka\ShipmentDeliveredEventProducerTest.class
+com\luckypets\logistics\deliveryservice\unittest\controller\DeliveryControllerTest.class
+com\luckypets\logistics\deliveryservice\unittest\listener\ShipmentScannedListenerTest.class
+com\luckypets\logistics\deliveryservice\integrationtest\DeliveryServiceIntegrationTest.class

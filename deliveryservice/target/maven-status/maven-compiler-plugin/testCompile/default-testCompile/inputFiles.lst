@@ -1,3 +1,5 @@
-C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\test\java\com\luckypets\logistics\deliveryservice\controller\DeliveryControllerTest.java
-C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\test\java\com\luckypets\logistics\deliveryservice\listener\ShipmentScannedListenerTest.java
-C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\test\java\com\luckypets\logistics\deliveryservice\kafka\ShipmentDeliveredEventProducerTest.java
+C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\test\java\com\luckypets\logistics\deliveryservice\unittest\kafka\ShipmentDeliveredEventProducerTest.java
+C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\test\java\com\luckypets\logistics\deliveryservice\unittest\service\DeliveryServiceImplTest.java
+C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\test\java\com\luckypets\logistics\deliveryservice\unittest\listener\ShipmentScannedListenerTest.java
+C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\test\java\com\luckypets\logistics\deliveryservice\integrationtest\DeliveryServiceIntegrationTest.java
+C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\test\java\com\luckypets\logistics\deliveryservice\unittest\controller\DeliveryControllerTest.java

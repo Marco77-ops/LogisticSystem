@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.luckypets.logistics.notificationservice.integrationtest.NotificationServiceIntegrationTest" time="14.43" tests="1" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="24"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\Marco Kaul\LogisticSystem\notificationservice\target\test-classes;C:\Users\Marco Kaul\LogisticSystem\notificationservice\target\classes;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.2.3\spring-boot-starter-web-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter\3.2.3\spring-boot-starter-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot\3.2.3\spring-boot-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.2.3\spring-boot-starter-logging-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.21.1\log4j-to-slf4j-2.21.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\logging\log4j\log4j-api\2.21.1\log4j-api-2.21.1.jar;C:\Users\Marco Kaul\.m2\repository\org\slf4j\jul-to-slf4j\2.0.12\jul-to-slf4j-2.0.12.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\Marco Kaul\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.2.3\spring-boot-starter-json-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.15.4\jackson-datatype-jdk8-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.15.4\jackson-module-parameter-names-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.2.3\spring-boot-starter-tomcat-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.19\tomcat-embed-core-10.1.19.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.19\tomcat-embed-el-10.1.19.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.19\tomcat-embed-websocket-10.1.19.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-web\6.1.4\spring-web-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-beans\6.1.4\spring-beans-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-webmvc\6.1.4\spring-webmvc-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-aop\6.1.4\spring-aop-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-expression\6.1.4\spring-expression-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\3.2.3\spring-boot-starter-actuator-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\3.2.3\spring-boot-actuator-autoconfigure-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-actuator\3.2.3\spring-boot-actuator-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\io\micrometer\micrometer-observation\1.12.3\micrometer-observation-1.12.3.jar;C:\Users\Marco Kaul\.m2\repository\io\micrometer\micrometer-commons\1.12.3\micrometer-commons-1.12.3.jar;C:\Users\Marco Kaul\.m2\repository\io\micrometer\micrometer-jakarta9\1.12.3\micrometer-jakarta9-1.12.3.jar;C:\Users\Marco Kaul\.m2\repository\io\micrometer\micrometer-core\1.12.3\micrometer-core-1.12.3.jar;C:\Users\Marco Kaul\.m2\repository\org\hdrhistogram\HdrHistogram\2.1.12\HdrHistogram-2.1.12.jar;C:\Users\Marco Kaul\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\kafka\spring-kafka\3.1.2\spring-kafka-3.1.2.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-context\6.1.4\spring-context-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-messaging\6.1.4\spring-messaging-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-tx\6.1.4\spring-tx-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\retry\spring-retry\2.0.5\spring-retry-2.0.5.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-clients\3.6.1\kafka-clients-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\com\github\luben\zstd-jni\1.5.5-1\zstd-jni-1.5.5-1.jar;C:\Users\Marco Kaul\.m2\repository\org\lz4\lz4-java\1.8.0\lz4-java-1.8.0.jar;C:\Users\Marco Kaul\.m2\repository\org\xerial\snappy\snappy-java\1.1.10.5\snappy-java-1.1.10.5.jar;C:\Users\Marco Kaul\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\Marco Kaul\.m2\repository\com\google\code\findbugs\jsr305\3.0.2\jsr305-3.0.2.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.2.3\spring-boot-starter-data-jpa-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-aop\3.2.3\spring-boot-starter-aop-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\aspectj\aspectjweaver\1.9.21\aspectjweaver-1.9.21.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.2.3\spring-boot-starter-jdbc-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\com\zaxxer\HikariCP\5.0.1\HikariCP-5.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-jdbc\6.1.4\spring-jdbc-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\hibernate\orm\hibernate-core\6.4.4.Final\hibernate-core-6.4.4.Final.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\Users\Marco Kaul\.m2\repository\org\hibernate\common\hibernate-commons-annotations\6.0.6.Final\hibernate-commons-annotations-6.0.6.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\smallrye\jandex\3.1.2\jandex-3.1.2.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\classmate\1.6.0\classmate-1.6.0.jar;C:\Users\Marco Kaul\.m2\repository\net\bytebuddy\byte-buddy\1.14.12\byte-buddy-1.14.12.jar;C:\Users\Marco Kaul\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.4\jaxb-runtime-4.0.4.jar;C:\Users\Marco Kaul\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.4\jaxb-core-4.0.4.jar;C:\Users\Marco Kaul\.m2\repository\org\eclipse\angus\angus-activation\2.0.1\angus-activation-2.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\glassfish\jaxb\txw2\4.0.4\txw2-4.0.4.jar;C:\Users\Marco Kaul\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\data\spring-data-jpa\3.2.3\spring-data-jpa-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\data\spring-data-commons\3.2.3\spring-data-commons-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-orm\6.1.4\spring-orm-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-aspects\6.1.4\spring-aspects-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\postgresql\postgresql\42.6.1\postgresql-42.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\checkerframework\checker-qual\3.31.0\checker-qual-3.31.0.jar;C:\Users\Marco Kaul\LogisticSystem\shared\target\shared-0.0.1-SNAPSHOT.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.15.4\jackson-databind-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.15.4\jackson-annotations-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.15.4\jackson-core-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.15.4\jackson-datatype-jsr310-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.2.3\spring-boot-autoconfigure-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.2.3\spring-boot-starter-test-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-test\3.2.3\spring-boot-test-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.2.3\spring-boot-test-autoconfigure-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.1\jakarta.xml.bind-api-4.0.1.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.2\jakarta.activation-api-2.1.2.jar;C:\Users\Marco Kaul\.m2\repository\net\minidev\json-smart\2.5.0\json-smart-2.5.0.jar;C:\Users\Marco Kaul\.m2\repository\net\minidev\accessors-smart\2.5.0\accessors-smart-2.5.0.jar;C:\Users\Marco Kaul\.m2\repository\org\ow2\asm\asm\9.3\asm-9.3.jar;C:\Users\Marco Kaul\.m2\repository\org\assertj\assertj-core\3.24.2\assertj-core-3.24.2.jar;C:\Users\Marco Kaul\.m2\repository\org\awaitility\awaitility\4.2.0\awaitility-4.2.0.jar;C:\Users\Marco Kaul\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;C:\Users\Marco Kaul\.m2\repository\org\mockito\mockito-core\5.7.0\mockito-core-5.7.0.jar;C:\Users\Marco Kaul\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.12\byte-buddy-agent-1.14.12.jar;C:\Users\Marco Kaul\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\Marco Kaul\.m2\repository\org\mockito\mockito-junit-jupiter\5.7.0\mockito-junit-jupiter-5.7.0.jar;C:\Users\Marco Kaul\.m2\repository\org\skyscreamer\jsonassert\1.5.1\jsonassert-1.5.1.jar;C:\Users\Marco Kaul\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-core\6.1.4\spring-core-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-jcl\6.1.4\spring-jcl-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-test\6.1.4\spring-test-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\xmlunit\xmlunit-core\2.9.1\xmlunit-core-2.9.1.jar;C:\Users\Marco Kaul\.m2\repository\com\h2database\h2\2.2.224\h2-2.2.224.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\postgresql\1.19.0\postgresql-1.19.0.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\jdbc\1.19.5\jdbc-1.19.5.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\database-commons\1.19.5\database-commons-1.19.5.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\kafka\1.19.0\kafka-1.19.0.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\testcontainers\1.19.5\testcontainers-1.19.5.jar;C:\Users\Marco Kaul\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\Marco Kaul\.m2\repository\org\hamcrest\hamcrest-core\2.2\hamcrest-core-2.2.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\commons\commons-compress\1.24.0\commons-compress-1.24.0.jar;C:\Users\Marco Kaul\.m2\repository\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;C:\Users\Marco Kaul\.m2\repository\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;C:\Users\Marco Kaul\.m2\repository\com\github\docker-java\docker-java-api\3.3.4\docker-java-api-3.3.4.jar;C:\Users\Marco Kaul\.m2\repository\com\github\docker-java\docker-java-transport-zerodep\3.3.4\docker-java-transport-zerodep-3.3.4.jar;C:\Users\Marco Kaul\.m2\repository\com\github\docker-java\docker-java-transport\3.3.4\docker-java-transport-3.3.4.jar;C:\Users\Marco Kaul\.m2\repository\net\java\dev\jna\jna\5.13.0\jna-5.13.0.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.2\junit-jupiter-5.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.2\junit-jupiter-api-5.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\platform\junit-platform-commons\1.10.2\junit-platform-commons-1.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.2\junit-jupiter-params-5.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.2\junit-jupiter-engine-5.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\platform\junit-platform-engine\1.10.2\junit-platform-engine-1.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\kafka\spring-kafka-test\3.1.2\spring-kafka-test-3.1.2.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\zookeeper\zookeeper\3.8.3\zookeeper-3.8.3.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\zookeeper\zookeeper-jute\3.8.3\zookeeper-jute-3.8.3.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\yetus\audience-annotations\0.12.0\audience-annotations-0.12.0.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-handler\4.1.107.Final\netty-handler-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-common\4.1.107.Final\netty-common-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-resolver\4.1.107.Final\netty-resolver-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-buffer\4.1.107.Final\netty-buffer-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-transport\4.1.107.Final\netty-transport-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.107.Final\netty-transport-native-unix-common-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-codec\4.1.107.Final\netty-codec-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-transport-native-epoll\4.1.107.Final\netty-transport-native-epoll-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-transport-classes-epoll\4.1.107.Final\netty-transport-classes-epoll-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\ch\qos\logback\logback-core\1.4.14\logback-core-1.4.14.jar;C:\Users\Marco Kaul\.m2\repository\ch\qos\logback\logback-classic\1.4.14\logback-classic-1.4.14.jar;C:\Users\Marco Kaul\.m2\repository\commons-io\commons-io\2.11.0\commons-io-2.11.0.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-clients\3.6.1\kafka-clients-3.6.1-test.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-metadata\3.6.1\kafka-metadata-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-raft\3.6.1\kafka-raft-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\com\yammer\metrics\metrics-core\2.2.0\metrics-core-2.2.0.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-server-common\3.6.1\kafka-server-common-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\net\sf\jopt-simple\jopt-simple\5.0.4\jopt-simple-5.0.4.jar;C:\Users\Marco Kaul\.m2\repository\org\pcollections\pcollections\4.0.1\pcollections-4.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-server-common\3.6.1\kafka-server-common-3.6.1-test.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-streams-test-utils\3.6.1\kafka-streams-test-utils-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-streams\3.6.1\kafka-streams-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\rocksdb\rocksdbjni\7.9.2\rocksdbjni-7.9.2.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka_2.13\3.6.1\kafka_2.13-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\scala-lang\scala-library\2.13.11\scala-library-2.13.11.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-group-coordinator\3.6.1\kafka-group-coordinator-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-storage-api\3.6.1\kafka-storage-api-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-tools-api\3.6.1\kafka-tools-api-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-storage\3.6.1\kafka-storage-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\com\github\ben-manes\caffeine\caffeine\3.1.8\caffeine-3.1.8.jar;C:\Users\Marco Kaul\.m2\repository\com\google\errorprone\error_prone_annotations\2.21.1\error_prone_annotations-2.21.1.jar;C:\Users\Marco Kaul\.m2\repository\net\sourceforge\argparse4j\argparse4j\0.7.0\argparse4j-0.7.0.jar;C:\Users\Marco Kaul\.m2\repository\commons-validator\commons-validator\1.7\commons-validator-1.7.jar;C:\Users\Marco Kaul\.m2\repository\commons-beanutils\commons-beanutils\1.9.4\commons-beanutils-1.9.4.jar;C:\Users\Marco Kaul\.m2\repository\commons-digester\commons-digester\2.1\commons-digester-2.1.jar;C:\Users\Marco Kaul\.m2\repository\commons-collections\commons-collections\3.2.2\commons-collections-3.2.2.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\module\jackson-module-scala_2.13\2.15.4\jackson-module-scala_2.13-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\thoughtworks\paranamer\paranamer\2.8\paranamer-2.8.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\dataformat\jackson-dataformat-csv\2.15.4\jackson-dataformat-csv-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\org\bitbucket\b_c\jose4j\0.9.3\jose4j-0.9.3.jar;C:\Users\Marco Kaul\.m2\repository\org\scala-lang\modules\scala-collection-compat_2.13\2.10.0\scala-collection-compat_2.13-2.10.0.jar;C:\Users\Marco Kaul\.m2\repository\org\scala-lang\modules\scala-java8-compat_2.13\1.0.2\scala-java8-compat_2.13-1.0.2.jar;C:\Users\Marco Kaul\.m2\repository\org\scala-lang\scala-reflect\2.13.11\scala-reflect-2.13.11.jar;C:\Users\Marco Kaul\.m2\repository\com\typesafe\scala-logging\scala-logging_2.13\3.9.4\scala-logging_2.13-3.9.4.jar;C:\Users\Marco Kaul\.m2\repository\io\dropwizard\metrics\metrics-core\4.2.25\metrics-core-4.2.25.jar;C:\Users\Marco Kaul\.m2\repository\commons-cli\commons-cli\1.4\commons-cli-1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka_2.13\3.6.1\kafka_2.13-3.6.1-test.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\platform\junit-platform-launcher\1.10.2\junit-platform-launcher-1.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\junit-jupiter\1.19.5\junit-jupiter-1.19.5.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="catalina.useNaming" value="false"/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="Europe/Berlin"/>
+    <property name="org.jboss.logging.provider" value="slf4j"/>
+    <property name="os.name" value="Windows 10"/>
+    <property name="java.vm.specification.version" value="24"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="DE"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-24\bin"/>
+    <property name="sun.java.command" value="C:\Users\Marco Kaul\AppData\Local\Temp\surefire11503364090621184338\surefirebooter-20250604182929005_8.jar C:\Users\Marco Kaul\AppData\Local\Temp\surefire11503364090621184338 2025-06-04T18-26-57_307-jvmRun1 surefire-20250604182929005_6tmp surefire_1-20250604182929005_7tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\Users\Marco Kaul\LogisticSystem\notificationservice\target\test-classes;C:\Users\Marco Kaul\LogisticSystem\notificationservice\target\classes;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.2.3\spring-boot-starter-web-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter\3.2.3\spring-boot-starter-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot\3.2.3\spring-boot-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.2.3\spring-boot-starter-logging-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.21.1\log4j-to-slf4j-2.21.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\logging\log4j\log4j-api\2.21.1\log4j-api-2.21.1.jar;C:\Users\Marco Kaul\.m2\repository\org\slf4j\jul-to-slf4j\2.0.12\jul-to-slf4j-2.0.12.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\Marco Kaul\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.2.3\spring-boot-starter-json-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.15.4\jackson-datatype-jdk8-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.15.4\jackson-module-parameter-names-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.2.3\spring-boot-starter-tomcat-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.19\tomcat-embed-core-10.1.19.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.19\tomcat-embed-el-10.1.19.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.19\tomcat-embed-websocket-10.1.19.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-web\6.1.4\spring-web-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-beans\6.1.4\spring-beans-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-webmvc\6.1.4\spring-webmvc-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-aop\6.1.4\spring-aop-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-expression\6.1.4\spring-expression-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\3.2.3\spring-boot-starter-actuator-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\3.2.3\spring-boot-actuator-autoconfigure-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-actuator\3.2.3\spring-boot-actuator-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\io\micrometer\micrometer-observation\1.12.3\micrometer-observation-1.12.3.jar;C:\Users\Marco Kaul\.m2\repository\io\micrometer\micrometer-commons\1.12.3\micrometer-commons-1.12.3.jar;C:\Users\Marco Kaul\.m2\repository\io\micrometer\micrometer-jakarta9\1.12.3\micrometer-jakarta9-1.12.3.jar;C:\Users\Marco Kaul\.m2\repository\io\micrometer\micrometer-core\1.12.3\micrometer-core-1.12.3.jar;C:\Users\Marco Kaul\.m2\repository\org\hdrhistogram\HdrHistogram\2.1.12\HdrHistogram-2.1.12.jar;C:\Users\Marco Kaul\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\kafka\spring-kafka\3.1.2\spring-kafka-3.1.2.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-context\6.1.4\spring-context-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-messaging\6.1.4\spring-messaging-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-tx\6.1.4\spring-tx-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\retry\spring-retry\2.0.5\spring-retry-2.0.5.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-clients\3.6.1\kafka-clients-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\com\github\luben\zstd-jni\1.5.5-1\zstd-jni-1.5.5-1.jar;C:\Users\Marco Kaul\.m2\repository\org\lz4\lz4-java\1.8.0\lz4-java-1.8.0.jar;C:\Users\Marco Kaul\.m2\repository\org\xerial\snappy\snappy-java\1.1.10.5\snappy-java-1.1.10.5.jar;C:\Users\Marco Kaul\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\Marco Kaul\.m2\repository\com\google\code\findbugs\jsr305\3.0.2\jsr305-3.0.2.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.2.3\spring-boot-starter-data-jpa-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-aop\3.2.3\spring-boot-starter-aop-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\aspectj\aspectjweaver\1.9.21\aspectjweaver-1.9.21.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.2.3\spring-boot-starter-jdbc-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\com\zaxxer\HikariCP\5.0.1\HikariCP-5.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-jdbc\6.1.4\spring-jdbc-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\hibernate\orm\hibernate-core\6.4.4.Final\hibernate-core-6.4.4.Final.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\Users\Marco Kaul\.m2\repository\org\hibernate\common\hibernate-commons-annotations\6.0.6.Final\hibernate-commons-annotations-6.0.6.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\smallrye\jandex\3.1.2\jandex-3.1.2.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\classmate\1.6.0\classmate-1.6.0.jar;C:\Users\Marco Kaul\.m2\repository\net\bytebuddy\byte-buddy\1.14.12\byte-buddy-1.14.12.jar;C:\Users\Marco Kaul\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.4\jaxb-runtime-4.0.4.jar;C:\Users\Marco Kaul\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.4\jaxb-core-4.0.4.jar;C:\Users\Marco Kaul\.m2\repository\org\eclipse\angus\angus-activation\2.0.1\angus-activation-2.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\glassfish\jaxb\txw2\4.0.4\txw2-4.0.4.jar;C:\Users\Marco Kaul\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\data\spring-data-jpa\3.2.3\spring-data-jpa-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\data\spring-data-commons\3.2.3\spring-data-commons-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-orm\6.1.4\spring-orm-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-aspects\6.1.4\spring-aspects-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\postgresql\postgresql\42.6.1\postgresql-42.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\checkerframework\checker-qual\3.31.0\checker-qual-3.31.0.jar;C:\Users\Marco Kaul\LogisticSystem\shared\target\shared-0.0.1-SNAPSHOT.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.15.4\jackson-databind-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.15.4\jackson-annotations-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.15.4\jackson-core-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.15.4\jackson-datatype-jsr310-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.2.3\spring-boot-autoconfigure-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.2.3\spring-boot-starter-test-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-test\3.2.3\spring-boot-test-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.2.3\spring-boot-test-autoconfigure-3.2.3.jar;C:\Users\Marco Kaul\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.1\jakarta.xml.bind-api-4.0.1.jar;C:\Users\Marco Kaul\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.2\jakarta.activation-api-2.1.2.jar;C:\Users\Marco Kaul\.m2\repository\net\minidev\json-smart\2.5.0\json-smart-2.5.0.jar;C:\Users\Marco Kaul\.m2\repository\net\minidev\accessors-smart\2.5.0\accessors-smart-2.5.0.jar;C:\Users\Marco Kaul\.m2\repository\org\ow2\asm\asm\9.3\asm-9.3.jar;C:\Users\Marco Kaul\.m2\repository\org\assertj\assertj-core\3.24.2\assertj-core-3.24.2.jar;C:\Users\Marco Kaul\.m2\repository\org\awaitility\awaitility\4.2.0\awaitility-4.2.0.jar;C:\Users\Marco Kaul\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;C:\Users\Marco Kaul\.m2\repository\org\mockito\mockito-core\5.7.0\mockito-core-5.7.0.jar;C:\Users\Marco Kaul\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.12\byte-buddy-agent-1.14.12.jar;C:\Users\Marco Kaul\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\Marco Kaul\.m2\repository\org\mockito\mockito-junit-jupiter\5.7.0\mockito-junit-jupiter-5.7.0.jar;C:\Users\Marco Kaul\.m2\repository\org\skyscreamer\jsonassert\1.5.1\jsonassert-1.5.1.jar;C:\Users\Marco Kaul\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-core\6.1.4\spring-core-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-jcl\6.1.4\spring-jcl-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\spring-test\6.1.4\spring-test-6.1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\xmlunit\xmlunit-core\2.9.1\xmlunit-core-2.9.1.jar;C:\Users\Marco Kaul\.m2\repository\com\h2database\h2\2.2.224\h2-2.2.224.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\postgresql\1.19.0\postgresql-1.19.0.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\jdbc\1.19.5\jdbc-1.19.5.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\database-commons\1.19.5\database-commons-1.19.5.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\kafka\1.19.0\kafka-1.19.0.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\testcontainers\1.19.5\testcontainers-1.19.5.jar;C:\Users\Marco Kaul\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\Marco Kaul\.m2\repository\org\hamcrest\hamcrest-core\2.2\hamcrest-core-2.2.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\commons\commons-compress\1.24.0\commons-compress-1.24.0.jar;C:\Users\Marco Kaul\.m2\repository\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;C:\Users\Marco Kaul\.m2\repository\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;C:\Users\Marco Kaul\.m2\repository\com\github\docker-java\docker-java-api\3.3.4\docker-java-api-3.3.4.jar;C:\Users\Marco Kaul\.m2\repository\com\github\docker-java\docker-java-transport-zerodep\3.3.4\docker-java-transport-zerodep-3.3.4.jar;C:\Users\Marco Kaul\.m2\repository\com\github\docker-java\docker-java-transport\3.3.4\docker-java-transport-3.3.4.jar;C:\Users\Marco Kaul\.m2\repository\net\java\dev\jna\jna\5.13.0\jna-5.13.0.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.2\junit-jupiter-5.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.2\junit-jupiter-api-5.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\platform\junit-platform-commons\1.10.2\junit-platform-commons-1.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.2\junit-jupiter-params-5.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.2\junit-jupiter-engine-5.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\platform\junit-platform-engine\1.10.2\junit-platform-engine-1.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\springframework\kafka\spring-kafka-test\3.1.2\spring-kafka-test-3.1.2.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\zookeeper\zookeeper\3.8.3\zookeeper-3.8.3.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\zookeeper\zookeeper-jute\3.8.3\zookeeper-jute-3.8.3.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\yetus\audience-annotations\0.12.0\audience-annotations-0.12.0.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-handler\4.1.107.Final\netty-handler-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-common\4.1.107.Final\netty-common-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-resolver\4.1.107.Final\netty-resolver-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-buffer\4.1.107.Final\netty-buffer-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-transport\4.1.107.Final\netty-transport-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.107.Final\netty-transport-native-unix-common-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-codec\4.1.107.Final\netty-codec-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-transport-native-epoll\4.1.107.Final\netty-transport-native-epoll-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\io\netty\netty-transport-classes-epoll\4.1.107.Final\netty-transport-classes-epoll-4.1.107.Final.jar;C:\Users\Marco Kaul\.m2\repository\ch\qos\logback\logback-core\1.4.14\logback-core-1.4.14.jar;C:\Users\Marco Kaul\.m2\repository\ch\qos\logback\logback-classic\1.4.14\logback-classic-1.4.14.jar;C:\Users\Marco Kaul\.m2\repository\commons-io\commons-io\2.11.0\commons-io-2.11.0.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-clients\3.6.1\kafka-clients-3.6.1-test.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-metadata\3.6.1\kafka-metadata-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-raft\3.6.1\kafka-raft-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\com\yammer\metrics\metrics-core\2.2.0\metrics-core-2.2.0.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-server-common\3.6.1\kafka-server-common-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\net\sf\jopt-simple\jopt-simple\5.0.4\jopt-simple-5.0.4.jar;C:\Users\Marco Kaul\.m2\repository\org\pcollections\pcollections\4.0.1\pcollections-4.0.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-server-common\3.6.1\kafka-server-common-3.6.1-test.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-streams-test-utils\3.6.1\kafka-streams-test-utils-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-streams\3.6.1\kafka-streams-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\rocksdb\rocksdbjni\7.9.2\rocksdbjni-7.9.2.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka_2.13\3.6.1\kafka_2.13-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\scala-lang\scala-library\2.13.11\scala-library-2.13.11.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-group-coordinator\3.6.1\kafka-group-coordinator-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-storage-api\3.6.1\kafka-storage-api-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-tools-api\3.6.1\kafka-tools-api-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka-storage\3.6.1\kafka-storage-3.6.1.jar;C:\Users\Marco Kaul\.m2\repository\com\github\ben-manes\caffeine\caffeine\3.1.8\caffeine-3.1.8.jar;C:\Users\Marco Kaul\.m2\repository\com\google\errorprone\error_prone_annotations\2.21.1\error_prone_annotations-2.21.1.jar;C:\Users\Marco Kaul\.m2\repository\net\sourceforge\argparse4j\argparse4j\0.7.0\argparse4j-0.7.0.jar;C:\Users\Marco Kaul\.m2\repository\commons-validator\commons-validator\1.7\commons-validator-1.7.jar;C:\Users\Marco Kaul\.m2\repository\commons-beanutils\commons-beanutils\1.9.4\commons-beanutils-1.9.4.jar;C:\Users\Marco Kaul\.m2\repository\commons-digester\commons-digester\2.1\commons-digester-2.1.jar;C:\Users\Marco Kaul\.m2\repository\commons-collections\commons-collections\3.2.2\commons-collections-3.2.2.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\module\jackson-module-scala_2.13\2.15.4\jackson-module-scala_2.13-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\com\thoughtworks\paranamer\paranamer\2.8\paranamer-2.8.jar;C:\Users\Marco Kaul\.m2\repository\com\fasterxml\jackson\dataformat\jackson-dataformat-csv\2.15.4\jackson-dataformat-csv-2.15.4.jar;C:\Users\Marco Kaul\.m2\repository\org\bitbucket\b_c\jose4j\0.9.3\jose4j-0.9.3.jar;C:\Users\Marco Kaul\.m2\repository\org\scala-lang\modules\scala-collection-compat_2.13\2.10.0\scala-collection-compat_2.13-2.10.0.jar;C:\Users\Marco Kaul\.m2\repository\org\scala-lang\modules\scala-java8-compat_2.13\1.0.2\scala-java8-compat_2.13-1.0.2.jar;C:\Users\Marco Kaul\.m2\repository\org\scala-lang\scala-reflect\2.13.11\scala-reflect-2.13.11.jar;C:\Users\Marco Kaul\.m2\repository\com\typesafe\scala-logging\scala-logging_2.13\3.9.4\scala-logging_2.13-3.9.4.jar;C:\Users\Marco Kaul\.m2\repository\io\dropwizard\metrics\metrics-core\4.2.25\metrics-core-4.2.25.jar;C:\Users\Marco Kaul\.m2\repository\commons-cli\commons-cli\1.4\commons-cli-1.4.jar;C:\Users\Marco Kaul\.m2\repository\org\apache\kafka\kafka_2.13\3.6.1\kafka_2.13-3.6.1-test.jar;C:\Users\Marco Kaul\.m2\repository\org\junit\platform\junit-platform-launcher\1.10.2\junit-platform-launcher-1.10.2.jar;C:\Users\Marco Kaul\.m2\repository\org\testcontainers\junit-jupiter\1.19.5\junit-jupiter-1.19.5.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\Marco Kaul"/>
+    <property name="user.language" value="de"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2025-03-18"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-24"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\Marco Kaul\LogisticSystem\notificationservice"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="FILE_LOG_CHARSET" value="UTF-8"/>
+    <property name="java.awt.headless" value="true"/>
+    <property name="surefire.real.class.path" value="C:\Users\Marco Kaul\AppData\Local\Temp\surefire11503364090621184338\surefirebooter-20250604182929005_8.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="24+36-3646"/>
+    <property name="user.name" value="Marco Kaul"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\Marco Kaul\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\MARCOK~1\AppData\Local\Temp\"/>
+    <property name="catalina.home" value="C:\Users\Marco Kaul\AppData\Local\Temp\tomcat.0.14453325326213240229"/>
+    <property name="com.zaxxer.hikari.pool_number" value="1"/>
+    <property name="java.version" value="24"/>
+    <property name="user.dir" value="C:\Users\Marco Kaul\LogisticSystem\notificationservice"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="PID" value="12136"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="CONSOLE_LOG_CHARSET" value="UTF-8"/>
+    <property name="catalina.base" value="C:\Users\Marco Kaul\AppData\Local\Temp\tomcat.0.14453325326213240229"/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-24\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Users\Marco Kaul\AppData\Local\Microsoft\WindowsApps;C:\Users\Marco Kaul\AppData\Local\GitHubDesktop\bin;C:\Users\Marco Kaul\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2024.3.5\bin;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Users\Marco Kaul\AppData\Local\Programs\Python\Launcher\;C:\Users\Marco Kaul\AppData\Local\Microsoft\WindowsApps;C:\Users\Marco Kaul\AppData\Local\GitHubDesktop\bin;C:\Users\Marco Kaul\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2024.3.5\bin;;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\apache-maven-3.9.9\bin;C:\Program Files\Java\jdk-24\bin;C:\Windows\System32\OpenSSH;C:\Users\Marco Kaul\flutter\bin;C:\Program Files\Git\bin;C:\Program Files\Git\cmd;C:\Windows\System32;C:\Windows\System32\WindowsPowerShell\v1.0;;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="24+36-3646"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="68.0"/>
+    <property name="LOGGED_APPLICATION_NAME" value="[shared] "/>
+  </properties>
+  <testcase name="shouldPublishShipmentDeliveredEventToKafka" classname="com.luckypets.logistics.notificationservice.integrationtest.NotificationServiceIntegrationTest" time="1.57">
+    <system-out><![CDATA[18:29:29.752 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+18:29:29.759 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+18:29:29.917 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.luckypets.logistics.notificationservice.integrationtest.NotificationServiceIntegrationTest]: NotificationServiceIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+18:29:30.020 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.luckypets.logistics.notificationservice.NotificationServiceApplication for test class com.luckypets.logistics.notificationservice.integrationtest.NotificationServiceIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.3)
+
+2025-06-04T18:29:30.920+02:00  INFO 12136 --- [shared] [           main] o.t.d.DockerClientProviderStrategy       : Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+2025-06-04T18:29:31.189+02:00  INFO 12136 --- [shared] [           main] o.t.d.DockerClientProviderStrategy       : Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+2025-06-04T18:29:31.191+02:00  INFO 12136 --- [shared] [           main] org.testcontainers.DockerClientFactory   : Docker host IP address is localhost
+2025-06-04T18:29:31.207+02:00  INFO 12136 --- [shared] [           main] org.testcontainers.DockerClientFactory   : Connected to docker: 
+  Server Version: 27.4.0
+  API Version: 1.47
+  Operating System: Docker Desktop
+  Total Memory: 7873 MB
+2025-06-04T18:29:31.341+02:00  INFO 12136 --- [shared] [           main] tc.testcontainers/ryuk:0.6.0             : Creating container for image: testcontainers/ryuk:0.6.0
+2025-06-04T18:29:31.499+02:00  INFO 12136 --- [shared] [           main] o.t.utility.RegistryAuthLocator          : Credential helper/store (docker-credential-desktop) does not have credentials for https://index.docker.io/v1/
+2025-06-04T18:29:31.634+02:00  INFO 12136 --- [shared] [           main] tc.testcontainers/ryuk:0.6.0             : Container testcontainers/ryuk:0.6.0 is starting: 1e6a6c03e5681451ec87be94138698fe05b48b681310ad58e5ade566af1e794f
+2025-06-04T18:29:32.209+02:00  INFO 12136 --- [shared] [           main] tc.testcontainers/ryuk:0.6.0             : Container testcontainers/ryuk:0.6.0 started in PT0.8682893S
+2025-06-04T18:29:32.219+02:00  INFO 12136 --- [shared] [           main] o.t.utility.RyukResourceReaper           : Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+2025-06-04T18:29:32.220+02:00  INFO 12136 --- [shared] [           main] org.testcontainers.DockerClientFactory   : Checking the system...
+2025-06-04T18:29:32.220+02:00  INFO 12136 --- [shared] [           main] org.testcontainers.DockerClientFactory   : ✔︎ Docker server version should be at least 1.6.0
+2025-06-04T18:29:32.221+02:00  INFO 12136 --- [shared] [           main] tc.confluentinc/cp-kafka:7.4.0           : Creating container for image: confluentinc/cp-kafka:7.4.0
+2025-06-04T18:29:32.309+02:00  INFO 12136 --- [shared] [           main] tc.confluentinc/cp-kafka:7.4.0           : Container confluentinc/cp-kafka:7.4.0 is starting: 7f4ee66d8040e8175b7a438422cedea16922945007d1862c45712d3add1cc9f0
+2025-06-04T18:29:37.312+02:00  INFO 12136 --- [shared] [           main] tc.confluentinc/cp-kafka:7.4.0           : Container confluentinc/cp-kafka:7.4.0 started in PT5.0910705S
+2025-06-04T18:29:37.323+02:00  INFO 12136 --- [shared] [           main] l.n.i.NotificationServiceIntegrationTest : Starting NotificationServiceIntegrationTest using Java 24 with PID 12136 (started by Marco Kaul in C:\Users\Marco Kaul\LogisticSystem\notificationservice)
+2025-06-04T18:29:37.324+02:00  INFO 12136 --- [shared] [           main] l.n.i.NotificationServiceIntegrationTest : No active profile set, falling back to 1 default profile: "default"
+2025-06-04T18:29:38.194+02:00  INFO 12136 --- [shared] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-04T18:29:38.216+02:00  INFO 12136 --- [shared] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 0 JPA repository interfaces.
+2025-06-04T18:29:39.024+02:00  INFO 12136 --- [shared] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
+2025-06-04T18:29:39.036+02:00  INFO 12136 --- [shared] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-04T18:29:39.036+02:00  INFO 12136 --- [shared] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-06-04T18:29:39.123+02:00  INFO 12136 --- [shared] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-06-04T18:29:39.123+02:00  INFO 12136 --- [shared] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1781 ms
+2025-06-04T18:29:39.447+02:00  INFO 12136 --- [shared] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-04T18:29:39.519+02:00  INFO 12136 --- [shared] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-06-04T18:29:39.558+02:00  INFO 12136 --- [shared] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-04T18:29:39.786+02:00  INFO 12136 --- [shared] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-04T18:29:39.813+02:00  INFO 12136 --- [shared] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-06-04T18:29:40.038+02:00  INFO 12136 --- [shared] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=NOTIFICATION
+2025-06-04T18:29:40.040+02:00  INFO 12136 --- [shared] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-06-04T18:29:40.072+02:00  WARN 12136 --- [shared] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.2.0 version for [org.hibernate.dialect.PostgreSQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 12.0.0. Check the community dialects project for available legacy versions.
+2025-06-04T18:29:40.078+02:00  WARN 12136 --- [shared] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-06-04T18:29:40.704+02:00  INFO 12136 --- [shared] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-04T18:29:40.710+02:00  INFO 12136 --- [shared] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-04T18:29:40.857+02:00  WARN 12136 --- [shared] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-04T18:29:41.670+02:00  INFO 12136 --- [shared] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2025-06-04T18:29:41.828+02:00  INFO 12136 --- [shared] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 56791 (http) with context path ''
+2025-06-04T18:29:41.868+02:00  INFO 12136 --- [shared] [           main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [PLAINTEXT://localhost:56786]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-notification-service-1
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = notification-service
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+
+2025-06-04T18:29:42.019+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.6.1
+2025-06-04T18:29:42.019+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 5e3c2b738d253ff5
+2025-06-04T18:29:42.019+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1749054582018
+2025-06-04T18:29:42.021+02:00  INFO 12136 --- [shared] [           main] fkaConsumerFactory$ExtendedKafkaConsumer : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Subscribed to topic(s): shipment-delivered
+2025-06-04T18:29:42.026+02:00  INFO 12136 --- [shared] [           main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [PLAINTEXT://localhost:56786]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-notification-service-2
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = notification-service
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+
+2025-06-04T18:29:42.035+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.6.1
+2025-06-04T18:29:42.035+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 5e3c2b738d253ff5
+2025-06-04T18:29:42.036+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1749054582035
+2025-06-04T18:29:42.036+02:00  INFO 12136 --- [shared] [           main] fkaConsumerFactory$ExtendedKafkaConsumer : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Subscribed to topic(s): shipment-scanned
+2025-06-04T18:29:42.038+02:00  INFO 12136 --- [shared] [           main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [PLAINTEXT://localhost:56786]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-notification-service-3
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = notification-service
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+
+2025-06-04T18:29:42.045+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.6.1
+2025-06-04T18:29:42.046+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 5e3c2b738d253ff5
+2025-06-04T18:29:42.046+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1749054582045
+2025-06-04T18:29:42.046+02:00  INFO 12136 --- [shared] [           main] fkaConsumerFactory$ExtendedKafkaConsumer : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Subscribed to topic(s): shipment-created
+2025-06-04T18:29:42.060+02:00  INFO 12136 --- [shared] [           main] l.n.i.NotificationServiceIntegrationTest : Started NotificationServiceIntegrationTest in 11.902 seconds (process running for 12.996)
+2025-06-04T18:29:42.535+02:00  WARN 12136 --- [shared] [ntainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Error while fetching metadata with correlation id 2 : {shipment-scanned=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.536+02:00  WARN 12136 --- [shared] [ntainer#1-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Error while fetching metadata with correlation id 2 : {shipment-created=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.536+02:00  WARN 12136 --- [shared] [ntainer#2-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Error while fetching metadata with correlation id 2 : {shipment-delivered=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.537+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Cluster ID: O4H4AI9bRTiloV-ng0MJ0w
+2025-06-04T18:29:42.538+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Cluster ID: O4H4AI9bRTiloV-ng0MJ0w
+2025-06-04T18:29:42.537+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Cluster ID: O4H4AI9bRTiloV-ng0MJ0w
+2025-06-04T18:29:42.645+02:00  WARN 12136 --- [shared] [ntainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Error while fetching metadata with correlation id 4 : {shipment-scanned=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.645+02:00  WARN 12136 --- [shared] [ntainer#2-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Error while fetching metadata with correlation id 4 : {shipment-delivered=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.645+02:00  WARN 12136 --- [shared] [ntainer#1-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Error while fetching metadata with correlation id 4 : {shipment-created=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.654+02:00  INFO 12136 --- [shared] [           main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [PLAINTEXT://localhost:56786]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.JsonDeserializer
+
+2025-06-04T18:29:42.704+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.6.1
+2025-06-04T18:29:42.705+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 5e3c2b738d253ff5
+2025-06-04T18:29:42.705+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1749054582704
+2025-06-04T18:29:42.706+02:00  INFO 12136 --- [shared] [           main] o.a.k.clients.consumer.KafkaConsumer     : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Subscribed to topic(s): shipment-delivered
+2025-06-04T18:29:42.719+02:00  INFO 12136 --- [shared] [           main] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = -1
+	auto.include.jmx.reporter = true
+	batch.size = 16384
+	bootstrap.servers = [PLAINTEXT://localhost:56786]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = producer-1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 120000
+	enable.idempotence = true
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metadata.max.idle.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.adaptive.partitioning.enable = true
+	partitioner.availability.timeout.ms = 0
+	partitioner.class = null
+	partitioner.ignore.keys = false
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 2147483647
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.springframework.kafka.support.serializer.JsonSerializer
+
+2025-06-04T18:29:42.733+02:00  INFO 12136 --- [shared] [           main] o.a.k.clients.producer.KafkaProducer     : [Producer clientId=producer-1] Instantiated an idempotent producer.
+2025-06-04T18:29:42.752+02:00  WARN 12136 --- [shared] [ntainer#2-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Error while fetching metadata with correlation id 6 : {shipment-delivered=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.752+02:00  WARN 12136 --- [shared] [ntainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Error while fetching metadata with correlation id 6 : {shipment-scanned=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.752+02:00  WARN 12136 --- [shared] [ntainer#1-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Error while fetching metadata with correlation id 6 : {shipment-created=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.756+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.6.1
+2025-06-04T18:29:42.756+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 5e3c2b738d253ff5
+2025-06-04T18:29:42.756+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1749054582756
+2025-06-04T18:29:42.768+02:00  WARN 12136 --- [shared] [ad | producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=producer-1] Error while fetching metadata with correlation id 1 : {shipment-delivered=LEADER_NOT_AVAILABLE}
+2025-06-04T18:29:42.769+02:00  INFO 12136 --- [shared] [ad | producer-1] org.apache.kafka.clients.Metadata        : [Producer clientId=producer-1] Cluster ID: O4H4AI9bRTiloV-ng0MJ0w
+2025-06-04T18:29:42.793+02:00  INFO 12136 --- [shared] [ad | producer-1] o.a.k.c.p.internals.TransactionManager   : [Producer clientId=producer-1] ProducerId set to 0 with epoch 0
+2025-06-04T18:29:42.863+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Discovered group coordinator localhost:56786 (id: 2147483646 rack: null)
+2025-06-04T18:29:42.863+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Discovered group coordinator localhost:56786 (id: 2147483646 rack: null)
+2025-06-04T18:29:42.863+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Discovered group coordinator localhost:56786 (id: 2147483646 rack: null)
+2025-06-04T18:29:42.865+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] (Re-)joining group
+2025-06-04T18:29:42.865+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] (Re-)joining group
+2025-06-04T18:29:42.865+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] (Re-)joining group
+2025-06-04T18:29:42.902+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Request joining group due to: need to re-join with the given member-id: consumer-notification-service-2-a6819b4e-88e4-4535-a364-d6ea7915854c
+2025-06-04T18:29:42.902+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Request joining group due to: need to re-join with the given member-id: consumer-notification-service-1-9dc67212-001c-456b-9167-00b8a39e6ce0
+2025-06-04T18:29:42.902+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Request joining group due to: need to re-join with the given member-id: consumer-notification-service-3-16ebac59-c51d-4f76-a1c3-cc84fd910f23
+2025-06-04T18:29:42.903+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Request joining group due to: rebalance failed due to 'The group member needs to have a valid member id before actually entering a consumer group.' (MemberIdRequiredException)
+2025-06-04T18:29:42.903+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Request joining group due to: rebalance failed due to 'The group member needs to have a valid member id before actually entering a consumer group.' (MemberIdRequiredException)
+2025-06-04T18:29:42.903+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Request joining group due to: rebalance failed due to 'The group member needs to have a valid member id before actually entering a consumer group.' (MemberIdRequiredException)
+2025-06-04T18:29:42.903+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] (Re-)joining group
+2025-06-04T18:29:42.903+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] (Re-)joining group
+2025-06-04T18:29:42.903+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] (Re-)joining group
+2025-06-04T18:29:42.932+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Successfully joined group with generation Generation{generationId=1, memberId='consumer-notification-service-1-9dc67212-001c-456b-9167-00b8a39e6ce0', protocol='range'}
+2025-06-04T18:29:42.933+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Successfully joined group with generation Generation{generationId=1, memberId='consumer-notification-service-3-16ebac59-c51d-4f76-a1c3-cc84fd910f23', protocol='range'}
+2025-06-04T18:29:42.934+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Successfully joined group with generation Generation{generationId=1, memberId='consumer-notification-service-2-a6819b4e-88e4-4535-a364-d6ea7915854c', protocol='range'}
+2025-06-04T18:29:42.944+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Finished assignment for group at generation 1: {consumer-notification-service-1-9dc67212-001c-456b-9167-00b8a39e6ce0=Assignment(partitions=[shipment-delivered-0]), consumer-notification-service-3-16ebac59-c51d-4f76-a1c3-cc84fd910f23=Assignment(partitions=[shipment-created-0]), consumer-notification-service-2-a6819b4e-88e4-4535-a364-d6ea7915854c=Assignment(partitions=[shipment-scanned-0])}
+2025-06-04T18:29:42.987+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Successfully synced group in generation Generation{generationId=1, memberId='consumer-notification-service-3-16ebac59-c51d-4f76-a1c3-cc84fd910f23', protocol='range'}
+2025-06-04T18:29:42.987+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Successfully synced group in generation Generation{generationId=1, memberId='consumer-notification-service-2-a6819b4e-88e4-4535-a364-d6ea7915854c', protocol='range'}
+2025-06-04T18:29:42.987+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Notifying assignor about the new Assignment(partitions=[shipment-created-0])
+2025-06-04T18:29:42.988+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Notifying assignor about the new Assignment(partitions=[shipment-scanned-0])
+2025-06-04T18:29:42.989+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Successfully synced group in generation Generation{generationId=1, memberId='consumer-notification-service-1-9dc67212-001c-456b-9167-00b8a39e6ce0', protocol='range'}
+2025-06-04T18:29:42.989+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Notifying assignor about the new Assignment(partitions=[shipment-delivered-0])
+2025-06-04T18:29:42.990+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Adding newly assigned partitions: shipment-created-0
+2025-06-04T18:29:42.990+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Adding newly assigned partitions: shipment-delivered-0
+2025-06-04T18:29:42.990+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Adding newly assigned partitions: shipment-scanned-0
+2025-06-04T18:29:43.001+02:00  INFO 12136 --- [shared] [           main] o.a.k.clients.producer.KafkaProducer     : [Producer clientId=producer-1] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms.
+2025-06-04T18:29:43.007+02:00  INFO 12136 --- [shared] [           main] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2025-06-04T18:29:43.008+02:00  INFO 12136 --- [shared] [           main] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2025-06-04T18:29:43.008+02:00  INFO 12136 --- [shared] [           main] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2025-06-04T18:29:43.009+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : App info kafka.producer for producer-1 unregistered
+2025-06-04T18:29:43.010+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Found no committed offset for partition shipment-created-0
+2025-06-04T18:29:43.010+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Found no committed offset for partition shipment-scanned-0
+2025-06-04T18:29:43.010+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Found no committed offset for partition shipment-delivered-0
+2025-06-04T18:29:43.016+02:00  INFO 12136 --- [shared] [           main] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Cluster ID: O4H4AI9bRTiloV-ng0MJ0w
+2025-06-04T18:29:43.016+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Discovered group coordinator localhost:56786 (id: 2147483646 rack: null)
+2025-06-04T18:29:43.017+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] (Re-)joining group
+2025-06-04T18:29:43.024+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Request joining group due to: need to re-join with the given member-id: consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4-a8a6aaba-98fa-4ad1-8b00-44292210c9f6
+2025-06-04T18:29:43.024+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Request joining group due to: rebalance failed due to 'The group member needs to have a valid member id before actually entering a consumer group.' (MemberIdRequiredException)
+2025-06-04T18:29:43.024+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] (Re-)joining group
+2025-06-04T18:29:43.032+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-notification-service-3, groupId=notification-service] Resetting offset for partition shipment-created-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[localhost:56786 (id: 1 rack: null)], epoch=0}}.
+2025-06-04T18:29:43.032+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-notification-service-1, groupId=notification-service] Resetting offset for partition shipment-delivered-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[localhost:56786 (id: 1 rack: null)], epoch=0}}.
+2025-06-04T18:29:43.032+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-notification-service-2, groupId=notification-service] Resetting offset for partition shipment-scanned-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[localhost:56786 (id: 1 rack: null)], epoch=0}}.
+2025-06-04T18:29:43.032+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Successfully joined group with generation Generation{generationId=1, memberId='consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4-a8a6aaba-98fa-4ad1-8b00-44292210c9f6', protocol='range'}
+2025-06-04T18:29:43.033+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Finished assignment for group at generation 1: {consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4-a8a6aaba-98fa-4ad1-8b00-44292210c9f6=Assignment(partitions=[shipment-delivered-0])}
+2025-06-04T18:29:43.033+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : notification-service: partitions assigned: [shipment-delivered-0]
+2025-06-04T18:29:43.033+02:00  INFO 12136 --- [shared] [ntainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : notification-service: partitions assigned: [shipment-scanned-0]
+2025-06-04T18:29:43.033+02:00  INFO 12136 --- [shared] [ntainer#1-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : notification-service: partitions assigned: [shipment-created-0]
+2025-06-04T18:29:43.039+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Successfully synced group in generation Generation{generationId=1, memberId='consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4-a8a6aaba-98fa-4ad1-8b00-44292210c9f6', protocol='range'}
+2025-06-04T18:29:43.040+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Notifying assignor about the new Assignment(partitions=[shipment-delivered-0])
+2025-06-04T18:29:43.040+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Adding newly assigned partitions: shipment-delivered-0
+2025-06-04T18:29:43.043+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Found no committed offset for partition shipment-delivered-0
+2025-06-04T18:29:43.051+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Resetting offset for partition shipment-delivered-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[localhost:56786 (id: 1 rack: null)], epoch=0}}.
+2025-06-04T18:29:43.142+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] c.l.l.n.listener.ShipmentEventListener   : Received shipment delivered event: com.luckypets.logistics.shared.events.ShipmentDeliveredEvent@280b272a
+2025-06-04T18:29:43.145+02:00  INFO 12136 --- [shared] [ntainer#2-0-C-1] c.l.l.n.listener.ShipmentEventListener   : Saved notification: Notification{id='2b3bae7c-4476-448c-b8e8-79fedd0638dc', shipmentId='SHIP-123', message='Shipment SHIP-123 has been delivered to Berlin', type=SHIPMENT_DELIVERED, timestamp=2025-06-04T18:29:43.143132700}
+2025-06-04T18:29:43.215+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Revoke previously assigned partitions shipment-delivered-0
+2025-06-04T18:29:43.215+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Member consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4-a8a6aaba-98fa-4ad1-8b00-44292210c9f6 sending LeaveGroup request to coordinator localhost:56786 (id: 2147483646 rack: null) due to the consumer is being closed
+2025-06-04T18:29:43.216+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-06-04T18:29:43.216+02:00  INFO 12136 --- [shared] [           main] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4, groupId=test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf] Request joining group due to: consumer pro-actively leaving the group
+2025-06-04T18:29:43.643+02:00  INFO 12136 --- [shared] [           main] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2025-06-04T18:29:43.643+02:00  INFO 12136 --- [shared] [           main] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2025-06-04T18:29:43.643+02:00  INFO 12136 --- [shared] [           main] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2025-06-04T18:29:43.646+02:00  INFO 12136 --- [shared] [           main] o.a.kafka.common.utils.AppInfoParser     : App info kafka.consumer for consumer-test-consumer-group-fcd22858-ddd8-44a2-a8e2-f494bcf9a1bf-4 unregistered
+]]></system-out>
+    <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\Marco Kaul\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.12\byte-buddy-agent-1.14.12.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+  </testcase>
+</testsuite>

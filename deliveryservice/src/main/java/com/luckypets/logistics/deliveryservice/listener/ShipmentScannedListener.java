@@ -23,19 +23,19 @@ public class ShipmentScannedListener {
 
     private final ShipmentRepository repository;
     private final KafkaTemplate<String, ShipmentDeliveredEvent> kafkaTemplate;
-    private final String deliveredTopic;
+
+    @Value("${kafka.topic.delivered:shipment-delivered}")  // Property sauber injiziert!
+    private String deliveredTopic;
 
     public ShipmentScannedListener(
             ShipmentRepository repository,
-            KafkaTemplate<String, ShipmentDeliveredEvent> kafkaTemplate,
-            @Value("${kafka.topic.delivered}") String deliveredTopic
+            KafkaTemplate<String, ShipmentDeliveredEvent> kafkaTemplate
     ) {
         this.repository = repository;
         this.kafkaTemplate = kafkaTemplate;
-        this.deliveredTopic = deliveredTopic;
     }
 
-    @KafkaListener(topics = "${kafka.topic.scanned}")
+    @KafkaListener(topics = "${kafka.topic.scanned:shipment-scanned}")
     public void onShipmentScanned(ShipmentScannedEvent event) {
         log.info("Received scan event: {}", event);
 
@@ -64,7 +64,7 @@ public class ShipmentScannedListener {
                     event.getShipmentId(),
                     event.getDestination(),
                     event.getLocation(),
-                    LocalDateTime.now(),  // LocalDateTime statt Instant verwenden
+                    LocalDateTime.now(),
                     event.getCorrelationId()
             );
             try {

@@ -1,6 +1,12 @@
 server:
   port: 8083
 
+# Custom kafka topic configuration
+kafka:
+  topic:
+    delivered: shipment-delivered
+    scanned: shipment-scanned
+
 spring:
   application:
     name: delivery-service
@@ -89,6 +95,12 @@ spring:
 
   kafka:
     bootstrap-servers: kafka:9092
+
+# Custom kafka topic configuration for docker profile
+kafka:
+  topic:
+    delivered: shipment-delivered
+    scanned: shipment-scanned
 
 logging:
   level:

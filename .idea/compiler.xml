@@ -19,7 +19,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="analyticservice" options="" />
-      <module name="deliveryservice" options="-parameters" />
+      <module name="deliveryservice" options="" />
       <module name="scanservice" options="" />
       <module name="shared" options="" />
       <module name="shipmentservice" options="" />

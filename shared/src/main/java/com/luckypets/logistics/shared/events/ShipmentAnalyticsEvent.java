@@ -1,15 +1,13 @@
 package com.luckypets.logistics.shared.events;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
-public class ShipmentAnalyticsEvent {
-    private final String location;
-    private final long deliveryCount;
-    private final Instant windowStart;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record ShipmentAnalyticsEvent(String location, long deliveryCount, Instant windowStart) {
     @JsonCreator
     public ShipmentAnalyticsEvent(
             @JsonProperty("location") String location,
@@ -19,17 +17,5 @@ public class ShipmentAnalyticsEvent {
         this.location = location;
         this.deliveryCount = deliveryCount;
         this.windowStart = windowStart;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public long getDeliveryCount() {
-        return deliveryCount;
-    }
-
-    public Instant getWindowStart() {
-        return windowStart;
     }
 }

@@ -73,7 +73,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 })
                 .peek((key, event) ->
                         logger.info("Analytics aggregation: Location={}, Count={}, Window={}",
-                                event.getLocation(), event.getDeliveryCount(), event.getWindowStart()));
+                                event.location(), event.deliveryCount(), event.windowStart()));
 
         // Send results to analytics topic
         outputStream.to(analyticsTopic, Produced.with(Serdes.String(), outputSerde));

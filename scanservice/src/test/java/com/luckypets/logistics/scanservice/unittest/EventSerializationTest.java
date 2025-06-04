@@ -124,7 +124,6 @@ public class EventSerializationTest {
         assertEquals(originalEvent.getCorrelationId(), deserializedEvent.getCorrelationId());
         assertEquals(originalEvent.getScannedAt(), deserializedEvent.getScannedAt());
         assertEquals(originalEvent.getEventType(), deserializedEvent.getEventType());
-        assertEquals(originalEvent.getAggregateId(), deserializedEvent.getAggregateId());
     }
 
     @Test
@@ -164,6 +163,5 @@ public class EventSerializationTest {
         assertEquals("corr-123", event.getCorrelationId());
         assertEquals(scannedTime, event.getScannedAt());
         assertEquals("ShipmentScannedEvent", event.getEventType());
-        assertEquals("SHIP-001", event.getAggregateId());
     }
 }

@@ -65,7 +65,11 @@ class ScanServiceTest {
         assertEquals(SHIPMENT_ID, result.getShipmentId());
         verify(shipmentRepository).findById(SHIPMENT_ID);
         verify(shipmentRepository).save(any(ShipmentEntity.class));
-        verify(kafkaTemplate).send(eq("shipment-scanned"), any(ShipmentScannedEvent.class));
+        verify(kafkaTemplate).send(
+                eq("shipment-scanned"),
+                eq(SHIPMENT_ID),
+                any(ShipmentScannedEvent.class)
+        );
     }
 
     @Test
@@ -82,7 +86,7 @@ class ScanServiceTest {
         assertEquals("Shipment not found", result.getErrorMessage());
         verify(shipmentRepository).findById(SHIPMENT_ID);
         verify(shipmentRepository, never()).save(any());
-        verify(kafkaTemplate, never()).send(anyString(), any());
+        verify(kafkaTemplate, never()).send(anyString(), anyString(), any());
     }
 
     @Test
@@ -93,7 +97,7 @@ class ScanServiceTest {
                 () -> scanService.scanShipment(null, LOCATION));
 
         verify(shipmentRepository, never()).findById(any());
-        verify(kafkaTemplate, never()).send(anyString(), any());
+        verify(kafkaTemplate, never()).send(anyString(), anyString(), any());
     }
 
     @Test
@@ -104,7 +108,7 @@ class ScanServiceTest {
                 () -> scanService.scanShipment(SHIPMENT_ID, ""));
 
         verify(shipmentRepository, never()).findById(any());
-        verify(kafkaTemplate, never()).send(anyString(), any());
+        verify(kafkaTemplate, never()).send(anyString(), anyString(), any());
     }
 
     @Test
@@ -134,13 +138,17 @@ class ScanServiceTest {
         scanService.scanShipment(SHIPMENT_ID, LOCATION);
 
         // Then
-        verify(kafkaTemplate).send(eq("shipment-scanned"), argThat(event ->
-                SHIPMENT_ID.equals(event.getShipmentId()) &&
-                        LOCATION.equals(event.getLocation()) &&
-                        DESTINATION.equals(event.getDestination()) &&
-                        event.getScannedAt() != null &&
-                        event.getCorrelationId() != null
-        ));
+        verify(kafkaTemplate).send(
+                eq("shipment-scanned"),
+                eq(SHIPMENT_ID),
+                argThat(event ->
+                        SHIPMENT_ID.equals(event.getShipmentId()) &&
+                                LOCATION.equals(event.getLocation()) &&
+                                DESTINATION.equals(event.getDestination()) &&
+                                event.getScannedAt() != null &&
+                                event.getCorrelationId() != null
+                )
+        );
     }
 
     @Test
@@ -154,9 +162,13 @@ class ScanServiceTest {
         scanService.scanShipment(SHIPMENT_ID, LOCATION);
 
         // Then
-        verify(kafkaTemplate).send(eq("shipment-scanned"), argThat(event ->
-                event.getCorrelationId() != null &&
-                        !event.getCorrelationId().isEmpty()
-        ));
+        verify(kafkaTemplate).send(
+                eq("shipment-scanned"),
+                eq(SHIPMENT_ID),
+                argThat(event ->
+                        event.getCorrelationId() != null &&
+                                !event.getCorrelationId().isEmpty()
+                )
+        );
     }
 }
