@@ -1,7 +1,7 @@
 package com.luckypets.logistics.notificationservice.controller;
 
 import com.luckypets.logistics.notificationservice.model.Notification;
-import com.luckypets.logistics.notificationservice.repository.NotificationRepository;
+import com.luckypets.logistics.notificationservice.service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,33 +11,33 @@ import java.util.List;
 @RequestMapping("/api/notifications")
 public class NotificationController {
 
-    private final NotificationRepository repository;
+    private final NotificationService service;
 
-    public NotificationController(NotificationRepository repository) {
-        this.repository = repository;
+    public NotificationController(NotificationService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<Notification> getAllNotifications() {
-        return repository.findAll();
+        return service.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Notification> getNotificationById(@PathVariable(name = "id") String id) {
-        return repository.findById(id)
+        return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/shipment/{shipmentId}")
     public List<Notification> getNotificationsByShipmentId(@PathVariable(name = "shipmentId") String shipmentId) {
-        return repository.findByShipmentId(shipmentId);
+        return service.findByShipmentId(shipmentId);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNotification(@PathVariable(name = "id") String id) {
-        if (repository.findById(id).isPresent()) {
-            repository.deleteById(id);
+        if (service.findById(id).isPresent()) {
+            service.deleteById(id);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
@@ -45,7 +45,7 @@ public class NotificationController {
 
     @DeleteMapping
     public ResponseEntity<Void> deleteAllNotifications() {
-        repository.deleteAll();
+        service.deleteAll();
         return ResponseEntity.noContent().build();
     }
 }

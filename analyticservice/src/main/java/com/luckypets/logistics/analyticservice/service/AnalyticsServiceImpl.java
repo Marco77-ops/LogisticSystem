@@ -1,11 +1,12 @@
-package com.luckypets.logistics.analyticservice;
+package com.luckypets.logistics.analyticservice.service;
 
-import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import com.luckypets.logistics.shared.events.ShipmentAnalyticsEvent;
+import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
+import com.luckypets.logistics.analyticservice.DeliveredAtTimestampExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,27 +15,32 @@ import org.springframework.kafka.support.serializer.JsonSerde;
 import java.time.Duration;
 import java.time.Instant;
 
+/**
+ * Implementation of {@link AnalyticsService} that creates the Kafka Streams topology
+ * for aggregating delivered shipments per location.
+ */
 @Configuration
-public class ShipmentAnalyticsStream {
+public class AnalyticsServiceImpl implements AnalyticsService {
 
-    @org.springframework.beans.factory.annotation.Value("${kafka.topic.delivered:shipment-delivered}")
+    @Value("${kafka.topic.delivered:shipment-delivered}")
     private String deliveredTopic;
 
-    @org.springframework.beans.factory.annotation.Value("${kafka.topic.analytics:shipment-analytics}")
+    @Value("${kafka.topic.analytics:shipment-analytics}")
     private String analyticsTopic;
 
-    public ShipmentAnalyticsStream(
+    public AnalyticsServiceImpl(
             @Value("${kafka.topic.delivered:shipment-delivered}") String deliveredTopic,
             @Value("${kafka.topic.analytics:shipment-analytics}") String analyticsTopic) {
         this.deliveredTopic = deliveredTopic;
         this.analyticsTopic = analyticsTopic;
     }
 
-    public ShipmentAnalyticsStream() {
+    public AnalyticsServiceImpl() {
     }
 
+    @Override
     @Bean
-    public KStream<String, ShipmentAnalyticsEvent> analyticsStream(StreamsBuilder builder) {
+    public KStream<String, ShipmentAnalyticsEvent> buildAnalyticsStream(StreamsBuilder builder) {
         JsonSerde<ShipmentDeliveredEvent> inputSerde = new JsonSerde<>(ShipmentDeliveredEvent.class);
         JsonSerde<ShipmentAnalyticsEvent> outputSerde = new JsonSerde<>(ShipmentAnalyticsEvent.class);
 
