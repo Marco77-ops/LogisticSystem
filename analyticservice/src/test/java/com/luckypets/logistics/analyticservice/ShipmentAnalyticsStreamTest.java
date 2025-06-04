@@ -2,6 +2,8 @@ package com.luckypets.logistics.analyticservice;
 
 import com.luckypets.logistics.shared.events.ShipmentAnalyticsEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
+import com.luckypets.logistics.analyticservice.service.AnalyticsService;
+import com.luckypets.logistics.analyticservice.service.AnalyticsServiceImpl;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.test.TestRecord;
@@ -24,14 +26,14 @@ public class ShipmentAnalyticsStreamTest {
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, ShipmentDeliveredEvent> inputTopic;
     private TestOutputTopic<String, ShipmentAnalyticsEvent> outputTopic;
-    private ShipmentAnalyticsStream analyticsStream;
+    private AnalyticsService analyticsService;
 
     @BeforeEach
     void setUp() {
         // Stream-Topologie erstellen
         StreamsBuilder builder = new StreamsBuilder();
-        analyticsStream = new ShipmentAnalyticsStream("shipment-delivered", "shipment-analytics");
-        analyticsStream.analyticsStream(builder);
+        analyticsService = new AnalyticsServiceImpl("shipment-delivered", "shipment-analytics");
+        analyticsService.buildAnalyticsStream(builder);
         Topology topology = builder.build();
 
         // Kafka Streams Eigenschaften

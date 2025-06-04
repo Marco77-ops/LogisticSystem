@@ -2,7 +2,7 @@ package com.luckypets.logistics.notificationservice.listener;
 
 import com.luckypets.logistics.notificationservice.model.Notification;
 import com.luckypets.logistics.notificationservice.model.NotificationType;
-import com.luckypets.logistics.notificationservice.repository.NotificationRepository;
+import com.luckypets.logistics.notificationservice.service.NotificationService;
 import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 public class ShipmentEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(ShipmentEventListener.class);
-    private final NotificationRepository repository;
+    private final NotificationService service;
 
-    public ShipmentEventListener(NotificationRepository repository) {
-        this.repository = repository;
+    public ShipmentEventListener(NotificationService service) {
+        this.service = service;
     }
 
     @KafkaListener(topics = "shipment-created", groupId = "notification-service")
@@ -32,7 +32,7 @@ public class ShipmentEventListener {
                 NotificationType.SHIPMENT_CREATED
         );
         
-        repository.save(notification);
+        service.save(notification);
         logger.info("Saved notification: {}", notification);
     }
 
@@ -47,7 +47,7 @@ public class ShipmentEventListener {
                 NotificationType.SHIPMENT_SCANNED
         );
         
-        repository.save(notification);
+        service.save(notification);
         logger.info("Saved notification: {}", notification);
     }
 
@@ -62,7 +62,7 @@ public class ShipmentEventListener {
                 NotificationType.SHIPMENT_DELIVERED
         );
         
-        repository.save(notification);
+        service.save(notification);
         logger.info("Saved notification: {}", notification);
     }
 }
