@@ -107,7 +107,7 @@ The testing strategy aims to achieve the following coverage:
 ### Notification View Service
 
 #### Unit Tests:
-- NotificationService class
+- NotificationViewService class
 - Event handling logic
 
 #### Integration Tests:

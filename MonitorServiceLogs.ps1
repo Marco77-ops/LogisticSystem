@@ -2,7 +2,7 @@
 
 # Define log file paths
 $analyticServiceLogPath = "$env:TEMP\analyticservice.log"
-$notificationServiceLogPath = "$env:TEMP\notificationservice.log"
+$notificationServiceLogPath = "$env:TEMP\notificationviewservice.log"
 
 # Create a new event source if it doesn't exist
 $eventSourceName = "LogisticsSystem"
@@ -35,11 +35,11 @@ function Monitor-LogFile {
 }
 
 # Main monitoring loop
-Write-Host "Starting log monitoring for analyticservice and notificationservice..."
+Write-Host "Starting log monitoring for analyticservice and notificationviewservice..."
 try {
     while ($true) {
         Monitor-LogFile -LogFilePath $analyticServiceLogPath -ServiceName "analyticservice"
-        Monitor-LogFile -LogFilePath $notificationServiceLogPath -ServiceName "notificationservice"
+        Monitor-LogFile -LogFilePath $notificationServiceLogPath -ServiceName "notificationviewservice"
         
         # Wait before checking again
         Start-Sleep -Seconds 60

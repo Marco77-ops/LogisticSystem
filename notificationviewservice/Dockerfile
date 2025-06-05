@@ -14,10 +14,10 @@ RUN mvn de.qaware.maven:go-offline-maven-plugin:1.2.8:resolve-dependencies
 
 COPY . .
 
-RUN mvn clean package -pl deliveryservice -am -DskipTests
+RUN mvn clean package -pl notificationviewservice -am -DskipTests
 
 # ------------ runtime stage -----------
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /workspace/deliveryservice/target/deliveryservice-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /workspace/notificationviewservice/target/notificationviewservice-0.0.1-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "app.jar"]

@@ -14,7 +14,7 @@
         <module>scanservice</module>
         <module>deliveryservice</module>
         <module>analyticservice</module>
-        <module>notificationservice</module>
+        <module>notificationviewservice</module>
     </modules>
 
     <properties>
