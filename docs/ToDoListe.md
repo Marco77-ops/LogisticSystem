@@ -38,9 +38,9 @@
 
 ---
 
-## 📦 NotificationService
+## 📦 NotificationViewService
 
-- [ ] Neuen Microservice `notificationservice` erstellen
+- [ ] Neuen Microservice `notificationviewservice` erstellen
 - [ ] Kafka-Consumer für relevante Events
 - [ ] Benachrichtigungen loggen oder über REST abrufbar machen
 - [ ] Optional: In-Memory-Speicher für einfache Anzeige
@@ -94,7 +94,7 @@
 | KW  | Zeitraum        | Fokus                                    |
 |-----|------------------|------------------------------------------|
 | 20  | 13.05.–19.05.    | Unit-/Integrationstests abschließen      |
-| 21  | 20.05.–26.05.    | NotificationService + Analytics finalisieren |
+| 21  | 20.05.–26.05.    | NotificationViewService + Analytics finalisieren |
 | 22  | 27.05.–02.06.    | Kafka Streams + REST-API testen          |
 | 23  | 03.06.–09.06.    | Kapitel 4–5 schreiben                    |
 | 24  | 10.06.–16.06.    | Diagramme + Kapitel 6                    |

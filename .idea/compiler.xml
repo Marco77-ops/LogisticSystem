@@ -11,7 +11,7 @@
         <module name="shared" />
         <module name="shipmentservice" />
         <module name="scanservice" />
-        <module name="notificationservice" />
+        <module name="notificationviewservice" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="24" />

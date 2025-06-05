@@ -106,10 +106,10 @@ services:
         condition: service_healthy
     restart: on-failure
 
-  notificationservice:
+  notificationviewservice:
     build:
       context: .
-      dockerfile: notificationservice/Dockerfile
+      dockerfile: notificationviewservice/Dockerfile
     ports:
       - "8085:8085"
     depends_on:

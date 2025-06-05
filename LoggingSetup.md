@@ -1,6 +1,6 @@
 # Logging Setup for Logistics System
 
-This document describes the logging setup for the Logistics System, specifically for the `analyticservice` and `notificationservice` components.
+This document describes the logging setup for the Logistics System, specifically for the `analyticservice` and `notificationviewservice` components.
 
 ## Overview
 
@@ -10,7 +10,7 @@ The system is configured to log errors to files and then report these errors to 
 
 ### 1. Service Logging Configuration
 
-Both `analyticservice` and `notificationservice` use Logback for logging, configured via `logback-spring.xml` files. These configurations:
+Both `analyticservice` and `notificationviewservice` use Logback for logging, configured via `logback-spring.xml` files. These configurations:
 
 - Include Spring Boot's default logging configuration
 - Add a file appender that only logs ERROR level messages
@@ -29,7 +29,7 @@ The `MonitorServiceLogs.ps1` PowerShell script:
 
 1. Ensure the `logback-spring.xml` files are in the correct locations:
    - `analyticservice/src/main/resources/logback-spring.xml`
-   - `notificationservice/src/main/resources/logback-spring.xml`
+   - `notificationviewservice/src/main/resources/logback-spring.xml`
 
 2. Run the monitoring script as an administrator:
    ```powershell
@@ -43,7 +43,7 @@ The `MonitorServiceLogs.ps1` PowerShell script:
 To check for errors from these services in the Windows Event Log, use the following PowerShell command:
 
 ```powershell
-Check-EventLog -LogName Application | Where-Object { $_.EntryType -eq "Error" -and $_.Message -match "analyticsservice|notificationservice" }
+Check-EventLog -LogName Application | Where-Object { $_.EntryType -eq "Error" -and $_.Message -match "analyticsservice|notificationviewservice" }
 ```
 
 ## Troubleshooting

@@ -121,10 +121,10 @@ curl -X POST "http://localhost:8082/scans?shipmentId=nonexistent&location=Berlin
 "We can also demonstrate resilience by stopping a service and observing retry behavior:"
 
 ```bash
-docker-compose stop notificationservice
+docker-compose stop notificationviewservice
 # Create or scan a shipment
-docker-compose start notificationservice
-docker-compose logs -f notificationservice
+docker-compose start notificationviewservice
+docker-compose logs -f notificationviewservice
 ```
 
 "Notice how the service processes the backlog of events after restarting."

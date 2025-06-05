@@ -20,7 +20,7 @@ Verify all services are running:
 docker-compose ps
 ```
 
-You should see all services (shipmentservice, scanservice, deliveryservice, analyticservice, notificationservice) running along with Kafka, Zookeeper, and PostgreSQL.
+You should see all services (shipmentservice, scanservice, deliveryservice, analyticservice, notificationviewservice) running along with Kafka, Zookeeper, and PostgreSQL.
 
 ## Step 2: Create a Shipment
 Create a new shipment by sending a POST request to the Shipment Service:
@@ -157,19 +157,19 @@ This should return an error message.
 2. Stopping a service and observing retry behavior:
 
 ```bash
-docker-compose stop notificationservice
+docker-compose stop notificationviewservice
 ```
 
 Create or scan a shipment, then restart the service:
 
 ```bash
-docker-compose start notificationservice
+docker-compose start notificationviewservice
 ```
 
 Check the logs to see how the service handles the backlog of events:
 
 ```bash
-docker-compose logs -f notificationservice
+docker-compose logs -f notificationviewservice
 ```
 
 ## Conclusion

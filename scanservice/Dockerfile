@@ -9,7 +9,7 @@ COPY shared/pom.xml shared/
 COPY shipmentservice/pom.xml shipmentservice/
 COPY deliveryservice/pom.xml deliveryservice/
 COPY analyticservice/pom.xml analyticservice/
-COPY notificationservice/pom.xml notificationservice/
+COPY notificationviewservice/pom.xml notificationviewservice/
 
 # Dependencies für alle Module vorab auflösen (maximaler Cache!)
 RUN mvn de.qaware.maven:go-offline-maven-plugin:1.2.8:resolve-dependencies
