@@ -39,10 +39,9 @@ The LuckyPets Logistics System is built as a set of microservices that communica
 
 | Topic Name | Producer | Consumers | Description |
 |------------|----------|-----------|-------------|
-| shipment-created | Shipment Service | Scan Service, Notification Service | Published when a new shipment is created |
-| shipment-scanned | Scan Service | Delivery Service, Notification Service | Published when a shipment is scanned at a location |
-| shipment-delivered | Delivery Service | Analytics Service, Notification Service | Published when a shipment is delivered |
-| shipment-analytics | Analytics Service | (None) | Contains aggregated analytics data |
+| shipment-created | Shipment Service | Scan Service, Notification View Service | Published when a new shipment is created |
+| shipment-scanned | Scan Service | Delivery Service, Notification View Service | Published when a shipment is scanned at a location |
+| shipment-delivered | Delivery Service | Analytics Service, Notification View Service | Published when a shipment is delivered |
 
 ## Event Model
 
@@ -69,6 +68,8 @@ All events in the system inherit from the `AbstractEvent` class, which implement
 
 ## Service Descriptions
 
+The Analytics Service and Notification View Service act purely as **read models**. They consume domain events from Kafka to maintain their own queryable state and expose this data only via REST endpoints for the user interface or administrative tooling. Other services do not depend on these REST APIs.
+
 ### Shipment Service
 - **Responsibility**: Creating and managing shipments
 - **Endpoints**: 
@@ -94,16 +95,16 @@ All events in the system inherit from the `AbstractEvent` class, which implement
 - **Events Consumed**: ShipmentScannedEvent
 
 ### Analytics Service
-- **Responsibility**: Aggregating and analyzing shipment data
-- **Endpoints**: 
+- **Responsibility**: Aggregating and analyzing shipment data as a read model
+- **Endpoints**:
   - `GET /analytics/deliveries/hourly` - Get hourly delivery counts
   - `GET /analytics/deliveries/location` - Get delivery counts by location
-- **Events Published**: ShipmentAnalyticsEvent
+- **Events Published**: None (read-only)
 - **Events Consumed**: ShipmentDeliveredEvent
-- **Kafka Streams**: Processes ShipmentDeliveredEvent to generate analytics
+- **Kafka Streams**: Processes ShipmentDeliveredEvent and stores aggregates in a local state store
 
-### Notification Service
-- **Responsibility**: Managing notifications for shipment events
+- **Notification View Service**
+- **Responsibility**: Providing a read model of shipment notifications
 - **Endpoints**: 
   - `GET /api/notifications` - Get all notifications
   - `GET /api/notifications/shipment/{shipmentId}` - Get notifications for a shipment
@@ -112,7 +113,7 @@ All events in the system inherit from the `AbstractEvent` class, which implement
 
 ## Kafka Streams Topology (Analytics Service)
 
-The Analytics Service uses Kafka Streams to process ShipmentDeliveredEvent and generate aggregated analytics:
+The Analytics Service uses Kafka Streams to process ShipmentDeliveredEvent and store aggregated analytics in a local state store:
 
 ```
 ┌───────────────────────┐
@@ -146,15 +147,7 @@ The Analytics Service uses Kafka Streams to process ShipmentDeliveredEvent and g
             ▼
 ┌───────────────────────┐
 │                       │
-│ Map to Analytics Event│
-│                       │
-└───────────┬───────────┘
-            │
-            ▼
-┌───────────────────────┐
-│                       │
-│ shipment-analytics    │
-│       topic           │
+│ Persist to state store│
 │                       │
 └───────────────────────┘
 ```
@@ -179,6 +172,14 @@ The system is deployed using Docker containers orchestrated with docker-compose:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+## Soll-Ist Vergleich
+
+| Aspekt | Vor dem Refactoring | Nach dem Refactoring |
+|-------|--------------------|----------------------|
+| Notification Service | REST-API zur Abfrage und Service-Name *Notification Service* | Rein lesender **Notification View Service**, nur von UI/Admin genutzt |
+| Analytics Service | Produziert `ShipmentAnalyticsEvent` und stellt REST-API bereit | Konsumiert nur `ShipmentDeliveredEvent` und bietet REST-API als Read Model |
+| Integration | Teilweise REST-Kommunikation zwischen Services | Alle Services integrieren sich nur über Kafka |
+
 ## Error Handling Strategy
 
 The system implements several error handling mechanisms:
@@ -196,4 +197,4 @@ The system is designed to be easily extensible:
 1. **New Event Types**: Can be added by extending AbstractEvent
 2. **New Services**: Can be added by connecting to Kafka and consuming/producing relevant events
 3. **New Analytics**: Can be implemented by adding new Kafka Streams topologies
-4. **New Notification Channels**: Can be added to the Notification Service
+4. **New Notification Channels**: Can be added to the Notification View Service

@@ -1,6 +1,5 @@
 package com.luckypets.logistics.analyticservice.config;
 
-import com.luckypets.logistics.shared.events.ShipmentAnalyticsEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -42,10 +41,4 @@ public class KafkaStreamsConfig {
         return serde;
     }
 
-    @Bean
-    public Serde<ShipmentAnalyticsEvent> shipmentAnalyticsEventSerde() {
-        JsonSerde<ShipmentAnalyticsEvent> serde = new JsonSerde<>(ShipmentAnalyticsEvent.class);
-        serde.configure(Map.of("spring.json.trusted.packages", "com.luckypets.logistics.shared.events"), false);
-        return serde;
-    }
 }

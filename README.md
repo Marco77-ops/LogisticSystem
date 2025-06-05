@@ -12,7 +12,7 @@ The system is composed of the following microservices:
 2. **Scan Service**: Records scanning events when shipments are scanned at various locations
 3. **Delivery Service**: Manages the delivery of shipments to their final destinations
 4. **Analytics Service**: Aggregates and analyzes shipment events using Kafka Streams
-5. **Notification Service**: Consumes events and provides notifications via REST endpoints
+5. **Notification View Service**: Consumes events and exposes notifications for the UI via REST
 
 ### Event-Driven Communication
 Services communicate asynchronously by publishing and consuming events via Apache Kafka. Each key business action triggers an event:
@@ -20,7 +20,6 @@ Services communicate asynchronously by publishing and consuming events via Apach
 - **ShipmentCreatedEvent**: When a new shipment is created
 - **ShipmentScannedEvent**: When a shipment is scanned at a location
 - **ShipmentDeliveredEvent**: When a shipment is delivered to its destination
-- **ShipmentAnalyticsEvent**: Aggregated analytics data
 
 ### Event Flow Diagram
 ```
@@ -60,7 +59,6 @@ All events inherit from a shared base class (`AbstractEvent`) which implements t
 ## Kafka Streams Analytics
 The Analytics Service uses Kafka Streams to process and aggregate shipment events:
 - Counts deliveries per hour and location
-- Publishes aggregated data as `ShipmentAnalyticsEvent`
 
 ### Kafka Streams Topology
 ```
@@ -76,10 +74,7 @@ Window by 1 hour
 Count events in window
          │
          ▼
-Map to ShipmentAnalyticsEvent
-         │
-         ▼
-Publish to shipment-analytics topic
+Persist counts in local state store
 ```
 
 ## REST Interfaces
@@ -89,7 +84,7 @@ Each service provides REST endpoints for triggering actions and querying state:
 - **Scan Service**: Record shipment scans
 - **Delivery Service**: Mark shipments as delivered
 - **Analytics Service**: Query analytics data
-- **Notification Service**: Query notifications
+- **Notification View Service**: Query notifications
 
 ## Containerization & Orchestration
 All services are containerized using Docker and orchestrated via docker-compose for local development and testing. The system includes:
@@ -127,4 +122,4 @@ For detailed API documentation, see the Swagger UI available at:
 - Scan Service: http://localhost:8082/swagger-ui.html
 - Delivery Service: http://localhost:8083/swagger-ui.html
 - Analytics Service: http://localhost:8084/swagger-ui.html
-- Notification Service: http://localhost:8085/swagger-ui.html
+- Notification View Service: http://localhost:8085/swagger-ui.html
