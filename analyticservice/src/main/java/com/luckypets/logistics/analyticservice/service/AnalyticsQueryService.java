@@ -22,7 +22,7 @@ import java.util.Map;
 public class AnalyticsQueryService {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsQueryService.class);
-    private static final String STORE_NAME = "KSTREAM-AGGREGATE-STATE-STORE-0000000004";
+    private static final String STORE_NAME = "deliveries-per-location";
 
     private final StreamsBuilderFactoryBean streamsBuilderFactoryBean;
 

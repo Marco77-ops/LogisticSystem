@@ -104,7 +104,7 @@ The testing strategy aims to achieve the following coverage:
 - Kafka Streams topology with TopologyTestDriver
 - Analytics REST endpoints
 
-### Notification Service
+### Notification View Service
 
 #### Unit Tests:
 - NotificationService class

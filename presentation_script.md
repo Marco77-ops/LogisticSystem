@@ -9,7 +9,7 @@
 1. Shipment Service - Creates shipments and publishes events
 2. Scan Service - Records scans at different locations
 3. Delivery Service - Processes deliveries when shipments reach their destination
-4. Notification Service - Provides notifications for all shipment events
+4. Notification View Service - Provides notifications for all shipment events
 5. Analytics Service - Aggregates delivery data using Kafka Streams
 
 Let me show you how they work together in a real scenario."
@@ -88,7 +88,7 @@ docker-compose logs -f deliveryservice
 curl -X GET http://localhost:8085/api/notifications
 ```
 
-"The Notification Service has created notifications for each event in the shipment's lifecycle."
+"The Notification View Service has created notifications for each event in the shipment's lifecycle."
 
 ### Step 5: Check Analytics
 "Finally, let's see how the Analytics Service processes delivery data:"

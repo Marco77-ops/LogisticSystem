@@ -1,9 +1,7 @@
 package com.luckypets.logistics.analyticservice.service;
 
-import com.luckypets.logistics.shared.events.ShipmentAnalyticsEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 import org.slf4j.Logger;
@@ -29,20 +27,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Value("${kafka.topic.delivered:shipment-delivered}")
     private String deliveredTopic;
 
-    @Value("${kafka.topic.analytics:shipment-analytics}")
-    private String analyticsTopic;
+    private static final String STORE_NAME = "deliveries-per-location";
 
     @Override
     @Bean
-    public KStream<String, ShipmentAnalyticsEvent> buildAnalyticsStream(StreamsBuilder builder) {
-        logger.info("Building analytics stream - Input: {}, Output: {}", deliveredTopic, analyticsTopic);
+    public void buildAnalyticsTopology(StreamsBuilder builder) {
+        logger.info("Building analytics topology - Input topic: {}", deliveredTopic);
 
-        // Configure serdes for input and output
+        // Configure serde for input events
         JsonSerde<ShipmentDeliveredEvent> inputSerde = new JsonSerde<>(ShipmentDeliveredEvent.class);
-        JsonSerde<ShipmentAnalyticsEvent> outputSerde = new JsonSerde<>(ShipmentAnalyticsEvent.class);
-
         inputSerde.configure(Map.of("spring.json.trusted.packages", "com.luckypets.logistics.shared.events"), false);
-        outputSerde.configure(Map.of("spring.json.trusted.packages", "com.luckypets.logistics.shared.events"), false);
 
         // Define 1-hour tumbling windows
         TimeWindows windows = TimeWindows.ofSizeWithNoGrace(Duration.ofHours(1));
@@ -53,32 +47,21 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 Consumed.with(Serdes.String(), inputSerde)
         );
 
-        // Group by location and count deliveries in time windows
+        // Group by location and count deliveries in time windows. Results are materialized
+        // in a named store to allow querying via Kafka Streams API.
         KTable<Windowed<String>, Long> countsPerLocation = inputStream
                 .groupBy((key, event) -> event.getLocation(),
                         Grouped.with(Serdes.String(), inputSerde))
                 .windowedBy(windows)
-                .count();
+                .count(Materialized.as(STORE_NAME));
 
-        // Transform counts to analytics events
-        KStream<String, ShipmentAnalyticsEvent> outputStream = countsPerLocation
-                .toStream()
-                .map((windowedKey, count) -> {
-                    ShipmentAnalyticsEvent analyticsEvent = new ShipmentAnalyticsEvent(
-                            windowedKey.key(), // location
-                            count,
-                            Instant.ofEpochMilli(windowedKey.window().start()) // Use Instant instead of LocalDateTime
-                    );
-                    return KeyValue.pair(windowedKey.key(), analyticsEvent);
-                })
-                .peek((key, event) ->
-                        logger.info("Analytics aggregation: Location={}, Count={}, Window={}",
-                                event.location(), event.deliveryCount(), event.windowStart()));
+        // Log the aggregations for observability
+        countsPerLocation.toStream()
+                .foreach((windowedKey, count) -> logger.info(
+                        "Analytics aggregation: Location={}, Count={}, Window={}",
+                        windowedKey.key(), count,
+                        Instant.ofEpochMilli(windowedKey.window().start())));
 
-        // Send results to analytics topic
-        outputStream.to(analyticsTopic, Produced.with(Serdes.String(), outputSerde));
-
-        logger.info("Analytics stream topology built successfully");
-        return outputStream;
+        logger.info("Analytics topology built successfully");
     }
 }

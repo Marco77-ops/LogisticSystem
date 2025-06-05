@@ -18,7 +18,7 @@ Both scripts follow the same basic workflow:
 2. Create a shipment via the Shipment Service
 3. Scan the shipment at its origin location
 4. Scan the shipment at its destination location (triggering delivery)
-5. Check notifications in the Notification Service
+5. Check notifications in the Notification View Service
 6. Observe analytics processing in the Analytics Service
 7. Demonstrate error handling and system resilience
 
