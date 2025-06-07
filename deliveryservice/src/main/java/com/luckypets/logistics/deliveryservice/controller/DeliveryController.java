@@ -44,8 +44,8 @@ public class DeliveryController {
     /** Mark a shipment as delivered */
     @PostMapping("/{shipmentId}/deliver")
     public ResponseEntity<DeliveryResponse> markAsDelivered(
-            @PathVariable String shipmentId,
-            @RequestBody(required = false) DeliveryRequest request) {
+            @PathVariable("shipmentId") String shipmentId,
+            @RequestBody DeliveryRequest request) {
 
         DeliveryRequest deliveryRequest = request != null ? request : new DeliveryRequest();
         deliveryRequest.setShipmentId(shipmentId);
