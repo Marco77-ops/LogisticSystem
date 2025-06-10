@@ -15,15 +15,7 @@ public class DeliveryResponse {
     private boolean success;
     private String errorMessage;
 
-    // Default constructor for Jackson
-    public DeliveryResponse() {
-    }
-
-    public DeliveryResponse(String shipmentId, String status) {
-        this.shipmentId = shipmentId;
-        this.status = status;
-        this.success = true;
-    }
+    public DeliveryResponse() {}
 
     public DeliveryResponse(String shipmentId, ShipmentStatus status, String location, LocalDateTime deliveredAt) {
         this.shipmentId = shipmentId;

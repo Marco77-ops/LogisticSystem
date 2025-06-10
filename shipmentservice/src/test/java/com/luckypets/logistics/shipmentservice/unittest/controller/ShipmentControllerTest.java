@@ -2,7 +2,7 @@ package com.luckypets.logistics.shipmentservice.unittest.controller;
 
 import com.luckypets.logistics.shipmentservice.controller.ShipmentController;
 import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
-import com.luckypets.logistics.shared.model.ShipmentEntity;
+import com.luckypets.logistics.shipmentservice.model.ShipmentEntity;
 import com.luckypets.logistics.shipmentservice.service.ShipmentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -4,15 +4,14 @@ import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
 import com.luckypets.logistics.shared.model.ShipmentStatus;
 import com.luckypets.logistics.shipmentservice.kafka.ShipmentEventProducer;
 import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
-import com.luckypets.logistics.shared.model.ShipmentEntity;
-import com.luckypets.logistics.shipmentservice.persistence.ShipmentRepository;
+import com.luckypets.logistics.shipmentservice.model.ShipmentEntity;
 import com.luckypets.logistics.shipmentservice.service.ShipmentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
-import java.util.Arrays;
 import java.util.List;
+// Import UUID for mocking
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -20,15 +19,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ShipmentServiceImplTest {
 
-    private ShipmentRepository repository;
     private ShipmentEventProducer eventProducer;
     private ShipmentServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        repository = mock(ShipmentRepository.class);
         eventProducer = mock(ShipmentEventProducer.class);
-        service = new ShipmentServiceImpl(repository, eventProducer);
+        // Correctly initialize the service with the mocked producer
+        service = new ShipmentServiceImpl(eventProducer);
     }
 
     @Test
@@ -39,71 +37,92 @@ class ShipmentServiceImplTest {
         request.setDestination("Berlin");
         request.setCustomerId("C123");
 
-        ShipmentEntity saved = new ShipmentEntity();
-        saved.setShipmentId("test-id");
-        saved.setOrigin("Munich");
-        saved.setDestination("Berlin");
-        saved.setCustomerId("C123");
-        saved.setStatus(ShipmentStatus.CREATED);
-
-        when(repository.save(any(ShipmentEntity.class))).thenReturn(saved);
-
         // Act
-        ShipmentEntity result = service.createShipment(request);
+        ShipmentEntity result = service.createShipment(request); // This line caused NullPointerException
 
         // Assert
-        assertEquals(saved, result);
-        verify(repository, times(1)).save(any(ShipmentEntity.class));
+        assertNotNull(result);
+        assertNotNull(result.getShipmentId());
+        assertEquals("Munich", result.getOrigin());
+        assertEquals("Berlin", result.getDestination());
+        assertEquals("C123", result.getCustomerId());
+        assertEquals(ShipmentStatus.CREATED, result.getStatus());
+        assertNotNull(result.getCreatedAt());
+
+        // Verify that ShipmentCreatedEvent was sent
         verify(eventProducer, times(1)).sendShipmentCreatedEvent(any(ShipmentCreatedEvent.class));
+
+        // Additionally, verify that the created shipment can be retrieved from in-memory storage
+        Optional<ShipmentEntity> retrieved = service.getShipmentById(result.getShipmentId());
+        assertTrue(retrieved.isPresent());
+        assertEquals(result.getShipmentId(), retrieved.get().getShipmentId());
     }
 
     @Test
     void getShipmentById_found_returnsOptionalWithEntity() {
-        ShipmentEntity entity = new ShipmentEntity();
-        entity.setShipmentId("id1");
-        when(repository.findById("id1")).thenReturn(Optional.of(entity));
+        // Arrange: Create a shipment through the service so it's in the in-memory map
+        ShipmentRequest request = new ShipmentRequest();
+        request.setOrigin("OriginTest");
+        request.setDestination("DestinationTest");
+        request.setCustomerId("CustomerTest");
+        ShipmentEntity createdEntity = service.createShipment(request);
+        String shipmentId = createdEntity.getShipmentId();
 
-        Optional<ShipmentEntity> found = service.getShipmentById("id1");
+        // Act
+        Optional<ShipmentEntity> found = service.getShipmentById(shipmentId);
+
+        // Assert
         assertTrue(found.isPresent());
-        assertEquals(entity, found.get());
+        assertEquals(createdEntity, found.get());
     }
 
     @Test
     void getShipmentById_notFound_returnsEmpty() {
-        when(repository.findById("notThere")).thenReturn(Optional.empty());
+        // Act
         Optional<ShipmentEntity> found = service.getShipmentById("notThere");
+
+        // Assert
         assertFalse(found.isPresent());
     }
 
     @Test
     void getAllShipments_returnsList() {
-        ShipmentEntity e1 = new ShipmentEntity();
-        e1.setShipmentId("a");
-        ShipmentEntity e2 = new ShipmentEntity();
-        e2.setShipmentId("b");
-        List<ShipmentEntity> list = Arrays.asList(e1, e2);
-        when(repository.findAll()).thenReturn(list);
+        // Arrange: Create some shipments through the service
+        service.createShipment(new ShipmentRequest() {{ setOrigin("O1"); setDestination("D1"); setCustomerId("C1"); }});
+        service.createShipment(new ShipmentRequest() {{ setOrigin("O2"); setDestination("D2"); setCustomerId("C2"); }});
 
+        // Act
         List<ShipmentEntity> result = service.getAllShipments();
-        assertEquals(list, result);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size()); // Should contain the 2 created shipments
     }
 
     @Test
     void deleteShipment_exists_deletesAndReturnsTrue() {
-        when(repository.existsById("del")).thenReturn(true);
-        doNothing().when(repository).deleteById("del");
+        // Arrange: Create a shipment to delete
+        ShipmentRequest request = new ShipmentRequest();
+        request.setOrigin("OriginDel");
+        request.setDestination("DestinationDel");
+        request.setCustomerId("CustDel");
+        ShipmentEntity created = service.createShipment(request);
+        String shipmentIdToDelete = created.getShipmentId();
 
-        boolean result = service.deleteShipment("del");
+        // Act
+        boolean result = service.deleteShipment(shipmentIdToDelete);
+
+        // Assert
         assertTrue(result);
-        verify(repository, times(1)).deleteById("del");
+        assertFalse(service.getShipmentById(shipmentIdToDelete).isPresent()); // Verify it's deleted
     }
 
     @Test
     void deleteShipment_notExists_returnsFalse() {
-        when(repository.existsById("missing")).thenReturn(false);
+        // Act
+        boolean result = service.deleteShipment("nonExistentId");
 
-        boolean result = service.deleteShipment("missing");
+        // Assert
         assertFalse(result);
-        verify(repository, never()).deleteById(anyString());
     }
 }

@@ -4,71 +4,76 @@ import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
 import com.luckypets.logistics.shared.model.ShipmentStatus;
 import com.luckypets.logistics.shipmentservice.kafka.ShipmentEventProducer;
 import com.luckypets.logistics.shipmentservice.model.ShipmentRequest;
-import com.luckypets.logistics.shared.model.ShipmentEntity;
-import com.luckypets.logistics.shipmentservice.persistence.ShipmentRepository;
+import com.luckypets.logistics.shipmentservice.model.ShipmentEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Für @Transactional
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID; // Für die Generierung einer ID
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class ShipmentServiceImpl implements ShipmentService {
 
-    private final ShipmentRepository shipmentRepository;
+    // In-memory storage
+    private final ConcurrentHashMap<String, ShipmentEntity> inMemoryStorage = new ConcurrentHashMap<>();
     private final ShipmentEventProducer eventProducer;
 
-    public ShipmentServiceImpl(ShipmentRepository shipmentRepository, ShipmentEventProducer eventProducer) {
-        this.shipmentRepository = shipmentRepository;
+    public ShipmentServiceImpl(ShipmentEventProducer eventProducer) {
         this.eventProducer = eventProducer;
     }
 
     @Override
-    @Transactional
     public ShipmentEntity createShipment(ShipmentRequest request) {
         ShipmentEntity entity = new ShipmentEntity();
-        entity.setShipmentId(UUID.randomUUID().toString().substring(0, 8)); // Beispiel ID
+        String shipmentId = UUID.randomUUID().toString().substring(0, 8);
+        entity.setShipmentId(shipmentId);
         entity.setOrigin(request.getOrigin());
         entity.setDestination(request.getDestination());
         entity.setCustomerId(request.getCustomerId());
-        entity.setStatus(ShipmentStatus.CREATED); // Setze den initialen Status
+        entity.setStatus(ShipmentStatus.CREATED);
         entity.setCreatedAt(LocalDateTime.now());
-        // Setzen Sie hier ggf. weitere Standardwerte
-        ShipmentEntity savedEntity = shipmentRepository.save(entity);
+
+        // Store in memory
+        inMemoryStorage.put(shipmentId, entity);
 
         // Create and publish ShipmentCreatedEvent
         ShipmentCreatedEvent event = new ShipmentCreatedEvent(
-            savedEntity.getShipmentId(),
-            savedEntity.getDestination(),
-            savedEntity.getCreatedAt(),
-            UUID.randomUUID().toString() // Generate a correlation ID
+                entity.getShipmentId(),
+                entity.getDestination(),
+                entity.getCreatedAt(),
+                UUID.randomUUID().toString()
         );
         eventProducer.sendShipmentCreatedEvent(event);
 
-        return savedEntity;
+        return entity;
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<ShipmentEntity> getShipmentById(String shipmentId) {
-        return shipmentRepository.findById(shipmentId);
+        // Retrieve from in-memory storage
+        return Optional.ofNullable(inMemoryStorage.get(shipmentId));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ShipmentEntity> getAllShipments() {
-        return shipmentRepository.findAll();
+        // Retrieve all from in-memory storage
+        return new ArrayList<>(inMemoryStorage.values());
     }
 
     @Override
-    @Transactional
     public boolean deleteShipment(String shipmentId) {
-        if (shipmentRepository.existsById(shipmentId)) {
-            shipmentRepository.deleteById(shipmentId);
-            return true;
-        }
-        return false;
+        // Remove from in-memory storage
+        return inMemoryStorage.remove(shipmentId) != null;
+    }
+
+    /**
+     * Helper method for clearing the in-memory storage, used by integration tests.
+     * This ensures a clean state for each test run.
+     */
+    public void clearInMemoryStorageForTests() {
+        inMemoryStorage.clear();
     }
 }

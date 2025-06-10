@@ -1,9 +1,9 @@
 package com.luckypets.logistics.deliveryservice.listener;
 
-import com.luckypets.logistics.deliveryservice.persistence.ShipmentRepository;
+import com.luckypets.logistics.deliveryservice.model.ShipmentEntity; // Import local ShipmentEntity
+import com.luckypets.logistics.deliveryservice.service.DeliveryServiceImpl; // Import DeliveryServiceImpl for in-memory access
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
-import com.luckypets.logistics.shared.model.ShipmentEntity;
 import com.luckypets.logistics.shared.model.ShipmentStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,17 +21,18 @@ public class ShipmentScannedListener {
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentScannedListener.class);
 
-    private final ShipmentRepository repository;
+    // Replace ShipmentRepository with DeliveryServiceImpl for in-memory access
+    private final DeliveryServiceImpl deliveryService;
     private final KafkaTemplate<String, ShipmentDeliveredEvent> kafkaTemplate;
 
-    @Value("${kafka.topic.delivered:shipment-delivered}")  // Property sauber injiziert!
+    @Value("${kafka.topic.delivered:shipment-delivered}")
     private String deliveredTopic;
 
     public ShipmentScannedListener(
-            ShipmentRepository repository,
+            DeliveryServiceImpl deliveryService, // Inject DeliveryServiceImpl
             KafkaTemplate<String, ShipmentDeliveredEvent> kafkaTemplate
     ) {
-        this.repository = repository;
+        this.deliveryService = deliveryService;
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -39,48 +40,55 @@ public class ShipmentScannedListener {
     public void onShipmentScanned(ShipmentScannedEvent event) {
         log.info("Received scan event: {}", event);
 
-        // 1) Lade vorhandenes Shipment oder lege neues an
-        ShipmentEntity entity = repository.findById(event.getShipmentId())
+        // Retrieve from in-memory storage or create a new entity
+        ShipmentEntity entity = deliveryService.findShipmentEntityById(event.getShipmentId())
                 .orElseGet(() -> {
-                    ShipmentEntity ne = new ShipmentEntity();
-                    ne.setShipmentId(event.getShipmentId());
-                    ne.setDestination(event.getDestination());
-                    ne.setCreatedAt(LocalDateTime.now());
-                    return ne;
+                    // Initialize with data from ShipmentScannedEvent
+                    ShipmentEntity newEntity = new ShipmentEntity(
+                            event.getShipmentId(),
+                            null, // Origin not available in ShipmentScannedEvent
+                            event.getDestination(),
+                            null, // CustomerId not available in ShipmentScannedEvent
+                            LocalDateTime.now(), // Set creation time here
+                            ShipmentStatus.CREATED // Initial status
+                    );
+                    return newEntity;
                 });
 
-        // 2) Update letzte Location + Zeit + Status
         entity.setLastLocation(event.getLocation());
-        entity.setLastScannedAt(event.getScannedAt());
-        entity.setStatus(ShipmentStatus.IN_TRANSIT);
+        entity.setLastScannedAt(event.getScannedAt()); // Use the timestamp from the event
 
-        // 3) Wenn Ziel erreicht → Delivered-Event
-        if (event.getLocation().equalsIgnoreCase(event.getDestination())) {
+        // Only change status to IN_TRANSIT if it's not already DELIVERED
+        if (entity.getStatus() != ShipmentStatus.DELIVERED) {
+            entity.setStatus(ShipmentStatus.IN_TRANSIT);
+        }
+
+        // Check for delivery condition
+        if (event.getLocation().equalsIgnoreCase(entity.getDestination())) {
             entity.setStatus(ShipmentStatus.DELIVERED);
             entity.setDeliveredAt(LocalDateTime.now());
 
-            // push Delivered-Event
             ShipmentDeliveredEvent delivered = new ShipmentDeliveredEvent(
                     event.getShipmentId(),
-                    event.getDestination(),
+                    entity.getDestination(), // Use destination from entity
                     event.getLocation(),
                     LocalDateTime.now(),
                     event.getCorrelationId()
             );
             try {
                 SendResult<String, ShipmentDeliveredEvent> result =
-                        kafkaTemplate.send(deliveredTopic, delivered.getShipmentId(), delivered)
-                                .get();
-                log.info(" DeliveredEvent sent (partition={}, offset={})",
+                        kafkaTemplate.send(deliveredTopic, delivered.getShipmentId(), delivered).get();
+                log.info("DeliveredEvent sent (partition={}, offset={})",
                         result.getRecordMetadata().partition(),
                         result.getRecordMetadata().offset());
             } catch (InterruptedException | ExecutionException ex) {
-                log.error(" Failed to send DeliveredEvent", ex);
+                log.error("Failed to send DeliveredEvent", ex);
+                // Restore interrupt status
                 Thread.currentThread().interrupt();
             }
         }
 
-        // 4) Speichern in der Datenbank
-        repository.save(entity);
+        // Save updated entity to in-memory storage via service method
+        deliveryService.updateShipmentState(entity); // Use the new updateShipmentState method
     }
 }

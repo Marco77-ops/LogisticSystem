@@ -21,7 +21,7 @@ public class ShipmentEventListener {
         this.service = service;
     }
 
-    @KafkaListener(topics = "shipment-created", groupId = "notification-service")
+    @KafkaListener(topics = "shipment-created", groupId = "notificationview-service")
     public void handleShipmentCreated(ShipmentCreatedEvent event) {
         logger.info("Received shipment created event: {}", event);
         

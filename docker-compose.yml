@@ -1,12 +1,13 @@
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.2
+    image: confluentinc/cp-zookeeper:latest
     ports: ["2181:2181"]
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:7.3.2
+    image: confluentinc/cp-kafka:latest
     depends_on: [ zookeeper ]
     ports: [ "9092:9092" ]
     environment:
@@ -31,24 +32,6 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
 
-  postgres:
-    image: postgres:16-alpine
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports: [ "5432:5432" ]
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
-
-
-
   shipmentservice:
     build:
       context: .
@@ -58,10 +41,7 @@ services:
       kafka:
         condition: service_healthy
     restart: on-failure
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shipment
-      SPRING_DATASOURCE_USERNAME: shipment
-      SPRING_DATASOURCE_PASSWORD: shipment_pw
+
 
   scanservice:
     build:
@@ -71,13 +51,8 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
     restart: on-failure
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/scan
-      SPRING_DATASOURCE_USERNAME: scan
-      SPRING_DATASOURCE_PASSWORD: scan_pw
+
 
   deliveryservice:
     build:
@@ -87,13 +62,8 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
     restart: on-failure
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/delivery
-      SPRING_DATASOURCE_USERNAME: delivery
-      SPRING_DATASOURCE_PASSWORD: delivery_pw
+
 
   analyticservice:
     build:
@@ -118,14 +88,7 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
     restart: on-failure
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notification
-      SPRING_DATASOURCE_USERNAME: notification
-      SPRING_DATASOURCE_PASSWORD: notification_pw
-
 
 volumes:
   pgdata:

@@ -5,31 +5,6 @@ spring:
   application:
     name: shipment-service
 
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:shipment}
-    username: ${DB_USER:shipment}
-    password: ${DB_PASSWORD:shipment_pw}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
-      idle-timeout: 300000
-      connection-timeout: 20000
-      validation-timeout: 5000
-
-  jpa:
-    hibernate:
-      ddl-auto: ${DDL_AUTO:update}
-    show-sql: ${SHOW_SQL:false}
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        jdbc:
-          batch_size: 20
-        order_inserts: true
-        order_updates: true
-        format_sql: true
-
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
@@ -57,19 +32,12 @@ logging:
   level:
     com.luckypets.logistics: INFO
     org.springframework.kafka: INFO
-    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
-    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_BIND_LOG_LEVEL:WARN}
 
 ---
 spring:
   config:
     activate:
       on-profile: docker
-
-  datasource:
-    url: jdbc:postgresql://postgres:5432/shipment
-    username: shipment
-    password: shipment_pw
 
   kafka:
     bootstrap-servers: kafka:9092

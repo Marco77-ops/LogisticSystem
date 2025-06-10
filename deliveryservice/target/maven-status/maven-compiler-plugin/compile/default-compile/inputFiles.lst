@@ -3,7 +3,7 @@ C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\l
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\service\DeliveryService.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\service\DeliveryServiceImpl.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\model\DeliveryResponse.java
-C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\persistence\ShipmentRepository.java
+C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\model\ShipmentEntity.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\listener\ShipmentScannedListener.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\controller\DeliveryController.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\kafka\ShipmentDeliveredEventProducer.java

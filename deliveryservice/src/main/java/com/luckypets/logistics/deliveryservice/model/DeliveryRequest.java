@@ -7,10 +7,7 @@ public class DeliveryRequest {
     private String shipmentId;
     private String location;
 
-    // Default constructor for Jackson
-    public DeliveryRequest() {
-    }
-
+    public DeliveryRequest() {}
     public DeliveryRequest(String shipmentId, String location) {
         this.shipmentId = shipmentId;
         this.location = location;

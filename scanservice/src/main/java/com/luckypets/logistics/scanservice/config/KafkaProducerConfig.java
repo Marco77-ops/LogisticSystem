@@ -20,7 +20,6 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    // Generischer Producer für alle Event-Typen
     @Bean
     public ProducerFactory<String, ShipmentScannedEvent> shipmentScannedEventProducerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -30,7 +29,6 @@ public class KafkaProducerConfig {
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
-    // Spezifischer Template für ShipmentScannedEvent
     @Bean
     public KafkaTemplate<String, ShipmentScannedEvent> shipmentScannedEventKafkaTemplate() {
         return new KafkaTemplate<>(shipmentScannedEventProducerFactory());
