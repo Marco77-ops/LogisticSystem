@@ -4,10 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.luckypets.logistics.analyticservice.model.DeliveryCount;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
+import com.luckypets.logistics.analyticservice.timestamp.DeliveredAtTimestampExtractor; // Import custom timestamp extractor
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig; // Import ProducerConfig
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,12 +36,18 @@ public class KafkaStreamsConfig {
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, JsonSerde.class);
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, "exactly_once_v2");
-        props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor.class);
+
+        props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, DeliveredAtTimestampExtractor.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 30000);
+
+        // CHANGE THESE TWO LINES:
+        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10000);  // Changed from 30000 to 10000
+        props.put(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, 15000); // Changed from 35000 to 15000
+
         props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
 
         return new KafkaStreamsConfiguration(props);
+
     }
 
     @Bean

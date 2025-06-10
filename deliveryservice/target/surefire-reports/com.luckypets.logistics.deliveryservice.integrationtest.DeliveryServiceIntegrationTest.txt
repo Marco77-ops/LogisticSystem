@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.luckypets.logistics.deliveryservice.integrationtest.DeliveryServiceIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.91 s -- in com.luckypets.logistics.deliveryservice.integrationtest.DeliveryServiceIntegrationTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.84 s -- in com.luckypets.logistics.deliveryservice.integrationtest.DeliveryServiceIntegrationTest

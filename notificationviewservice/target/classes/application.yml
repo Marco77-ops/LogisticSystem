@@ -5,30 +5,6 @@ spring:
   application:
     name: notification-service
 
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:notification}
-    username: ${DB_USER:notification}
-    password: ${DB_PASSWORD:notification_pw}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 15
-      minimum-idle: 5
-      idle-timeout: 300000
-      connection-timeout: 20000
-      validation-timeout: 5000
-
-  jpa:
-    hibernate:
-      ddl-auto: ${DDL_AUTO:update}
-    show-sql: ${SHOW_SQL:false}
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        jdbc:
-          batch_size: 20
-        order_inserts: true
-        order_updates: true
-        format_sql: true
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
@@ -73,8 +49,6 @@ logging:
   level:
     com.luckypets.logistics: INFO
     org.springframework.kafka: INFO
-    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
-    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_BIND_LOG_LEVEL:WARN}
 
 ---
 spring:
@@ -82,10 +56,6 @@ spring:
     activate:
       on-profile: docker
 
-  datasource:
-    url: jdbc:postgresql://postgres:5432/notification
-    username: notification
-    password: notification_pw
 
   kafka:
     bootstrap-servers: kafka:9092

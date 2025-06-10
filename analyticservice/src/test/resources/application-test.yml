@@ -1,0 +1,13 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  kafka:
+    bootstrap-servers: localhost:9092
+    streams:
+      # Explicitly set auto-startup to true for tests, as it was removed previously and might default to false.
+      # Also, setting it here ensures it's picked up by the test context.
+      auto-startup: true
+      properties:
+        # FIXED: Ensure producer.transaction.timeout.ms is explicitly set for the test profile
+        producer.transaction.timeout.ms: 60000
