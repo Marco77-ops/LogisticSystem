@@ -1,6 +1,7 @@
 package com.luckypets.logistics.notificationviewservice.controller;
 
 import com.luckypets.logistics.notificationviewservice.model.Notification;
+import com.luckypets.logistics.notificationviewservice.model.NotificationType;
 import com.luckypets.logistics.notificationviewservice.service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,12 @@ public class NotificationController {
     @GetMapping("/shipment/{shipmentId}")
     public List<Notification> getNotificationsByShipmentId(@PathVariable(name = "shipmentId") String shipmentId) {
         return service.findByShipmentId(shipmentId);
+    }
 
+    @PostMapping("/test")
+    public ResponseEntity<Notification> createTestNotification(@RequestParam String shipmentId, @RequestParam String message) {
+        Notification notification = new Notification(shipmentId, message, NotificationType.SHIPMENT_CREATED);
+        Notification saved = service.save(notification);
+        return ResponseEntity.ok(saved);
     }
 }

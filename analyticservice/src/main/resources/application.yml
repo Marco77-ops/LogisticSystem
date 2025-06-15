@@ -38,12 +38,13 @@ spring:
       default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       default-value-serde: org.springframework.kafka.support.serializer.JsonSerde
       properties:
+        spring.json.trusted.packages: com.luckypets.logistics.shared.events
+        spring.json.value.default.type: com.luckypets.logistics.shared.events.ShipmentDeliveredEvent
         processing.guarantee: exactly_once_v2
-        commit.interval.ms: 10000  # REDUCED from 30000 to 10000
+        commit.interval.ms: 10000
         cache.max.bytes.buffering: 0
         default.timestamp.extractor: com.luckypets.logistics.analyticservice.timestamp.DeliveredAtTimestampExtractor
-        # CRITICAL: Set transaction timeout HIGHER than commit interval
-        producer.transaction.timeout.ms: 15000  # 15 seconds > 10 seconds commit interval
+        producer.transaction.timeout.ms: 15000
 
 # Custom kafka topic configuration
 kafka:
