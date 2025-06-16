@@ -1,15 +1,25 @@
 package com.luckypets.logistics.notificationviewservice.integrationtest;
 
+import com.luckypets.logistics.notificationviewservice.listener.ShipmentEventListener;
+import com.luckypets.logistics.notificationviewservice.model.Notification;
+import com.luckypets.logistics.notificationviewservice.model.NotificationType;
+import com.luckypets.logistics.notificationviewservice.service.NotificationService;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer; // Added import
-import org.apache.kafka.clients.producer.ProducerRecord; // Added import
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer; // Added import
+import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
@@ -22,49 +32,50 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.NONE,
+        classes = {com.luckypets.logistics.notificationviewservice.NotificationViewServiceApplication.class}
+)
+@EnableAutoConfiguration(exclude = {KafkaAutoConfiguration.class})
+@ActiveProfiles("test")
 @Testcontainers
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NotificationServiceIntegrationTest {
 
     @Container
-    static final KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"));
+    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"));
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private ShipmentEventListener shipmentEventListener;
 
     @DynamicPropertySource
     static void kafkaProperties(DynamicPropertyRegistry registry) {
-        kafka.start();
         registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-    }
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-        registry.add("spring.kafka.consumer.bootstrap-servers", kafka::getBootstrapServers);
-        registry.add("spring.kafka.producer.bootstrap-servers", kafka::getBootstrapServers);
-
-        // Optional: Testdatenbank für H2, falls benötigt
-        registry.add("spring.datasource.url", () -> "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
-        registry.add("spring.datasource.driver-class-name", () -> "org.h2.Driver");
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
     }
 
     private KafkaConsumer<String, ShipmentDeliveredEvent> kafkaConsumer;
 
     @BeforeEach
-    void setupKafkaConsumer() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group-" + UUID.randomUUID());
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, ShipmentDeliveredEvent.class.getName());
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+    void setUp() {
+        // Setup Kafka Consumer for integration tests (following ShipmentServiceIntegrationTest pattern)
+        Properties props = new Properties();
+        props.put("bootstrap.servers", kafka.getBootstrapServers());
+        props.put("group.id", "test-group-" + System.currentTimeMillis()); // Unique group id for each test
+        props.put("auto.offset.reset", "earliest");
 
-        kafkaConsumer = new KafkaConsumer<>(props);
-        kafkaConsumer.subscribe(List.of("shipment-delivered"));
+        kafkaConsumer = new KafkaConsumer<>(
+                props,
+                new StringDeserializer(),
+                new JsonDeserializer<>(ShipmentDeliveredEvent.class, false)
+        );
+        kafkaConsumer.subscribe(Collections.singletonList("shipment-delivered"));
+
+        // Clear any existing notifications
+        notificationService.deleteAll();
     }
 
     @AfterEach
@@ -76,31 +87,33 @@ class NotificationServiceIntegrationTest {
 
     @Test
     void shouldPublishShipmentDeliveredEventToKafka() {
-        // Beispiel-Event
+        // Create test event
         ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
                 "SHIP-123", "Berlin", "Berlin", LocalDateTime.now(), "corr-id-001"
         );
 
-        // PRODUCER: Send the event to Kafka (UNCOMMENTED)
+        // Send event using simple producer (following ShipmentServiceIntegrationTest pattern)
         Properties producerProps = new Properties();
         producerProps.put("bootstrap.servers", kafka.getBootstrapServers());
-        producerProps.put("key.serializer", org.apache.kafka.common.serialization.StringSerializer.class);
-        producerProps.put("value.serializer", JsonSerializer.class.getName()); // Use JsonSerializer
 
-        try (KafkaProducer<String, ShipmentDeliveredEvent> producer = new KafkaProducer<>(producerProps)) {
+        try (KafkaProducer<String, ShipmentDeliveredEvent> producer = new KafkaProducer<>(
+                producerProps,
+                new StringSerializer(),
+                new JsonSerializer<>()
+        )) {
             producer.send(new ProducerRecord<>("shipment-delivered", "SHIP-123", event));
             producer.flush();
         }
 
-        // Warten auf das Event im Topic
+        // Wait for the event (following ShipmentServiceIntegrationTest pattern)
         ConsumerRecord<String, ShipmentDeliveredEvent> received = null;
-        long timeout = System.currentTimeMillis() + 10_000;
-        poll:
+        long timeout = System.currentTimeMillis() + 10_000; // 10 seconds timeout
+
         while (System.currentTimeMillis() < timeout) {
             var records = kafkaConsumer.poll(Duration.ofMillis(500));
-            for (ConsumerRecord<String, ShipmentDeliveredEvent> record : records) {
-                received = record;
-                break poll;
+            if (!records.isEmpty()) {
+                received = records.iterator().next(); // Get the first record
+                break;
             }
         }
 
@@ -108,5 +121,29 @@ class NotificationServiceIntegrationTest {
         assertThat(received.value().getShipmentId()).isEqualTo("SHIP-123");
         assertThat(received.value().getLocation()).isEqualTo("Berlin");
         assertThat(received.value().getCorrelationId()).isNotNull();
+    }
+
+    @Test
+    void shouldCreateNotificationWhenShipmentDeliveredEventIsProcessed() {
+        // Create a test event
+        ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
+                "SHIP-456", "Munich", "Munich", LocalDateTime.now(), "corr-id-002"
+        );
+
+        // Directly call the event handler method to simulate Kafka message consumption
+        Acknowledgment acknowledgment = mock(Acknowledgment.class);
+        shipmentEventListener.handleShipmentDelivered(
+                event,
+                "shipment-delivered",
+                0,
+                0L,
+                acknowledgment
+        );
+
+        // Verify that a notification was created with the correct properties
+        List<Notification> notifications = notificationService.findByShipmentId("SHIP-456");
+        assertThat(notifications).isNotEmpty();
+        assertThat(notifications.get(0).getType()).isEqualTo(NotificationType.SHIPMENT_DELIVERED);
+        assertThat(notifications.get(0).getMessage()).contains("has been delivered to its destination Munich");
     }
 }

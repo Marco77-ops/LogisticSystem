@@ -27,7 +27,7 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
         JsonSerializer<ShipmentDeliveredEvent> jsonSerializer = new JsonSerializer<>(objectMapper);
-        jsonSerializer.setAddTypeInfo(false);
+        jsonSerializer.setAddTypeInfo(true);
 
         return new DefaultKafkaProducerFactory<>(configProps, new StringSerializer(), jsonSerializer);
     }

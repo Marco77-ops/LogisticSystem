@@ -3,29 +3,31 @@ server:
 
 spring:
   application:
-    name: notification-service
-
+    name: notificationView-service
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
     consumer:
-      group-id: notification-service
+      group-id: notificationView-service
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      enable-auto-commit: false
       properties:
-        spring.json.trusted.packages: com.luckypets.logistics.shared.events
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "com.luckypets.logistics.shared.events"
+        spring.json.use.type.headers: true
         session.timeout.ms: 30000
         heartbeat.interval.ms: 10000
         max.poll.records: 500
         max.poll.interval.ms: 300000
-        enable.auto.commit: false
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
-        spring.json.trusted.packages: com.luckypets.logistics.shared.events
+        spring.json.add.type.headers: true
         acks: all
         retries: 3
         batch.size: 16384
@@ -35,6 +37,12 @@ spring:
 
     listener:
       ack-mode: manual_immediate
+
+    topic:
+      shipment-created: shipment-created
+      shipment-scanned: shipment-scanned
+      shipment-delivered: shipment-delivered
+      notification-sent: notification-sent
 
 management:
   endpoints:
@@ -49,13 +57,14 @@ logging:
   level:
     com.luckypets.logistics: INFO
     org.springframework.kafka: INFO
+    org.apache.kafka: WARN
 
 ---
+
 spring:
   config:
     activate:
       on-profile: docker
-
 
   kafka:
     bootstrap-servers: kafka:9092
@@ -63,3 +72,4 @@ spring:
 logging:
   level:
     root: INFO
+    com.luckypets.logistics: DEBUG

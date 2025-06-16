@@ -108,7 +108,7 @@ public class ShipmentEventListener {
         }
     }
 
-    @KafkaListener(topics = "${spring.kafka.topic.shipment-delivered}", groupId = "notificationView-service")
+    @KafkaListener(topics = "shipment-delivered", groupId = "notificationView-service")
     public void handleShipmentDelivered(
             @Payload ShipmentDeliveredEvent event,
             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
@@ -134,8 +134,8 @@ public class ShipmentEventListener {
 
             Notification notification = new Notification(
                     event.getShipmentId(),
-                    String.format("Shipment %s has been delivered to %s",
-                            event.getShipmentId(), event.getLocation()),
+                    String.format("Shipment %s has been delivered to its destination %s",
+                            event.getShipmentId(), event.getDestination()),
                     NotificationType.SHIPMENT_DELIVERED
             );
 

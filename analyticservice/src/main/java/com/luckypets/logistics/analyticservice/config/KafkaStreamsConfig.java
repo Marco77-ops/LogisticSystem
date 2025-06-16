@@ -36,18 +36,17 @@ public class KafkaStreamsConfig {
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, JsonSerde.class);
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, "exactly_once_v2");
-
         props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, DeliveredAtTimestampExtractor.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
-        // CHANGE THESE TWO LINES:
-        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10000);  // Changed from 30000 to 10000
-        props.put(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, 15000); // Changed from 35000 to 15000
-
-        props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
-
+        
+        // Korrigierte Timeout-Konfiguration
+        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10000);  // 10 Sekunden
+        props.put(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, 60000); // 60 Sekunden (erhöht)
+        
+        // Cache wieder aktivieren für bessere Performance
+        props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 10 * 1024 * 1024); // 10MB
+        
         return new KafkaStreamsConfiguration(props);
-
     }
 
     @Bean
@@ -59,14 +58,14 @@ public class KafkaStreamsConfig {
 
     @Bean
     public JsonSerde<ShipmentDeliveredEvent> shipmentDeliveredEventSerde() {
-        JsonSerde<ShipmentDeliveredEvent> serde = new JsonSerde<>(ShipmentDeliveredEvent.class);
+        JsonSerde<ShipmentDeliveredEvent> serde = new JsonSerde<>(ShipmentDeliveredEvent.class, objectMapper());
         serde.configure(Map.of(), false);
         return serde;
     }
 
     @Bean
     public JsonSerde<DeliveryCount> deliveryCountSerde() {
-        JsonSerde<DeliveryCount> serde = new JsonSerde<>(DeliveryCount.class);
+        JsonSerde<DeliveryCount> serde = new JsonSerde<>(DeliveryCount.class, objectMapper());
         serde.configure(Map.of(), false);
         return serde;
     }

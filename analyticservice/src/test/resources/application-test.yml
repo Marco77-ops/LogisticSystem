@@ -1,13 +1,55 @@
+# Test-spezifische Konfiguration - überschreibt Produktions-Konfiguration
 spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   kafka:
-    bootstrap-servers: localhost:9092
+    # Bootstrap-Server wird von @DynamicPropertySource gesetzt
     streams:
-      # Explicitly set auto-startup to true for tests, as it was removed previously and might default to false.
-      # Also, setting it here ensures it's picked up by the test context.
-      auto-startup: true
+      auto-startup: false  # WICHTIG: Manueller Start nach Topic-Erstellung
       properties:
-        # FIXED: Ensure producer.transaction.timeout.ms is explicitly set for the test profile
-        producer.transaction.timeout.ms: 60000
+        # Einfache Test-Konfiguration
+        processing.guarantee: at_least_once
+        num.stream.threads: 1
+        commit.interval.ms: 1000
+        cache.max.bytes.buffering: 0
+        state.cleanup.delay.ms: 1000
+        # Reduzierte Timeouts für Tests
+        request.timeout.ms: 30000
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 3000
+        # Wichtig für Tests: Schnellere Metadata-Updates
+        metadata.max.age.ms: 5000
+        # Retry-Einstellungen
+        retry.backoff.ms: 100
+        reconnect.backoff.ms: 50
+        reconnect.backoff.max.ms: 1000
+
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+    producer:
+      acks: 1
+      retries: 3
+
+# Topic-Konfiguration
+kafka:
+  topic:
+    delivered: shipment-delivered
+    delivery-analytics: delivery-analytics
+
+# Window-Konfiguration für Tests
+kafka.streams:
+  window:
+    size-minutes: 60
+    grace-period-minutes: 5
+  state-store:
+    retention-days: 1
+
+# Logging für besseres Debugging
+logging:
+  level:
+    com.luckypets.logistics.analyticservice: DEBUG
+    org.apache.kafka.streams: INFO
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
+    org.apache.kafka.clients.consumer: INFO
+    org.apache.kafka.clients.admin: INFO
