@@ -1,9 +1,13 @@
+com\luckypets\logistics\notificationviewservice\model\NotificationType.class
+com\luckypets\logistics\notificationviewservice\service\NotificationServiceImpl.class
+com\luckypets\logistics\notificationviewservice\kafka\NotificationSentEventProducer.class
 com\luckypets\logistics\notificationviewservice\NotificationViewServiceApplication.class
 com\luckypets\logistics\notificationviewservice\controller\NotificationController.class
-com\luckypets\logistics\notificationviewservice\model\NotificationType.class
 com\luckypets\logistics\notificationviewservice\model\Notification.class
 com\luckypets\logistics\notificationviewservice\listener\ShipmentEventListener.class
-com\luckypets\logistics\notificationviewservice\service\NotificationServiceImpl.class
+com\luckypets\logistics\notificationviewservice\config\ErrorHandlingConfig$CustomDeadLetterHandler.class
+com\luckypets\logistics\notificationviewservice\config\ErrorHandlingConfig.class
 com\luckypets\logistics\notificationviewservice\repository\NotificationRepository.class
 com\luckypets\logistics\notificationviewservice\config\KafkaConsumerConfig.class
+com\luckypets\logistics\notificationviewservice\config\KafkaProducerConfig.class
 com\luckypets\logistics\notificationviewservice\service\NotificationService.class

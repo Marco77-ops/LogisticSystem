@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------------
+Test set: com.luckypets.logistics.notificationviewservice.integrationtest.End2EndTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.462 s <<< FAILURE! -- in com.luckypets.logistics.notificationviewservice.integrationtest.End2EndTest
+com.luckypets.logistics.notificationviewservice.integrationtest.End2EndTest -- Time elapsed: 0.462 s <<< ERROR!
+java.lang.ExceptionInInitializerError
+	at java.base/jdk.internal.misc.Unsafe.ensureClassInitialized0(Native Method)
+	at java.base/jdk.internal.misc.Unsafe.ensureClassInitialized(Unsafe.java:1160)
+	at java.base/java.lang.reflect.Field.acquireOverrideFieldAccessor(Field.java:1200)
+	at java.base/java.lang.reflect.Field.getOverrideFieldAccessor(Field.java:1169)
+	at java.base/java.lang.reflect.Field.get(Field.java:444)
+	at org.testcontainers.junit.jupiter.TestcontainersExtension.getContainerInstance(TestcontainersExtension.java:252)
+	at org.testcontainers.junit.jupiter.TestcontainersExtension.lambda$findSharedContainers$10(TestcontainersExtension.java:213)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1708)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+	at org.testcontainers.junit.jupiter.TestcontainersExtension.findSharedContainers(TestcontainersExtension.java:214)
+	at org.testcontainers.junit.jupiter.TestcontainersExtension.beforeAll(TestcontainersExtension.java:54)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.lang.IllegalArgumentException: Unable to parse YAML file from C:\Users\Marco Kaul\LogisticSystem\notificationviewservice\..\..\docker-compose.yml
+	at org.testcontainers.containers.ParsedDockerComposeFile.<init>(ParsedDockerComposeFile.java:44)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+	at org.testcontainers.containers.DockerComposeFiles.<init>(DockerComposeFiles.java:18)
+	at org.testcontainers.containers.ComposeDelegate.<init>(ComposeDelegate.java:92)
+	at org.testcontainers.containers.DockerComposeContainer.<init>(DockerComposeContainer.java:89)
+	at org.testcontainers.containers.DockerComposeContainer.<init>(DockerComposeContainer.java:81)
+	at org.testcontainers.containers.DockerComposeContainer.<init>(DockerComposeContainer.java:77)
+	at com.luckypets.logistics.notificationviewservice.integrationtest.End2EndTest.<clinit>(End2EndTest.java:38)
+	... 17 more
+Caused by: java.io.FileNotFoundException: ..\..\docker-compose.yml (Das System kann die angegebene Datei nicht finden)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:213)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:152)
+	at org.testcontainers.shaded.org.apache.commons.io.FileUtils.openInputStream(FileUtils.java:2501)
+	at org.testcontainers.containers.ParsedDockerComposeFile.<init>(ParsedDockerComposeFile.java:41)
+	... 30 more
+
