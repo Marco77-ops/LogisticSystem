@@ -8,12 +8,8 @@
         <option value="$PROJECT_DIR$/scanservice/pom.xml" />
         <option value="$PROJECT_DIR$/shipmentservice/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
-      </list>
-    </option>
-    <option name="ignoredFiles">
-      <set>
         <option value="$PROJECT_DIR$/e2e-tests/pom.xml" />
-      </set>
+      </list>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK">

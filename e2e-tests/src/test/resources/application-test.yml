@@ -1,0 +1,26 @@
+# Test-spezifische Spring Boot Konfiguration
+spring:
+  profiles:
+    active: test
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: e2e-test-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+    producer:
+      retries: 3
+
+logging:
+  level:
+    com.luckypets.logistics: DEBUG
+    org.testcontainers: INFO
+    io.restassured: INFO
+
+# Test-spezifische Timeouts
+test:
+  timeouts:
+    health-check: 30s
+    workflow: 60s
+    analytics: 45s

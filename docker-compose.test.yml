@@ -1,0 +1,138 @@
+# docker-compose.test.yml - KORRIGIERTE VERSION (ohne Datenbank)
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_LOG_RETENTION_HOURS: 1
+      KAFKA_LOG_SEGMENT_BYTES: 1048576
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # KEINE PostgreSQL - da alles In-Memory ist!
+
+  shipmentservice:
+    build:
+      context: ./shipmentservice
+      dockerfile: Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # KEINE Datenbank-Konfiguration nötig
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  scanservice:
+    build:
+      context: ./scanservice
+      dockerfile: Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # KEINE Datenbank-Konfiguration nötig
+    ports:
+      - "8082:8082"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  deliveryservice:
+    build:
+      context: ./deliveryservice
+      dockerfile: Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # KEINE Datenbank-Konfiguration nötig
+    ports:
+      - "8083:8083"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  analyticservice:
+    build:
+      context: ./analyticservice
+      dockerfile: Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # Kafka Streams - keine DB nötig
+    ports:
+      - "8084:8084"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  notificationviewservice:
+    build:
+      context: ./notificationviewservice
+      dockerfile: Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # KEINE Datenbank-Konfiguration nötig
+    ports:
+      - "8085:8085"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+networks:
+  default:
+    name: logistics-e2e-network

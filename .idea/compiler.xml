@@ -6,16 +6,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="deliveryservice" />
-        <module name="analyticservice" />
+        <module name="e2e-tests" />
         <module name="shared" />
-        <module name="notificationviewservice" />
         <module name="shipmentservice" />
+        <module name="analyticservice" />
+        <module name="deliveryservice" />
+        <module name="notificationviewservice" />
         <module name="scanservice" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="24">
-      <module name="e2e-tests" target="24" />
       <module name="notificationservice" target="17" />
     </bytecodeTargetLevel>
   </component>

@@ -9,6 +9,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <!-- pom.xml (Root) -->
     <modules>
         <module>shared</module>
         <module>shipmentservice</module>
@@ -16,6 +17,7 @@
         <module>deliveryservice</module>
         <module>analyticservice</module>
         <module>notificationviewservice</module>
+        <module>e2e-tests</module>  <!-- HINZUFÜGEN -->
     </modules>
 
     <properties>
@@ -25,7 +27,18 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <!-- Define Testcontainers version property here -->
         <testcontainers.version>1.19.7</testcontainers.version>
+            <rest-assured.version>5.3.0</rest-assured.version>
+            <awaitility.version>4.2.0</awaitility.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>e2e</id>
+            <modules>
+                <module>e2e-tests</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>
