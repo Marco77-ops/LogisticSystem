@@ -36,7 +36,7 @@ public class NotificationController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<Notification> createTestNotification(@RequestParam String shipmentId, @RequestParam String message) {
+    public ResponseEntity<Notification> createTestNotification(@RequestParam("shipmentId") String shipmentId, @RequestParam("message") String message) {
         Notification notification = new Notification(shipmentId, message, NotificationType.SHIPMENT_CREATED);
         Notification saved = service.save(notification);
         return ResponseEntity.ok(saved);

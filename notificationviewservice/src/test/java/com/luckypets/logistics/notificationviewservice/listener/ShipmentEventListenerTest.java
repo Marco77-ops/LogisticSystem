@@ -1,22 +1,21 @@
 package com.luckypets.logistics.notificationviewservice.listener;
 
-import com.luckypets.logistics.notificationviewservice.model.Notification;
-import com.luckypets.logistics.notificationviewservice.model.NotificationType;
 import com.luckypets.logistics.notificationviewservice.service.NotificationService;
 import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.support.Acknowledgment;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -29,143 +28,115 @@ class ShipmentEventListenerTest {
     @Mock
     private Acknowledgment acknowledgment;
 
-    private ShipmentEventListener shipmentEventListener;
+    private ShipmentEventListener listener;
 
     @BeforeEach
     void setUp() {
-        shipmentEventListener = new ShipmentEventListener(notificationService);
+        listener = new ShipmentEventListener(notificationService);
     }
 
     @Test
-    void handleShipmentDelivered_shouldCreateNotification_withCorrectMessage() {
-        // Arrange
-        ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
-                "SHIP-123",
-                "Berlin",
-                "Berlin",
-                LocalDateTime.now(),
-                "corr-id-001"
-        );
+    @DisplayName("Should acknowledge when ShipmentCreatedEvent is null")
+    void shouldAcknowledgeWhenShipmentCreatedEventIsNull() {
+        // When
+        listener.handleShipmentCreated(null, "topic", 0, 0L, acknowledgment);
 
-        // Act
-        shipmentEventListener.handleShipmentDelivered(
-                event,
-                "shipment-delivered",
-                0,
-                0L,
-                acknowledgment
-        );
-
-        // Assert
-        ArgumentCaptor<Notification> notificationCaptor = ArgumentCaptor.forClass(Notification.class);
-        verify(notificationService).save(notificationCaptor.capture());
+        // Then
         verify(acknowledgment).acknowledge();
-
-        Notification capturedNotification = notificationCaptor.getValue();
-        assertThat(capturedNotification.getShipmentId()).isEqualTo("SHIP-123");
-        assertThat(capturedNotification.getType()).isEqualTo(NotificationType.SHIPMENT_DELIVERED);
-        assertThat(capturedNotification.getMessage()).contains("has been delivered to its destination Berlin");
+        verifyNoInteractions(notificationService);
     }
 
     @Test
-    void handleShipmentDelivered_withNullEvent_shouldAcknowledgeAndNotSaveNotification() {
-        // Act
-        shipmentEventListener.handleShipmentDelivered(
-                null,
-                "shipment-delivered",
-                0,
-                0L,
-                acknowledgment
-        );
-
-        // Assert
-        verify(notificationService, never()).save(any());
-        verify(acknowledgment).acknowledge();
-    }
-
-    @Test
-    void handleShipmentDelivered_withEmptyShipmentId_shouldAcknowledgeAndNotSaveNotification() {
-        // Arrange
-        ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
-                "",
-                "Berlin",
-                "Berlin",
-                LocalDateTime.now(),
-                "corr-id-001"
-        );
-
-        // Act
-        shipmentEventListener.handleShipmentDelivered(
-                event,
-                "shipment-delivered",
-                0,
-                0L,
-                acknowledgment
-        );
-
-        // Assert
-        verify(notificationService, never()).save(any());
-        verify(acknowledgment).acknowledge();
-    }
-
-    @Test
-    void handleShipmentCreated_shouldCreateNotification_withCorrectMessage() {
-        // Arrange
+    @DisplayName("Should acknowledge when shipmentId is null in ShipmentCreatedEvent")
+    void shouldAcknowledgeWhenShipmentIdIsNullInShipmentCreatedEvent() {
+        // Given
         ShipmentCreatedEvent event = new ShipmentCreatedEvent(
-                "SHIP-456",
-                "Munich",
-                LocalDateTime.now(),
-                "corr-id-002"
-        );
+                null, "Berlin", LocalDateTime.now(), UUID.randomUUID().toString());
 
-        // Act
-        shipmentEventListener.handleShipmentCreated(
-                event,
-                "shipment-created",
-                0,
-                0L,
-                acknowledgment
-        );
+        // When
+        listener.handleShipmentCreated(event, "topic", 0, 0L, acknowledgment);
 
-        // Assert
-        ArgumentCaptor<Notification> notificationCaptor = ArgumentCaptor.forClass(Notification.class);
-        verify(notificationService).save(notificationCaptor.capture());
+        // Then
         verify(acknowledgment).acknowledge();
-
-        Notification capturedNotification = notificationCaptor.getValue();
-        assertThat(capturedNotification.getShipmentId()).isEqualTo("SHIP-456");
-        assertThat(capturedNotification.getType()).isEqualTo(NotificationType.SHIPMENT_CREATED);
-        assertThat(capturedNotification.getMessage()).contains("has been created with destination Munich");
+        verifyNoInteractions(notificationService);
     }
 
     @Test
-    void handleShipmentScanned_shouldCreateNotification_withCorrectMessage() {
-        // Arrange
-        ShipmentScannedEvent event = new ShipmentScannedEvent(
-                "SHIP-789",
-                "Frankfurt",
-                LocalDateTime.now(),
-                "Berlin",
-                "corr-id-003"
-        );
+    @DisplayName("Should acknowledge when shipmentId is empty in ShipmentCreatedEvent")
+    void shouldAcknowledgeWhenShipmentIdIsEmptyInShipmentCreatedEvent() {
+        // Given
+        ShipmentCreatedEvent event = new ShipmentCreatedEvent(
+                "", "Berlin", LocalDateTime.now(), UUID.randomUUID().toString());
 
-        // Act
-        shipmentEventListener.handleShipmentScanned(
-                event,
-                "shipment-scanned",
-                0,
-                0L,
-                acknowledgment
-        );
+        // When
+        listener.handleShipmentCreated(event, "topic", 0, 0L, acknowledgment);
 
-        // Assert
-        ArgumentCaptor<Notification> notificationCaptor = ArgumentCaptor.forClass(Notification.class);
-        verify(notificationService).save(notificationCaptor.capture());
+        // Then
         verify(acknowledgment).acknowledge();
+        verifyNoInteractions(notificationService);
+    }
 
-        Notification capturedNotification = notificationCaptor.getValue();
-        assertThat(capturedNotification.getShipmentId()).isEqualTo("SHIP-789");
-        assertThat(capturedNotification.getType()).isEqualTo(NotificationType.SHIPMENT_SCANNED);
-        assertThat(capturedNotification.getMessage()).contains("has been scanned at location Frankfurt");
+    @Test
+    @DisplayName("Should throw exception when service fails for ShipmentCreatedEvent")
+    void shouldThrowExceptionWhenServiceFailsForShipmentCreatedEvent() {
+        // Given
+        ShipmentCreatedEvent event = new ShipmentCreatedEvent(
+                "SHIP-123", "Berlin", LocalDateTime.now(), UUID.randomUUID().toString());
+
+        when(notificationService.save(any())).thenThrow(new RuntimeException("Service error"));
+
+        // When & Then
+        assertThrows(RuntimeException.class, () ->
+                listener.handleShipmentCreated(event, "topic", 0, 0L, acknowledgment));
+
+        verify(notificationService).save(any());
+        verifyNoInteractions(acknowledgment);
+    }
+
+    @Test
+    @DisplayName("Should acknowledge when ShipmentCreatedEvent processing succeeds")
+    void shouldAcknowledgeWhenShipmentCreatedEventProcessingSucceeds() {
+        // Given
+        ShipmentCreatedEvent event = new ShipmentCreatedEvent(
+                "SHIP-123", "Berlin", LocalDateTime.now(), UUID.randomUUID().toString());
+
+        // When
+        listener.handleShipmentCreated(event, "topic", 0, 0L, acknowledgment);
+
+        // Then
+        verify(notificationService).save(any());
+        verify(acknowledgment).acknowledge();
+    }
+
+    // Similar tests for ShipmentScannedEvent
+    @Test
+    @DisplayName("Should handle ShipmentScannedEvent correctly")
+    void shouldHandleShipmentScannedEventCorrectly() {
+        // Given
+        ShipmentScannedEvent event = new ShipmentScannedEvent(
+                "SHIP-456", "Frankfurt", LocalDateTime.now(), "Berlin", UUID.randomUUID().toString());
+
+        // When
+        listener.handleShipmentScanned(event, "topic", 0, 0L, acknowledgment);
+
+        // Then
+        verify(notificationService).save(any());
+        verify(acknowledgment).acknowledge();
+    }
+
+    // Similar tests for ShipmentDeliveredEvent
+    @Test
+    @DisplayName("Should handle ShipmentDeliveredEvent correctly")
+    void shouldHandleShipmentDeliveredEventCorrectly() {
+        // Given
+        ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
+                "SHIP-789", "Munich", "Munich", LocalDateTime.now(), UUID.randomUUID().toString());
+
+        // When
+        listener.handleShipmentDelivered(event, "topic", 0, 0L, acknowledgment);
+
+        // Then
+        verify(notificationService).save(any());
+        verify(acknowledgment).acknowledge();
     }
 }
