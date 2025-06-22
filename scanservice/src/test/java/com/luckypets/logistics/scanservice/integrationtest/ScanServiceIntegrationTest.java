@@ -1,208 +1,199 @@
 package com.luckypets.logistics.scanservice.integrationtest;
 
-import com.luckypets.logistics.scanservice.service.ScanService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.luckypets.logistics.scanservice.ScanServiceApplication;
+import com.luckypets.logistics.scanservice.model.ScanRequest;
+import com.luckypets.logistics.scanservice.model.ShipmentEntity;
 import com.luckypets.logistics.scanservice.service.ScanServiceImpl;
 import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
-import com.luckypets.logistics.scanservice.model.ShipmentEntity; // Import local ShipmentEntity
-import com.luckypets.logistics.shared.model.ShipmentStatus; // Import shared ShipmentStatus
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import com.luckypets.logistics.shared.model.ShipmentStatus;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
-import java.util.Properties;
-import java.util.Optional; // Import Optional
-import java.util.UUID;
+import java.util.Map;
+import java.util.Optional;
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content; // Import content for error messages
 
-
-@SpringBootTest
+@SpringBootTest(classes = ScanServiceApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Testcontainers
-class ScanServiceIntegrationTest {
+@EmbeddedKafka(partitions = 1, topics = {"shipment-created", "shipment-scanned"}, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
+@ActiveProfiles("test")
+@DirtiesContext
+public class ScanServiceIntegrationTest {
+
+    private static final Logger log = LoggerFactory.getLogger(ScanServiceIntegrationTest.class);
 
     @Autowired
-    private MockMvc mockMvc; // For testing REST endpoints
+    private MockMvc mockMvc;
 
     @Autowired
-    private ScanService scanService; // For direct service interaction, especially for setup/teardown
+    private ObjectMapper objectMapper;
 
-    private KafkaConsumer<String, ShipmentScannedEvent> kafkaConsumerScanned;
-    private KafkaConsumer<String, ShipmentCreatedEvent> kafkaConsumerCreated; // For consuming created events (optional, if you need to test the listener flow)
+    @Autowired
+    private ScanServiceImpl scanService;
 
-    @Container
-    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"));
+    // **Korrekt: Feld-Injektion, KEIN Konstruktor!**
+    @Autowired
+    private EmbeddedKafkaBroker embeddedKafkaBroker;
 
-    @DynamicPropertySource
-    static void kafkaProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-    }
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
+
+    private Consumer<String, ShipmentCreatedEvent> createdEventConsumer;
+    private Consumer<String, ShipmentScannedEvent> scannedEventConsumer;
 
     @BeforeEach
     void setUp() {
-        // Clear in-memory storage of the service for test isolation
-        if (scanService instanceof ScanServiceImpl) {
-            ((ScanServiceImpl) scanService).clearInMemoryStorageForTests();
-        }
+        log.info("Setting up Kafka consumers for integration tests. Bootstrap Servers: {}", bootstrapServers);
 
-        // Setup Kafka Consumer for ShipmentScannedEvent
-        Properties propsScanned = new Properties();
-        propsScanned.put("bootstrap.servers", kafka.getBootstrapServers());
-        propsScanned.put("group.id", "test-group-scanned-" + UUID.randomUUID()); // Unique group id
-        propsScanned.put("auto.offset.reset", "earliest");
+        scanService.clearInMemoryStorageForTests();
 
-        kafkaConsumerScanned = new KafkaConsumer<>(
-                propsScanned,
+        // Consumer für ShipmentCreatedEvent
+        Map<String, Object> createdConsumerProps = KafkaTestUtils.consumerProps("test-group-created", "true", embeddedKafkaBroker);
+        createdConsumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        createdConsumerProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.luckypets.logistics.shared.events");
+        createdEventConsumer = new DefaultKafkaConsumerFactory<String, ShipmentCreatedEvent>(
+                createdConsumerProps,
                 new StringDeserializer(),
-                new JsonDeserializer<>(ShipmentScannedEvent.class, false)
-        );
-        kafkaConsumerScanned.subscribe(Collections.singletonList("shipment-scanned"));
+                new JsonDeserializer<>(ShipmentCreatedEvent.class)
+        ).createConsumer();
+        createdEventConsumer.subscribe(Collections.singleton("shipment-created"));
+        KafkaTestUtils.getRecords(createdEventConsumer, Duration.ofMillis(100)); // partition assignment workaround
 
-        // Setup Kafka Consumer for ShipmentCreatedEvent (optional, only if you test the listener logic)
-        Properties propsCreated = new Properties();
-        propsCreated.put("bootstrap.servers", kafka.getBootstrapServers());
-        propsCreated.put("group.id", "test-group-created-" + UUID.randomUUID()); // Unique group id
-        propsCreated.put("auto.offset.reset", "earliest");
-
-        kafkaConsumerCreated = new KafkaConsumer<>(
-                propsCreated,
+        // Consumer für ShipmentScannedEvent
+        Map<String, Object> scannedConsumerProps = KafkaTestUtils.consumerProps("test-group-scanned", "true", embeddedKafkaBroker);
+        scannedConsumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        scannedConsumerProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.luckypets.logistics.shared.events");
+        scannedEventConsumer = new DefaultKafkaConsumerFactory<String, ShipmentScannedEvent>(
+                scannedConsumerProps,
                 new StringDeserializer(),
-                new JsonDeserializer<>(ShipmentCreatedEvent.class, false)
-        );
-        kafkaConsumerCreated.subscribe(Collections.singletonList("shipment-created"));
+                new JsonDeserializer<>(ShipmentScannedEvent.class)
+        ).createConsumer();
+        scannedEventConsumer.subscribe(Collections.singleton("shipment-scanned"));
+        KafkaTestUtils.getRecords(scannedEventConsumer, Duration.ofMillis(100)); // partition assignment workaround
+
+        log.info("Kafka setup complete.");
     }
 
     @AfterEach
     void tearDown() {
-        if (kafkaConsumerScanned != null) {
-            kafkaConsumerScanned.close();
-        }
-        if (kafkaConsumerCreated != null) {
-            kafkaConsumerCreated.close();
-        }
+        if (createdEventConsumer != null) createdEventConsumer.close();
+        if (scannedEventConsumer != null) scannedEventConsumer.close();
     }
 
     @Test
     void scanShipment_existingShipment_updatesAndPublishesEvent() throws Exception {
-        // Arrange: Populate the ScanService's in-memory store directly for testing
-        ShipmentEntity shipmentToScan = new ShipmentEntity();
-        shipmentToScan.setShipmentId("SHIP-123");
-        shipmentToScan.setOrigin("München");
-        shipmentToScan.setDestination("Berlin");
-        shipmentToScan.setCustomerId("C111");
-        shipmentToScan.setStatus(ShipmentStatus.CREATED); // Initial status
-        shipmentToScan.setCreatedAt(LocalDateTime.now());
-        shipmentToScan.setLastLocation("Initial location from creation"); // Set an initial last location
+        // Arrange: Shipment direkt im In-Memory-Store anlegen
+        String shipmentId = "SHIP-123";
+        String origin = "TestOrigin";
+        String destination = "TestDestination";
+        String customerId = "test-customer";
+        LocalDateTime createdAt = LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.MILLIS);
 
-        if (scanService instanceof ScanServiceImpl) {
-            ((ScanServiceImpl) scanService).addShipmentForTest(shipmentToScan);
-        }
+        ShipmentEntity initialShipment = new ShipmentEntity(shipmentId, origin, destination, customerId, createdAt, ShipmentStatus.CREATED);
+        scanService.addShipmentForTest(initialShipment);
+        log.info("Initial shipment added to in-memory store: {}", initialShipment);
 
-        String requestJson = """
-            {
-                "shipmentId": "SHIP-123",
-                "location": "WAREHOUSE_A"
-            }
-        """;
+        // Act: Scan-Request
+        String scanLocation = "WAREHOUSE_A";
+        ScanRequest scanRequest = new ScanRequest();
+        scanRequest.setShipmentId(shipmentId);
+        scanRequest.setLocation(scanLocation);
+        String requestBody = objectMapper.writeValueAsString(scanRequest);
 
-        // Act (via controller)
         mockMvc.perform(post("/api/v1/scans")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isOk());
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(content().string(containsString("Shipment successfully scanned at " + scanLocation)));
+        log.info("Scan request sent and 201 Created received.");
 
-        // Assert: Verify internal state changed and Kafka event was sent
-        // Verify internal state (optional, but good for in-memory service)
-        Optional<ShipmentEntity> updatedShipmentOpt = ((ScanServiceImpl) scanService).findById("SHIP-123");
-        assertTrue(updatedShipmentOpt.isPresent());
-        assertThat(updatedShipmentOpt.get().getLastLocation()).isEqualTo("WAREHOUSE_A");
-        assertThat(updatedShipmentOpt.get().getStatus()).isEqualTo(ShipmentStatus.IN_TRANSIT);
+        // Assert: In-Memory-Status
+        Optional<ShipmentEntity> updatedShipment = scanService.findById(shipmentId);
+        assertThat(updatedShipment).isPresent();
+        assertThat(updatedShipment.get().getLastLocation()).isEqualTo(scanLocation);
+        assertThat(updatedShipment.get().getStatus()).isEqualTo(ShipmentStatus.IN_TRANSIT);
+        assertThat(updatedShipment.get().getLastScannedAt()).isNotNull();
 
+        // Assert: Kafka Event publiziert
+        ConsumerRecords<String, ShipmentScannedEvent> records = KafkaTestUtils.getRecords(scannedEventConsumer, Duration.ofSeconds(10));
+        assertThat(records.count()).isEqualTo(1);
+        ShipmentScannedEvent publishedEvent = records.iterator().next().value();
 
-        // Verify Kafka event
-        ConsumerRecord<String, ShipmentScannedEvent> received = null;
-        long timeout = System.currentTimeMillis() + 10_000;
-        while (System.currentTimeMillis() < timeout) {
-            var records = kafkaConsumerScanned.poll(Duration.ofMillis(500));
-            if (!records.isEmpty()) {
-                received = records.iterator().next();
-                break;
-            }
-        }
-        assertThat(received).isNotNull();
-        assertThat(received.value().getShipmentId()).isEqualTo("SHIP-123");
-        assertThat(received.value().getLocation()).isEqualTo("WAREHOUSE_A");
-        assertThat(received.value().getDestination()).isEqualTo("Berlin"); // Destination comes from the in-memory entity
+        assertThat(publishedEvent.getShipmentId()).isEqualTo(shipmentId);
+        assertThat(publishedEvent.getLocation()).isEqualTo(scanLocation);
+        assertThat(publishedEvent.getScannedAt()).isNotNull();
+        assertThat(publishedEvent.getDestination()).isEqualTo(destination);
+        assertThat(publishedEvent.getCorrelationId()).isNotNull().isNotBlank();
+        log.info("ShipmentScannedEvent published to Kafka and verified: {}", publishedEvent);
     }
 
     @Test
-    void scanShipment_nonExistingShipment_returnsFailure() throws Exception {
-        // Arrange (no existing shipment in the service's in-memory map)
-        String requestJson = """
-            {
-                "shipmentId": "NON_EXISTENT",
-                "location": "Warehouse B"
-            }
-        """;
+    void scanShipment_nonExistentShipment_returnsBadRequest() throws Exception {
+        String shipmentId = "NON_EXISTENT_SHIPMENT";
+        String scanLocation = "WAREHOUSE_B";
+        ScanRequest scanRequest = new ScanRequest();
+        scanRequest.setShipmentId(shipmentId);
+        scanRequest.setLocation(scanLocation);
+        String requestBody = objectMapper.writeValueAsString(scanRequest);
 
-        // Act (via controller)
         mockMvc.perform(post("/api/v1/scans")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
+                        .content(requestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Shipment not found")); // Verify the error message
+                .andExpect(content().string(containsString("Shipment with ID " + shipmentId + " not found.")));
+        log.info("Scan request for non-existent shipment returned 400 Bad Request as expected.");
     }
 
     @Test
-    void scanShipment_nullShipmentId_returnsBadRequest() throws Exception {
-        String requestJson = """
-            {
-                "shipmentId": null,
-                "location": "Location C"
-            }
-        """;
+    void scanShipment_invalidRequest_returnsBadRequest() throws Exception {
+        // Missing shipmentId
+        String invalidRequestBody = "{\"location\": \"WAREHOUSE_C\"}";
 
         mockMvc.perform(post("/api/v1/scans")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
+                        .content(invalidRequestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Shipment ID cannot be null")); // Verify the error message
-    }
+                .andExpect(content().string(containsString("Shipment ID cannot be null")));
+        log.info("Scan request with invalid body returned 400 Bad Request as expected (missing shipmentId).");
 
-    @Test
-    void scanShipment_emptyLocation_returnsBadRequest() throws Exception {
-        String requestJson = """
-            {
-                "shipmentId": "SHIP456",
-                "location": ""
-            }
-        """;
-
+        // Missing location
+        String invalidRequestBody2 = "{\"shipmentId\": \"SHIP-456\"}";
         mockMvc.perform(post("/api/v1/scans")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
+                        .content(invalidRequestBody2))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Location cannot be empty")); // Verify the error message
+                .andExpect(content().string(containsString("Location cannot be null")));
+        log.info("Scan request with invalid body returned 400 Bad Request as expected (missing location).");
     }
 }

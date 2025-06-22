@@ -43,6 +43,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Optional<DeliveryResponse> getShipmentById(String shipmentId) {
         if (shipmentId == null || shipmentId.isBlank()) {
+            // Log this as a warning if it's a common occurrence in tests, otherwise error
+            logger.warn("Attempted to get shipment by null or empty shipmentId.");
             throw new IllegalArgumentException("shipmentId must not be null or empty");
         }
         // Retrieve from in-memory storage
@@ -103,7 +105,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Optional<ShipmentEntity> findShipmentEntityById(String shipmentId) {
-        // Retrieve from in-memory storage (used by other components like listeners)
+        if (shipmentId == null || shipmentId.isBlank()) {
+            return Optional.empty(); // Defensive: Null/leer => leer zurück
+        }
         return Optional.ofNullable(inMemoryStorage.get(shipmentId));
     }
 
@@ -111,11 +115,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     // New public method for listeners to update/add shipment entities
     public void updateShipmentState(ShipmentEntity shipment) {
         if (shipment == null || shipment.getShipmentId() == null || shipment.getShipmentId().isBlank()) {
-            logger.warn("Attempted to update shipment state with null or invalid shipment entity/ID.");
-            return;
+            logger.warn("Attempted to update shipment state with null or invalid shipment entity/ID. Skipping update.");
+            return; // Important: ensure this return prevents putting null/invalid keys
         }
         inMemoryStorage.put(shipment.getShipmentId(), shipment);
-        logger.debug("Shipment {} state updated in in-memory storage.", shipment.getShipmentId());
+        logger.debug("Shipment {} state updated in in-memory storage of DeliveryService.", shipment.getShipmentId());
     }
 
 

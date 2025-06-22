@@ -1,6 +1,7 @@
 com\luckypets\logistics\deliveryservice\service\DeliveryService.class
 com\luckypets\logistics\deliveryservice\DeliveryServiceApplication.class
 com\luckypets\logistics\deliveryservice\model\DeliveryResponse.class
+com\luckypets\logistics\deliveryservice\config\KafkaConfig.class
 com\luckypets\logistics\deliveryservice\exception\ShipmentNotFoundException.class
 com\luckypets\logistics\deliveryservice\model\DeliveryRequest.class
 com\luckypets\logistics\deliveryservice\controller\DeliveryController.class

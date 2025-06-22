@@ -3,6 +3,7 @@ com\luckypets\logistics\notificationviewservice\service\NotificationServiceImpl.
 com\luckypets\logistics\notificationviewservice\kafka\NotificationSentEventProducer.class
 com\luckypets\logistics\notificationviewservice\NotificationViewServiceApplication.class
 com\luckypets\logistics\notificationviewservice\controller\NotificationController.class
+com\luckypets\logistics\notificationviewservice\controller\DebugController.class
 com\luckypets\logistics\notificationviewservice\model\Notification.class
 com\luckypets\logistics\notificationviewservice\listener\ShipmentEventListener.class
 com\luckypets\logistics\notificationviewservice\config\ErrorHandlingConfig$CustomDeadLetterHandler.class

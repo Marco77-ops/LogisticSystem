@@ -1,6 +1,7 @@
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\config\KafkaConsumerConfig.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\DeliveryServiceApplication.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\service\DeliveryService.java
+C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\config\KafkaConfig.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\service\DeliveryServiceImpl.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\model\DeliveryResponse.java
 C:\Users\Marco Kaul\LogisticSystem\deliveryservice\src\main\java\com\luckypets\logistics\deliveryservice\model\ShipmentEntity.java

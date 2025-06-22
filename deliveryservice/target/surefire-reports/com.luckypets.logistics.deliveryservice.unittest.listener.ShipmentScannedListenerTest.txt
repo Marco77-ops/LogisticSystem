@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.luckypets.logistics.deliveryservice.unittest.listener.ShipmentScannedListenerTest
 -------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.275 s -- in com.luckypets.logistics.deliveryservice.unittest.listener.ShipmentScannedListenerTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.346 s -- in com.luckypets.logistics.deliveryservice.unittest.listener.ShipmentScannedListenerTest

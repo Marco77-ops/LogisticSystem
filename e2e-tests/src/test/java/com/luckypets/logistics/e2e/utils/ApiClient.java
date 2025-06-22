@@ -116,6 +116,14 @@ public class ApiClient {
                 .post(getScanServiceUrl() + "/api/v1/scans");
     }
 
+    public Response getScanServiceShipmentStatus(String shipmentId) {
+        return given()
+                .when()
+                .get(getScanServiceUrl() + "/api/v1/scans/" + shipmentId)
+                .then()
+                .extract().response(); // Do not assert status here; the calling test will do so.
+    }
+
     public Response scanShipmentRaw(String json) {
         return given()
                 .contentType("application/json")

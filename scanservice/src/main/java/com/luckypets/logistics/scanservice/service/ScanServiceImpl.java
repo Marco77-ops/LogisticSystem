@@ -1,9 +1,9 @@
 package com.luckypets.logistics.scanservice.service;
 
 import com.luckypets.logistics.scanservice.model.ScanResult;
-import com.luckypets.logistics.scanservice.model.ShipmentEntity; // Import local ShipmentEntity
+import com.luckypets.logistics.scanservice.model.ShipmentEntity;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
-import com.luckypets.logistics.shared.model.ShipmentStatus; // Import shared ShipmentStatus
+import com.luckypets.logistics.shared.model.ShipmentStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -34,7 +34,10 @@ public class ScanServiceImpl implements ScanService {
         if (shipmentId == null) {
             throw new IllegalArgumentException("Shipment ID cannot be null");
         }
-        if (location == null || location.trim().isEmpty()) {
+        if (location == null) {
+            throw new IllegalArgumentException("Location cannot be null");
+        }
+        if (location.trim().isEmpty()) {
             throw new IllegalArgumentException("Location cannot be empty");
         }
 
@@ -42,7 +45,7 @@ public class ScanServiceImpl implements ScanService {
 
         if (optionalShipment.isEmpty()) {
             logger.warn("Shipment not found: {}", shipmentId);
-            return ScanResult.failure("Shipment not found");
+            return ScanResult.failure("Shipment with ID " + shipmentId + " not found.");
         }
 
         ShipmentEntity shipment = optionalShipment.get();
@@ -52,7 +55,7 @@ public class ScanServiceImpl implements ScanService {
         shipment.setLastScannedAt(LocalDateTime.now());
         // Update status if it's currently not DELIVERED
         if (shipment.getStatus() != ShipmentStatus.DELIVERED) {
-            shipment.setStatus(ShipmentStatus.IN_TRANSIT); // Shipment is now in transit
+            shipment.setStatus(ShipmentStatus.IN_TRANSIT);
         }
 
         // Update in-memory storage
@@ -63,34 +66,22 @@ public class ScanServiceImpl implements ScanService {
                 shipment.getShipmentId(),
                 location,
                 LocalDateTime.now(),
-                shipment.getDestination(), // Destination from the in-memory shipment
+                shipment.getDestination(),
                 UUID.randomUUID().toString()
         );
         kafkaTemplate.send(TOPIC_SHIPMENT_SCANNED, event.getShipmentId(), event);
 
-        logger.info("Shipment scanned successfully: {} at {}\", shipmentId, location");
+        logger.info("Shipment scanned successfully: {} at {}", shipmentId, location);
         return ScanResult.success(shipmentId);
     }
 
-    /**
-     * Helper method to add a shipment to the in-memory store for testing purposes.
-     * This simulates a shipment being created and made available for scanning.
-     */
+    // For tests: add shipment directly
     public void addShipmentForTest(ShipmentEntity shipment) {
         inMemoryStorage.put(shipment.getShipmentId(), shipment);
     }
-
-    /**
-     * Helper method to clear the in-memory storage for test isolation.
-     */
     public void clearInMemoryStorageForTests() {
         inMemoryStorage.clear();
     }
-
-    /**
-     * Helper method to find a shipment by its ID in the in-memory store for testing purposes.
-     * This allows tests to verify the state of the in-memory entity directly.
-     */
     public Optional<ShipmentEntity> findById(String shipmentId) {
         return Optional.ofNullable(inMemoryStorage.get(shipmentId));
     }
