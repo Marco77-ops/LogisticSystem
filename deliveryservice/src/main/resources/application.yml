@@ -1,10 +1,8 @@
+# deliveryservice/src/main/resources/application.yml
+# Kopiere den ScanService Ansatz
+
 server:
   port: 8083
-
-kafka:
-  topic:
-    delivered: shipment-delivered
-    scanned: shipment-scanned
 
 spring:
   application:
@@ -14,14 +12,13 @@ spring:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
     consumer:
-      group-id: delivery-service
+      group-id: delivery-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        spring.json.value.default.type: com.luckypets.logistics.shared.events.ShipmentScannedEvent   # <-- NEU!
-        spring.json.add.type.headers: true    # <-- NEU!
+        spring.json.add.type.headers: true     # <-- WICHTIG!
         session.timeout.ms: 30000
         heartbeat.interval.ms: 10000
         max.poll.records: 500
@@ -33,7 +30,7 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        spring.json.add.type.headers: true
+        spring.json.add.type.headers: true     # <-- WICHTIG!
         acks: all
         retries: 3
         batch.size: 16384
@@ -41,6 +38,7 @@ spring:
         buffer.memory: 33554432
         enable.idempotence: true
 
+    # 🔥 DAS IST DER SCHLÜSSEL - genau wie im ScanService!
     listener:
       ack-mode: manual_immediate
 
@@ -48,20 +46,21 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: always
-  health:
-    kafka:
-      enabled: true
 
 logging:
   level:
     com.luckypets.logistics: INFO
     org.springframework.kafka: INFO
-    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
-    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_BIND_LOG_LEVEL:WARN}
+
+# Kafka Topics Configuration
+kafka:
+  topic:
+    scanned: shipment-scanned
+    delivered: shipment-delivered
 
 ---
 spring:
@@ -71,11 +70,6 @@ spring:
 
   kafka:
     bootstrap-servers: kafka:9092
-
-kafka:
-  topic:
-    delivered: shipment-delivered
-    scanned: shipment-scanned
 
 logging:
   level:

@@ -1,80 +1,78 @@
+# analyticservice/src/main/resources/application.yml
+
 server:
   port: 8084
 
 spring:
   application:
-    name: analytic-service
+    name: analytics-service
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    streams:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+      application-id: analytics-service-v1
+      properties:
+        processing.guarantee: exactly_once_v2
+        commit.interval.ms: 10000
+        cache.max.bytes.buffering: 10485760
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
+        default.timestamp.extractor: com.luckypets.logistics.analyticservice.timestamp.DeliveredAtTimestampExtractor
+
     consumer:
-      group-id: analytic-service
+      group-id: analytics-consumer-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        session.timeout.ms: 30000
-        heartbeat.interval.ms: 10000
-        max.poll.records: 500
-        max.poll.interval.ms: 300000
-        enable.auto.commit: false
+        spring.json.add.type.headers: true
 
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        acks: all
-        retries: 3
-        batch.size: 16384
-        linger.ms: 5
-        buffer.memory: 33554432
-        enable.idempotence: true
-
-    streams:
-      application-id: analytic-service
-      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-      default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-      default-value-serde: org.springframework.kafka.support.serializer.JsonSerde
-      properties:
-        spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        spring.json.value.default.type: com.luckypets.logistics.shared.events.ShipmentDeliveredEvent
-        processing.guarantee: exactly_once_v2
-        commit.interval.ms: 10000
-        cache.max.bytes.buffering: 0
-        default.timestamp.extractor: com.luckypets.logistics.analyticservice.timestamp.DeliveredAtTimestampExtractor
-        producer.transaction.timeout.ms: 15000
-
-# Custom kafka topic configuration
+# Kafka Topics
 kafka:
   topic:
-    delivered: ${KAFKA_TOPIC_DELIVERED:shipment-delivered}
-  streams:
-    state-store-name: deliveries-per-location
-    window:
-      size-minutes: 60
-      grace-period-minutes: 5
+    delivered: shipment-delivered
+    delivery-analytics: delivery-analytics
 
+  streams:
+    state-store-name: delivery-count-store
+    window:
+      size-minutes: 60  # 1 Stunde Fenster
+      grace-period-minutes: 5  # 5 Minuten Grace Period
+    window-size-hours: 1
+    max-results: 1000
+    state-store:
+      retention-days: 7
+
+# Management Endpoints
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,kafka-streams
   endpoint:
     health:
       show-details: always
-  health:
-    kafka:
-      enabled: true
+    kafka-streams:
+      cache:
+        time-to-live: 10s
 
+# Logging
 logging:
   level:
     com.luckypets.logistics: INFO
-    org.apache.kafka: INFO
     org.apache.kafka.streams: INFO
+    org.springframework.kafka: INFO
+    root: INFO
+
+# App Configuration
+app:
+  default-timezone: Europe/Berlin
 
 ---
+# Docker Profile
 spring:
   config:
     activate:
@@ -84,11 +82,6 @@ spring:
     bootstrap-servers: kafka:9092
     streams:
       bootstrap-servers: kafka:9092
-
-# Custom kafka topic configuration for docker profile
-kafka:
-  topic:
-    delivered: shipment-delivered
 
 logging:
   level:
