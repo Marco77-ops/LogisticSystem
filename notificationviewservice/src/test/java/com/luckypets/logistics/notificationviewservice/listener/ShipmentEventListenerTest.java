@@ -1,5 +1,7 @@
 package com.luckypets.logistics.notificationviewservice.listener;
 
+import com.luckypets.logistics.notificationviewservice.model.Notification;
+import com.luckypets.logistics.notificationviewservice.model.NotificationType;
 import com.luckypets.logistics.notificationviewservice.service.NotificationService;
 import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
@@ -100,6 +102,11 @@ class ShipmentEventListenerTest {
         ShipmentCreatedEvent event = new ShipmentCreatedEvent(
                 "SHIP-123", "Berlin", LocalDateTime.now(), UUID.randomUUID().toString());
 
+        // FIXED: Mock returns a valid Notification object instead of null
+        Notification savedNotification = new Notification("SHIP-123", "Test message", NotificationType.SHIPMENT_CREATED);
+        when(notificationService.save(any())).thenReturn(savedNotification);
+        when(notificationService.getNotificationCount()).thenReturn(1L);
+
         // When
         listener.handleShipmentCreated(event, "topic", 0, 0L, acknowledgment);
 
@@ -108,13 +115,17 @@ class ShipmentEventListenerTest {
         verify(acknowledgment).acknowledge();
     }
 
-    // Similar tests for ShipmentScannedEvent
     @Test
     @DisplayName("Should handle ShipmentScannedEvent correctly")
     void shouldHandleShipmentScannedEventCorrectly() {
         // Given
         ShipmentScannedEvent event = new ShipmentScannedEvent(
                 "SHIP-456", "Frankfurt", LocalDateTime.now(), "Berlin", UUID.randomUUID().toString());
+
+        // FIXED: Mock returns a valid Notification object
+        Notification savedNotification = new Notification("SHIP-456", "Test message", NotificationType.SHIPMENT_SCANNED);
+        when(notificationService.save(any())).thenReturn(savedNotification);
+        when(notificationService.getNotificationCount()).thenReturn(1L);
 
         // When
         listener.handleShipmentScanned(event, "topic", 0, 0L, acknowledgment);
@@ -124,7 +135,6 @@ class ShipmentEventListenerTest {
         verify(acknowledgment).acknowledge();
     }
 
-    // Similar tests for ShipmentDeliveredEvent
     @Test
     @DisplayName("Should handle ShipmentDeliveredEvent correctly")
     void shouldHandleShipmentDeliveredEventCorrectly() {
@@ -132,11 +142,82 @@ class ShipmentEventListenerTest {
         ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
                 "SHIP-789", "Munich", "Munich", LocalDateTime.now(), UUID.randomUUID().toString());
 
+        // FIXED: Mock returns a valid Notification object instead of null
+        Notification savedNotification = new Notification("SHIP-789", "Test message", NotificationType.SHIPMENT_DELIVERED);
+        when(notificationService.save(any())).thenReturn(savedNotification);
+        when(notificationService.getNotificationCount()).thenReturn(1L);
+
         // When
         listener.handleShipmentDelivered(event, "topic", 0, 0L, acknowledgment);
 
         // Then
         verify(notificationService).save(any());
         verify(acknowledgment).acknowledge();
+    }
+
+    // Additional tests for null/empty shipmentId in other events
+
+    @Test
+    @DisplayName("Should acknowledge when shipmentId is null in ShipmentScannedEvent")
+    void shouldAcknowledgeWhenShipmentIdIsNullInShipmentScannedEvent() {
+        // Given
+        ShipmentScannedEvent event = new ShipmentScannedEvent(
+                null, "Frankfurt", LocalDateTime.now(), "Berlin", UUID.randomUUID().toString());
+
+        // When
+        listener.handleShipmentScanned(event, "topic", 0, 0L, acknowledgment);
+
+        // Then
+        verify(acknowledgment).acknowledge();
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    @DisplayName("Should acknowledge when shipmentId is null in ShipmentDeliveredEvent")
+    void shouldAcknowledgeWhenShipmentIdIsNullInShipmentDeliveredEvent() {
+        // Given
+        ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
+                null, "Munich", "Munich", LocalDateTime.now(), UUID.randomUUID().toString());
+
+        // When
+        listener.handleShipmentDelivered(event, "topic", 0, 0L, acknowledgment);
+
+        // Then
+        verify(acknowledgment).acknowledge();
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when service fails for ShipmentScannedEvent")
+    void shouldThrowExceptionWhenServiceFailsForShipmentScannedEvent() {
+        // Given
+        ShipmentScannedEvent event = new ShipmentScannedEvent(
+                "SHIP-456", "Frankfurt", LocalDateTime.now(), "Berlin", UUID.randomUUID().toString());
+
+        when(notificationService.save(any())).thenThrow(new RuntimeException("Service error"));
+
+        // When & Then
+        assertThrows(RuntimeException.class, () ->
+                listener.handleShipmentScanned(event, "topic", 0, 0L, acknowledgment));
+
+        verify(notificationService).save(any());
+        verifyNoInteractions(acknowledgment);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when service fails for ShipmentDeliveredEvent")
+    void shouldThrowExceptionWhenServiceFailsForShipmentDeliveredEvent() {
+        // Given
+        ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
+                "SHIP-789", "Munich", "Munich", LocalDateTime.now(), UUID.randomUUID().toString());
+
+        when(notificationService.save(any())).thenThrow(new RuntimeException("Service error"));
+
+        // When & Then
+        assertThrows(RuntimeException.class, () ->
+                listener.handleShipmentDelivered(event, "topic", 0, 0L, acknowledgment));
+
+        verify(notificationService).save(any());
+        verifyNoInteractions(acknowledgment);
     }
 }

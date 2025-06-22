@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Configuration for error handling in Kafka consumers
- * Implements dead letter queue pattern for failed message processing
+ * Enhanced configuration for error handling in Kafka consumers
+ * Implements dead letter queue pattern with comprehensive logging
  */
 @Configuration
 public class ErrorHandlingConfig {
@@ -44,6 +44,8 @@ public class ErrorHandlingConfig {
         configProps.put(ProducerConfig.ACKS_CONFIG, "all");
         configProps.put(ProducerConfig.RETRIES_CONFIG, 3);
         configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+
+        logger.info("🔧 Configured dead letter producer with bootstrap servers: {}", bootstrapServers);
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
@@ -56,24 +58,27 @@ public class ErrorHandlingConfig {
     }
 
     /**
-     * Dead letter publishing recoverer - sends failed messages to DLT (Dead Letter Topic)
-     * Failed messages from 'original-topic' will be sent to 'original-topic.DLT'
+     * Enhanced dead letter publishing recoverer with detailed logging
      */
     @Bean
     public DeadLetterPublishingRecoverer deadLetterPublishingRecoverer() {
         return new DeadLetterPublishingRecoverer(deadLetterKafkaTemplate(),
                 (consumerRecord, exception) -> {
-                    // Log the failed message details
-                    logger.error("Message processing failed for topic: {}, partition: {}, offset: {}, key: {}, exception: {}",
-                            consumerRecord.topic(),
-                            consumerRecord.partition(),
-                            consumerRecord.offset(),
-                            consumerRecord.key(),
-                            exception.getMessage());
+                    // Enhanced logging for failed message details
+                    logger.error("🚨 MESSAGE PROCESSING FAILED!");
+                    logger.error("📍 Topic: {}", consumerRecord.topic());
+                    logger.error("📍 Partition: {}", consumerRecord.partition());
+                    logger.error("📍 Offset: {}", consumerRecord.offset());
+                    logger.error("📍 Key: {}", consumerRecord.key());
+                    logger.error("📍 Value: {}", consumerRecord.value());
+                    logger.error("📍 Headers: {}", consumerRecord.headers());
+                    logger.error("❌ Exception: {}", exception.getClass().getSimpleName());
+                    logger.error("❌ Message: {}", exception.getMessage());
+                    logger.error("❌ Stack trace:", exception);
 
                     // Custom logic to determine dead letter topic name
                     String deadLetterTopic = consumerRecord.topic() + ".DLT";
-                    logger.info("Sending failed message to dead letter topic: {}", deadLetterTopic);
+                    logger.error("💀 Sending failed message to dead letter topic: {}", deadLetterTopic);
 
                     // Return TopicPartition with the same partition as the original record
                     return new TopicPartition(deadLetterTopic, consumerRecord.partition());
@@ -81,61 +86,78 @@ public class ErrorHandlingConfig {
     }
 
     /**
-     * Error handler with retry logic and dead letter publishing
-     * - Retries failed messages 3 times with 1 second intervals
-     * - After all retries are exhausted, sends message to dead letter topic
+     * Enhanced error handler with comprehensive retry logic and logging
      */
     @Bean
     public DefaultErrorHandler errorHandler() {
-        // Configure retry policy: 3 retries with 1 second delay between attempts
-        FixedBackOff fixedBackOff = new FixedBackOff(1000L, 3);
+        // Configure retry policy: 3 retries with 2 second delay between attempts
+        FixedBackOff fixedBackOff = new FixedBackOff(2000L, 3);
 
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(
                 deadLetterPublishingRecoverer(),
                 fixedBackOff);
 
-        // Configure which exceptions should trigger retries
+        // Configure which exceptions should trigger retries vs immediate DLQ
         errorHandler.addNotRetryableExceptions(
                 IllegalArgumentException.class,
-                NullPointerException.class
+                NullPointerException.class,
+                ClassCastException.class
         );
 
-        // Add logging for retry attempts
+        // Enhanced logging for retry attempts
         errorHandler.setRetryListeners((consumerRecord, exception, deliveryAttempt) -> {
-            logger.warn("Retry attempt {} for message from topic: {}, partition: {}, offset: {}, exception: {}",
-                    deliveryAttempt,
-                    consumerRecord.topic(),
-                    consumerRecord.partition(),
-                    consumerRecord.offset(),
-                    exception.getMessage());
+            logger.warn("🔄 RETRY ATTEMPT {} for failed message", deliveryAttempt);
+            logger.warn("📍 Topic: {}, Partition: {}, Offset: {}",
+                    consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
+            logger.warn("❌ Exception: {} - {}", exception.getClass().getSimpleName(), exception.getMessage());
+
+            if (deliveryAttempt >= 3) {
+                logger.error("💀 Max retries exceeded - message will be sent to DLT");
+            }
         });
+
+        // Add logging when error handler is invoked
+        logger.info("🔧 Configured Kafka error handler with 3 retries and 2s delay");
 
         return errorHandler;
     }
 
     /**
-     * Custom dead letter queue handler for specific business logic
-     * This can be used to implement custom recovery strategies
+     * Enhanced custom dead letter queue handler for specific business logic
      */
     public static class CustomDeadLetterHandler {
 
         private static final Logger log = LoggerFactory.getLogger(CustomDeadLetterHandler.class);
 
         public static void handleDeadLetter(ConsumerRecord<String, Object> record, Exception exception) {
-            log.error("Processing dead letter for record: topic={}, partition={}, offset={}, key={}, value={}, exception={}",
-                    record.topic(),
-                    record.partition(),
-                    record.offset(),
-                    record.key(),
-                    record.value(),
-                    exception.getMessage());
+            log.error("💀 DEAD LETTER PROCESSING");
+            log.error("📍 Record: topic={}, partition={}, offset={}, key={}",
+                    record.topic(), record.partition(), record.offset(), record.key());
+            log.error("📄 Value: {}", record.value());
+            log.error("❌ Exception: {} - {}", exception.getClass().getSimpleName(), exception.getMessage());
+            log.error("🔧 Headers: {}", record.headers());
 
             // TODO: Implement custom dead letter handling logic
             // Examples:
-            // - Send alert to monitoring system
+            // - Send alert to monitoring system (e.g., Slack, PagerDuty)
             // - Store in database for manual review
             // - Send notification to operations team
             // - Implement custom retry logic with exponential backoff
+            // - Create incident ticket in JIRA/ServiceNow
+
+            log.error("⚠️ Dead letter message requires manual intervention");
         }
+    }
+
+    /**
+     * Debugging method to log current error handler configuration
+     */
+    public void logErrorHandlerConfig() {
+        logger.info("🔧 Error Handler Configuration:");
+        logger.info("   - Bootstrap Servers: {}", bootstrapServers);
+        logger.info("   - Retry Attempts: 3");
+        logger.info("   - Retry Delay: 2000ms");
+        logger.info("   - Non-retryable Exceptions: IllegalArgumentException, NullPointerException, ClassCastException");
+        logger.info("   - Dead Letter Topic Pattern: [original-topic].DLT");
     }
 }

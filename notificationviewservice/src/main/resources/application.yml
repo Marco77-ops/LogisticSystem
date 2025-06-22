@@ -11,15 +11,8 @@ spring:
     consumer:
       group-id: notification-view-service
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       enable-auto-commit: false
-      properties:
-        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
-        spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        spring.json.use.type.headers: false
-        spring.json.ignore.type.precedence: true
-        spring.json.value.default.type: java.lang.Object
+      # Remove complex properties - let the custom ConsumerConfig handle this
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -29,16 +22,17 @@ spring:
 
     listener:
       ack-mode: manual_immediate
+      auto-startup: true
 
+    # Topic configuration - these are used by the listeners
     topic:
       shipment-created: shipment-created
       shipment-scanned: shipment-scanned
       shipment-delivered: shipment-delivered
       notification-sent: notification-sent
+
   retry:
     enabled: true
-
-# Retry configuration for event publishing
 
 management:
   endpoints:
@@ -49,13 +43,17 @@ management:
     health:
       show-details: always
 
+# Enhanced logging for debugging
 logging:
   level:
-    com.luckypets.logistics: INFO
+    com.luckypets.logistics.notificationviewservice: DEBUG
     org.springframework.kafka: INFO
     org.apache.kafka: WARN
-    # Enable debug logging for troubleshooting
-    com.luckypets.logistics.notificationviewservice: DEBUG
+    # Specific debugging for listeners
+    com.luckypets.logistics.notificationviewservice.listener: DEBUG
+    com.luckypets.logistics.notificationviewservice.service: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 ---
 
@@ -70,7 +68,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.luckypets.logistics: DEBUG
+    com.luckypets.logistics.notificationviewservice: DEBUG
 
 ---
 
@@ -84,5 +82,5 @@ spring:
 
 logging:
   level:
-    com.luckypets.logistics: DEBUG
+    com.luckypets.logistics.notificationviewservice: DEBUG
     org.springframework.kafka: DEBUG

@@ -41,6 +41,7 @@ class NotificationServiceImplTest {
         // Given
         Notification notification = new Notification("SHIP-123", "Test message", NotificationType.SHIPMENT_CREATED);
         when(repository.save(any(Notification.class))).thenReturn(notification);
+        when(repository.count()).thenReturn(1L);
 
         // When
         Notification result = service.save(notification);
@@ -306,14 +307,14 @@ class NotificationServiceImplTest {
     @Test
     @DisplayName("Should delete all notifications")
     void shouldDeleteAllNotifications() {
-        // Given
-        when(repository.count()).thenReturn(5L);
+        // Given - FIXED: Allow multiple calls to count() for logging
+        when(repository.count()).thenReturn(5L).thenReturn(0L);
 
         // When
         service.deleteAll();
 
-        // Then
-        verify(repository).count();
+        // Then - FIXED: Verify count() called twice (before and after delete for logging)
+        verify(repository, times(2)).count();
         verify(repository).deleteAll();
     }
 
@@ -327,5 +328,74 @@ class NotificationServiceImplTest {
         assertThrows(RuntimeException.class, () -> service.deleteAll());
         verify(repository).count();
         verify(repository, never()).deleteAll();
+    }
+
+    // NEW TESTS for the added interface methods
+
+    @Test
+    @DisplayName("Should get notification count")
+    void shouldGetNotificationCount() {
+        // Given
+        when(repository.count()).thenReturn(42L);
+
+        // When
+        long count = service.getNotificationCount();
+
+        // Then
+        assertThat(count).isEqualTo(42L);
+        verify(repository).count();
+    }
+
+    @Test
+    @DisplayName("Should handle exception during getNotificationCount")
+    void shouldHandleExceptionDuringGetNotificationCount() {
+        // Given
+        when(repository.count()).thenThrow(new RuntimeException("Count error"));
+
+        // When & Then
+        assertThrows(RuntimeException.class, () -> service.getNotificationCount());
+        verify(repository).count();
+    }
+
+    @Test
+    @DisplayName("Should clear in-memory storage for tests")
+    void shouldClearInMemoryStorageForTests() {
+        // When
+        service.clearInMemoryStorageForTests();
+
+        // Then
+        verify(repository).clearInMemoryStorageForTests();
+    }
+
+    @Test
+    @DisplayName("Should log current state")
+    void shouldLogCurrentState() {
+        // Given
+        when(repository.count()).thenReturn(5L);
+        when(repository.findAll()).thenReturn(List.of(
+                new Notification("SHIP-1", "Message 1", NotificationType.SHIPMENT_CREATED),
+                new Notification("SHIP-2", "Message 2", NotificationType.SHIPMENT_DELIVERED)
+        ));
+
+        // When
+        service.logCurrentState();
+
+        // Then
+        verify(repository).count();
+        verify(repository).findAll();
+    }
+
+    @Test
+    @DisplayName("Should handle exception during logCurrentState")
+    void shouldHandleExceptionDuringLogCurrentState() {
+        // Given
+        when(repository.count()).thenThrow(new RuntimeException("Log error"));
+
+        // When
+        service.logCurrentState(); // Should not throw, just log error
+
+        // Then
+        verify(repository).count();
+        verify(repository, never()).findAll();
     }
 }

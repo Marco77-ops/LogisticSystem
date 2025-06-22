@@ -2,7 +2,7 @@ package com.luckypets.logistics.deliveryservice.unittest.listener;
 
 import com.luckypets.logistics.deliveryservice.listener.ShipmentScannedListener;
 import com.luckypets.logistics.deliveryservice.model.ShipmentEntity;
-import com.luckypets.logistics.deliveryservice.service.DeliveryServiceImpl; // Import the concrete service
+import com.luckypets.logistics.deliveryservice.service.DeliveryServiceImpl;
 import com.luckypets.logistics.shared.model.ShipmentStatus;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
@@ -11,12 +11,12 @@ import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-// Removed @ExtendWith(MockitoExtension.class) and @InjectMocks as we are manually instantiating
-// and managing the listener and its dependencies for in-memory state.
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito; // Import Mockito class for static mock method
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -30,18 +30,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("ShipmentScannedListener Unit Tests")
 class ShipmentScannedListenerTest {
 
-    // Removed @Mock private ShipmentRepository repository;
-    // Now we mock DeliveryServiceImpl
     @Mock
     private DeliveryServiceImpl deliveryService;
 
     @Mock
     private KafkaTemplate<String, ShipmentDeliveredEvent> kafkaTemplate;
 
-    // Manually instantiate listener in setUp
+    @Mock
+    private Acknowledgment acknowledgment;
+
     private ShipmentScannedListener listener;
 
     private ShipmentScannedEvent event;
@@ -52,14 +53,7 @@ class ShipmentScannedListenerTest {
 
     @BeforeEach
     void setUp() {
-        // Initialize mocks
-        deliveryService = Mockito.mock(DeliveryServiceImpl.class);
-        kafkaTemplate = Mockito.mock(KafkaTemplate.class);
-
-        // Manually instantiate the listener with the mocks
         listener = new ShipmentScannedListener(deliveryService, kafkaTemplate);
-
-        // Set the deliveredTopic using ReflectionTestUtils (since it's @Value injected)
         ReflectionTestUtils.setField(listener, "deliveredTopic", DELIVERED_TOPIC);
 
         event = new ShipmentScannedEvent(
@@ -77,30 +71,28 @@ class ShipmentScannedListenerTest {
         // Given
         ShipmentEntity existingShipment = new ShipmentEntity();
         existingShipment.setShipmentId(SHIPMENT_ID);
-        existingShipment.setStatus(ShipmentStatus.CREATED); // Start as CREATED
+        existingShipment.setStatus(ShipmentStatus.CREATED);
         existingShipment.setLastLocation("ORIGIN");
         existingShipment.setDestination(DESTINATION);
-        existingShipment.setCreatedAt(LocalDateTime.now().minusDays(2)); // Set a creation date
+        existingShipment.setCreatedAt(LocalDateTime.now().minusDays(2));
 
-        // Mock the behavior of deliveryService.findShipmentEntityById
         when(deliveryService.findShipmentEntityById(SHIPMENT_ID)).thenReturn(Optional.of(existingShipment));
 
         // When
-        listener.onShipmentScanned(event);
+        listener.onShipmentScanned(event, acknowledgment);
 
         // Then
-        // Verify that deliveryService.updateShipmentState was called
         ArgumentCaptor<ShipmentEntity> shipmentCaptor = ArgumentCaptor.forClass(ShipmentEntity.class);
         verify(deliveryService).updateShipmentState(shipmentCaptor.capture());
 
         ShipmentEntity updatedShipment = shipmentCaptor.getValue();
         assertEquals(SHIPMENT_ID, updatedShipment.getShipmentId());
         assertEquals(LOCATION, updatedShipment.getLastLocation());
-        assertEquals(ShipmentStatus.IN_TRANSIT, updatedShipment.getStatus()); // Should transition to IN_TRANSIT
+        assertEquals(ShipmentStatus.IN_TRANSIT, updatedShipment.getStatus());
         assertEquals(event.getScannedAt(), updatedShipment.getLastScannedAt());
 
-        // Verify no Kafka delivered event was sent (not at destination)
         verify(kafkaTemplate, never()).send(any(), any(), any());
+        verify(acknowledgment).acknowledge();
     }
 
     @Test
@@ -110,23 +102,22 @@ class ShipmentScannedListenerTest {
         when(deliveryService.findShipmentEntityById(SHIPMENT_ID)).thenReturn(Optional.empty());
 
         // When
-        listener.onShipmentScanned(event);
+        listener.onShipmentScanned(event, acknowledgment);
 
         // Then
-        // Verify that deliveryService.updateShipmentState was called with a new entity
         ArgumentCaptor<ShipmentEntity> shipmentCaptor = ArgumentCaptor.forClass(ShipmentEntity.class);
         verify(deliveryService).updateShipmentState(shipmentCaptor.capture());
 
         ShipmentEntity newShipment = shipmentCaptor.getValue();
         assertEquals(SHIPMENT_ID, newShipment.getShipmentId());
         assertEquals(LOCATION, newShipment.getLastLocation());
-        assertEquals(ShipmentStatus.IN_TRANSIT, newShipment.getStatus()); // New shipment also goes IN_TRANSIT
+        assertEquals(ShipmentStatus.IN_TRANSIT, newShipment.getStatus());
         assertEquals(DESTINATION, newShipment.getDestination());
-        assertNotNull(newShipment.getCreatedAt()); // CreatedAt should be set
-        assertNotNull(newShipment.getLastScannedAt()); // LastScannedAt should be set from event
+        assertNotNull(newShipment.getCreatedAt());
+        assertNotNull(newShipment.getLastScannedAt());
 
-        // Verify no Kafka delivered event was sent (not at destination)
         verify(kafkaTemplate, never()).send(any(), any(), any());
+        verify(acknowledgment).acknowledge();
     }
 
     @Test
@@ -135,22 +126,21 @@ class ShipmentScannedListenerTest {
         // Given
         ShipmentScannedEvent eventAtDestination = new ShipmentScannedEvent(
                 SHIPMENT_ID,
-                DESTINATION,                 // location is same as destination
-                LocalDateTime.now(),         // scannedAt
-                DESTINATION,                 // destination
-                UUID.randomUUID().toString() // correlationId
+                DESTINATION,
+                LocalDateTime.now(),
+                DESTINATION,
+                UUID.randomUUID().toString()
         );
 
         ShipmentEntity existingShipment = new ShipmentEntity();
         existingShipment.setShipmentId(SHIPMENT_ID);
-        existingShipment.setStatus(ShipmentStatus.IN_TRANSIT); // Can be IN_TRANSIT or CREATED
+        existingShipment.setStatus(ShipmentStatus.IN_TRANSIT);
         existingShipment.setLastLocation("WAREHOUSE_B");
         existingShipment.setDestination(DESTINATION);
         existingShipment.setCreatedAt(LocalDateTime.now().minusDays(2));
 
         when(deliveryService.findShipmentEntityById(SHIPMENT_ID)).thenReturn(Optional.of(existingShipment));
 
-        // Mock the KafkaTemplate.send to return a completed future with a SendResult
         RecordMetadata metadata = new RecordMetadata(
                 new TopicPartition(DELIVERED_TOPIC, 1),
                 42L, 0L, 0L, null, 0, 0
@@ -160,20 +150,18 @@ class ShipmentScannedListenerTest {
                 .thenReturn(CompletableFuture.completedFuture(sendResult));
 
         // When
-        listener.onShipmentScanned(eventAtDestination);
+        listener.onShipmentScanned(eventAtDestination, acknowledgment);
 
         // Then
-        // Verify that deliveryService.updateShipmentState was called
         ArgumentCaptor<ShipmentEntity> shipmentCaptor = ArgumentCaptor.forClass(ShipmentEntity.class);
         verify(deliveryService).updateShipmentState(shipmentCaptor.capture());
 
         ShipmentEntity updatedShipment = shipmentCaptor.getValue();
         assertEquals(SHIPMENT_ID, updatedShipment.getShipmentId());
         assertEquals(DESTINATION, updatedShipment.getLastLocation());
-        assertEquals(ShipmentStatus.DELIVERED, updatedShipment.getStatus()); // Should transition to DELIVERED
-        assertNotNull(updatedShipment.getDeliveredAt()); // DeliveredAt should be set
+        assertEquals(ShipmentStatus.DELIVERED, updatedShipment.getStatus());
+        assertNotNull(updatedShipment.getDeliveredAt());
 
-        // Verify Kafka delivered event was sent
         ArgumentCaptor<ShipmentDeliveredEvent> eventCaptor = ArgumentCaptor.forClass(ShipmentDeliveredEvent.class);
         verify(kafkaTemplate).send(eq(DELIVERED_TOPIC), eq(SHIPMENT_ID), eventCaptor.capture());
 
@@ -183,6 +171,8 @@ class ShipmentScannedListenerTest {
         assertEquals(eventAtDestination.getCorrelationId(), deliveredEvent.getCorrelationId());
         assertEquals(DESTINATION, deliveredEvent.getDestination());
         assertNotNull(deliveredEvent.getDeliveredAt());
+
+        verify(acknowledgment).acknowledge();
     }
 
     @Test
@@ -191,7 +181,7 @@ class ShipmentScannedListenerTest {
         // Given
         ShipmentScannedEvent eventAtDestination = new ShipmentScannedEvent(
                 SHIPMENT_ID,
-                DESTINATION, // location is same as destination
+                DESTINATION,
                 LocalDateTime.now(),
                 DESTINATION,
                 UUID.randomUUID().toString()
@@ -206,19 +196,17 @@ class ShipmentScannedListenerTest {
 
         when(deliveryService.findShipmentEntityById(SHIPMENT_ID)).thenReturn(Optional.of(existingShipment));
 
-        // Mock Kafka send with exception
         CompletableFuture<SendResult<String, ShipmentDeliveredEvent>> future = new CompletableFuture<>();
         future.completeExceptionally(new RuntimeException("Kafka send failed"));
         when(kafkaTemplate.send(eq(DELIVERED_TOPIC), eq(SHIPMENT_ID), any(ShipmentDeliveredEvent.class))).thenReturn(future);
 
         // When
-        listener.onShipmentScanned(eventAtDestination);
+        listener.onShipmentScanned(eventAtDestination, acknowledgment);
 
         // Then
-        // Verify the shipment was still updated in the service despite Kafka error
         verify(deliveryService).updateShipmentState(any(ShipmentEntity.class));
-        // Verify that the Kafka send method was indeed called (even if it threw an exception)
         verify(kafkaTemplate).send(eq(DELIVERED_TOPIC), eq(SHIPMENT_ID), any(ShipmentDeliveredEvent.class));
+        verify(acknowledgment).acknowledge();
     }
 
     @Test
@@ -227,9 +215,9 @@ class ShipmentScannedListenerTest {
         // Given
         ShipmentScannedEvent eventAtDestination = new ShipmentScannedEvent(
                 SHIPMENT_ID,
-                "berlin", // location (lowercase)
+                "berlin", // lowercase
                 LocalDateTime.now(),
-                "BERLIN", // destination (uppercase)
+                "BERLIN", // uppercase
                 UUID.randomUUID().toString()
         );
 
@@ -237,13 +225,11 @@ class ShipmentScannedListenerTest {
         existingShipment.setShipmentId(SHIPMENT_ID);
         existingShipment.setStatus(ShipmentStatus.IN_TRANSIT);
         existingShipment.setLastLocation("WAREHOUSE_B");
-        existingShipment.setDestination("Berlin"); // mixed case, to be matched case-insensitively
+        existingShipment.setDestination("Berlin"); // mixed case
         existingShipment.setCreatedAt(LocalDateTime.now().minusDays(2));
-
 
         when(deliveryService.findShipmentEntityById(SHIPMENT_ID)).thenReturn(Optional.of(existingShipment));
 
-        // Mock the KafkaTemplate.send to return a completed future with a SendResult
         RecordMetadata metadata = new RecordMetadata(
                 new TopicPartition(DELIVERED_TOPIC, 1),
                 42L, 0L, 0L, null, 0, 0
@@ -253,17 +239,16 @@ class ShipmentScannedListenerTest {
                 .thenReturn(CompletableFuture.completedFuture(sendResult));
 
         // When
-        listener.onShipmentScanned(eventAtDestination);
+        listener.onShipmentScanned(eventAtDestination, acknowledgment);
 
         // Then
-        // Verify the shipment was updated to DELIVERED status
         ArgumentCaptor<ShipmentEntity> shipmentCaptor = ArgumentCaptor.forClass(ShipmentEntity.class);
         verify(deliveryService).updateShipmentState(shipmentCaptor.capture());
         ShipmentEntity updatedShipment = shipmentCaptor.getValue();
         assertEquals(ShipmentStatus.DELIVERED, updatedShipment.getStatus());
 
-        // Verify Kafka delivered event was sent
         verify(kafkaTemplate).send(eq(DELIVERED_TOPIC), eq(SHIPMENT_ID), any(ShipmentDeliveredEvent.class));
+        verify(acknowledgment).acknowledge();
     }
 
     @Test
@@ -272,7 +257,7 @@ class ShipmentScannedListenerTest {
         // Given
         ShipmentScannedEvent eventAlreadyDelivered = new ShipmentScannedEvent(
                 SHIPMENT_ID,
-                "Somewhere Else", // New location after delivery
+                "Somewhere Else",
                 LocalDateTime.now(),
                 DESTINATION,
                 UUID.randomUUID().toString()
@@ -280,8 +265,8 @@ class ShipmentScannedListenerTest {
 
         ShipmentEntity existingDeliveredShipment = new ShipmentEntity();
         existingDeliveredShipment.setShipmentId(SHIPMENT_ID);
-        existingDeliveredShipment.setStatus(ShipmentStatus.DELIVERED); // Already delivered
-        existingDeliveredShipment.setLastLocation(DESTINATION); // Previous delivered location
+        existingDeliveredShipment.setStatus(ShipmentStatus.DELIVERED);
+        existingDeliveredShipment.setLastLocation(DESTINATION);
         existingDeliveredShipment.setDeliveredAt(LocalDateTime.now().minusHours(1));
         existingDeliveredShipment.setDestination(DESTINATION);
         existingDeliveredShipment.setCreatedAt(LocalDateTime.now().minusDays(5));
@@ -289,21 +274,19 @@ class ShipmentScannedListenerTest {
         when(deliveryService.findShipmentEntityById(SHIPMENT_ID)).thenReturn(Optional.of(existingDeliveredShipment));
 
         // When
-        listener.onShipmentScanned(eventAlreadyDelivered);
+        listener.onShipmentScanned(eventAlreadyDelivered, acknowledgment);
 
         // Then
-        // Verify that deliveryService.updateShipmentState was called
         ArgumentCaptor<ShipmentEntity> shipmentCaptor = ArgumentCaptor.forClass(ShipmentEntity.class);
         verify(deliveryService).updateShipmentState(shipmentCaptor.capture());
 
         ShipmentEntity updatedShipment = shipmentCaptor.getValue();
-        assertEquals(ShipmentStatus.DELIVERED, updatedShipment.getStatus()); // Status should remain DELIVERED
-        assertEquals("Somewhere Else", updatedShipment.getLastLocation()); // Location should still update
-        assertNotNull(updatedShipment.getLastScannedAt()); // Scan time should still update
+        assertEquals(ShipmentStatus.DELIVERED, updatedShipment.getStatus());
+        assertEquals("Somewhere Else", updatedShipment.getLastLocation());
+        assertNotNull(updatedShipment.getLastScannedAt());
 
-        // Since it was already delivered and this scan is not at destination (implicitly),
-        // no *new* ShipmentDeliveredEvent should be sent.
         verify(kafkaTemplate, never()).send(eq(DELIVERED_TOPIC), any(), any(ShipmentDeliveredEvent.class));
+        verify(acknowledgment).acknowledge();
     }
 
     @Test
@@ -336,7 +319,7 @@ class ShipmentScannedListenerTest {
                 .thenReturn(CompletableFuture.completedFuture(sendResult));
 
         // When
-        listener.onShipmentScanned(eventAtDestination);
+        listener.onShipmentScanned(eventAtDestination, acknowledgment);
 
         // Then
         ArgumentCaptor<ShipmentEntity> shipmentCaptor = ArgumentCaptor.forClass(ShipmentEntity.class);
@@ -345,5 +328,6 @@ class ShipmentScannedListenerTest {
 
         assertEquals(ShipmentStatus.DELIVERED, updatedShipment.getStatus());
         verify(kafkaTemplate).send(eq(DELIVERED_TOPIC), eq(SHIPMENT_ID), any(ShipmentDeliveredEvent.class));
+        verify(acknowledgment).acknowledge();
     }
 }

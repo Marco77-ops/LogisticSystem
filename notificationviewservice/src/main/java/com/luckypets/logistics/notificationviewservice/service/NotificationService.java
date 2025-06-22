@@ -52,4 +52,23 @@ public interface NotificationService {
      * Delete all stored notifications.
      */
     void deleteAll();
+
+    /**
+     * Get the total count of notifications.
+     *
+     * @return the count of notifications
+     */
+    long getNotificationCount();
+
+    /**
+     * Helper method for testing - clears the in-memory storage.
+     * Should only be used in test environments.
+     */
+    void clearInMemoryStorageForTests();
+
+    /**
+     * Debug method to log current state of the notification service.
+     * Useful for troubleshooting and monitoring.
+     */
+    void logCurrentState();
 }

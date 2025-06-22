@@ -23,9 +23,14 @@ public class ShipmentEventListener {
 
     public ShipmentEventListener(NotificationService service) {
         this.service = service;
+        logger.info("ShipmentEventListener initialized");
     }
 
-    @KafkaListener(topics = "shipment-created", groupId = "notification-view-service")
+    @KafkaListener(
+            topics = "${spring.kafka.topic.shipment-created:shipment-created}",
+            groupId = "${spring.kafka.consumer.group-id:notification-view-service}",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     public void handleShipmentCreated(
             @Payload ShipmentCreatedEvent event,
             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
@@ -33,23 +38,25 @@ public class ShipmentEventListener {
             @Header(KafkaHeaders.OFFSET) long offset,
             Acknowledgment acknowledgment) {
 
-        logger.info("Received shipment created event from topic: {}, partition: {}, offset: {}, event: {}",
-                topic, partition, offset, event);
+        logger.info("🎯 RECEIVED ShipmentCreatedEvent from topic: {}, partition: {}, offset: {}", topic, partition, offset);
+        logger.info("📦 Event details: {}", event);
 
         // Validation mit sofortigem Acknowledge bei Invalid Data
         if (event == null) {
-            logger.error("Received null event for shipment created");
-            acknowledgment.acknowledge(); // OK - Invalid Data soll nicht retried werden
+            logger.error("❌ Received null event for shipment created");
+            acknowledgment.acknowledge();
             return;
         }
 
         if (event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
-            logger.error("Received event with null or empty shipmentId: {}", event);
-            acknowledgment.acknowledge(); // OK - Invalid Data soll nicht retried werden
+            logger.error("❌ Received event with null or empty shipmentId: {}", event);
+            acknowledgment.acknowledge();
             return;
         }
 
         try {
+            logger.info("🔄 Processing ShipmentCreatedEvent for shipment: {}", event.getShipmentId());
+
             Notification notification = new Notification(
                     event.getShipmentId(),
                     String.format("Shipment %s has been created with destination %s",
@@ -57,18 +64,27 @@ public class ShipmentEventListener {
                     NotificationType.SHIPMENT_CREATED
             );
 
-            service.save(notification);
-            logger.info("Successfully saved notification: {}", notification);
-            acknowledgment.acknowledge(); // ✅ Nur bei Erfolg acknowledgen
+            Notification saved = service.save(notification);
+            logger.info("✅ Successfully saved notification: {}", saved.getId());
+
+            // Debug: Log current notification count
+            long totalCount = service.getNotificationCount();
+            logger.info("📊 Total notifications in system: {}", totalCount);
+
+            acknowledgment.acknowledge();
 
         } catch (Exception e) {
-            logger.error("Error processing shipment created event: {}", event, e);
-            // ✅ NICHT acknowledgen - lass den Error Handler das DLQ Pattern handhaben
+            logger.error("❌ Error processing shipment created event: {}", event, e);
+            // Nicht acknowledgen - lass den Error Handler das DLQ Pattern handhaben
             throw new RuntimeException("Failed to process shipment created event", e);
         }
     }
 
-    @KafkaListener(topics = "shipment-scanned", groupId = "notification-view-service")
+    @KafkaListener(
+            topics = "${spring.kafka.topic.shipment-scanned:shipment-scanned}",
+            groupId = "${spring.kafka.consumer.group-id:notification-view-service}",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     public void handleShipmentScanned(
             @Payload ShipmentScannedEvent event,
             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
@@ -76,22 +92,24 @@ public class ShipmentEventListener {
             @Header(KafkaHeaders.OFFSET) long offset,
             Acknowledgment acknowledgment) {
 
-        logger.info("Received shipment scanned event from topic: {}, partition: {}, offset: {}, event: {}",
-                topic, partition, offset, event);
+        logger.info("🎯 RECEIVED ShipmentScannedEvent from topic: {}, partition: {}, offset: {}", topic, partition, offset);
+        logger.info("📍 Event details: {}", event);
 
         if (event == null) {
-            logger.error("Received null event for shipment scanned");
+            logger.error("❌ Received null event for shipment scanned");
             acknowledgment.acknowledge();
             return;
         }
 
         if (event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
-            logger.error("Received event with null or empty shipmentId: {}", event);
+            logger.error("❌ Received event with null or empty shipmentId: {}", event);
             acknowledgment.acknowledge();
             return;
         }
 
         try {
+            logger.info("🔄 Processing ShipmentScannedEvent for shipment: {}", event.getShipmentId());
+
             Notification notification = new Notification(
                     event.getShipmentId(),
                     String.format("Shipment %s has been scanned at location %s",
@@ -99,17 +117,25 @@ public class ShipmentEventListener {
                     NotificationType.SHIPMENT_SCANNED
             );
 
-            service.save(notification);
-            logger.info("Successfully saved notification: {}", notification);
+            Notification saved = service.save(notification);
+            logger.info("✅ Successfully saved notification: {}", saved.getId());
+
+            long totalCount = service.getNotificationCount();
+            logger.info("📊 Total notifications in system: {}", totalCount);
+
             acknowledgment.acknowledge();
 
         } catch (Exception e) {
-            logger.error("Error processing shipment scanned event: {}", event, e);
+            logger.error("❌ Error processing shipment scanned event: {}", event, e);
             throw new RuntimeException("Failed to process shipment scanned event", e);
         }
     }
 
-    @KafkaListener(topics = "shipment-delivered", groupId = "notification-view-service")
+    @KafkaListener(
+            topics = "${spring.kafka.topic.shipment-delivered:shipment-delivered}",
+            groupId = "${spring.kafka.consumer.group-id:notification-view-service}",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     public void handleShipmentDelivered(
             @Payload ShipmentDeliveredEvent event,
             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
@@ -117,22 +143,24 @@ public class ShipmentEventListener {
             @Header(KafkaHeaders.OFFSET) long offset,
             Acknowledgment acknowledgment) {
 
-        logger.info("Received shipment delivered event from topic: {}, partition: {}, offset: {}, event: {}",
-                topic, partition, offset, event);
+        logger.info("🎯 RECEIVED ShipmentDeliveredEvent from topic: {}, partition: {}, offset: {}", topic, partition, offset);
+        logger.info("🚚 Event details: {}", event);
 
         if (event == null) {
-            logger.error("Received null event for shipment delivered");
+            logger.error("❌ Received null event for shipment delivered");
             acknowledgment.acknowledge();
             return;
         }
 
         if (event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
-            logger.error("Received event with null or empty shipmentId: {}", event);
+            logger.error("❌ Received event with null or empty shipmentId: {}", event);
             acknowledgment.acknowledge();
             return;
         }
 
         try {
+            logger.info("🔄 Processing ShipmentDeliveredEvent for shipment: {}", event.getShipmentId());
+
             Notification notification = new Notification(
                     event.getShipmentId(),
                     String.format("Shipment %s has been delivered to its destination %s",
@@ -140,12 +168,16 @@ public class ShipmentEventListener {
                     NotificationType.SHIPMENT_DELIVERED
             );
 
-            service.save(notification);
-            logger.info("Successfully saved notification: {}", notification);
+            Notification saved = service.save(notification);
+            logger.info("✅ Successfully saved notification: {}", saved.getId());
+
+            long totalCount = service.getNotificationCount();
+            logger.info("📊 Total notifications in system: {}", totalCount);
+
             acknowledgment.acknowledge();
 
         } catch (Exception e) {
-            logger.error("Error processing shipment delivered event: {}", event, e);
+            logger.error("❌ Error processing shipment delivered event: {}", event, e);
             throw new RuntimeException("Failed to process shipment delivered event", e);
         }
     }

@@ -30,7 +30,6 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -47,7 +46,6 @@ import static org.awaitility.Awaitility.await;
 class NotificationViewServiceIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationViewServiceIntegrationTest.class);
-    private static final int KAFKA_READY_TIMEOUT = 60;
     private static final int NOTIFICATION_PROCESSING_TIMEOUT = 30;
 
     @Container
@@ -77,36 +75,29 @@ class NotificationViewServiceIntegrationTest {
 
         String bootstrapServers = kafka.getBootstrapServers();
 
+        // Basic Kafka configuration
         registry.add("spring.kafka.bootstrap-servers", () -> bootstrapServers);
-        registry.add("spring.kafka.consumer.bootstrap-servers", () -> bootstrapServers);
-        registry.add("spring.kafka.producer.bootstrap-servers", () -> bootstrapServers);
-        
-        // Use the same group ID as the main application to ensure listeners work
-        registry.add("spring.kafka.consumer.group-id", () -> "notification-view-service");
+
+        // Consumer configuration - SIMPLIFIED to use main config
+        registry.add("spring.kafka.consumer.group-id", () -> "notification-view-service-test");
         registry.add("spring.kafka.consumer.auto-offset-reset", () -> "earliest");
         registry.add("spring.kafka.consumer.enable-auto-commit", () -> false);
-        
-        // JSON deserialization configuration
-        registry.add("spring.kafka.consumer.key-deserializer", () -> "org.apache.kafka.common.serialization.StringDeserializer");
-        registry.add("spring.kafka.consumer.value-deserializer", () -> "org.springframework.kafka.support.serializer.ErrorHandlingDeserializer");
-        registry.add("spring.kafka.consumer.properties.spring.deserializer.value.delegate.class", () -> "org.springframework.kafka.support.serializer.JsonDeserializer");
-        registry.add("spring.kafka.consumer.properties.spring.json.trusted.packages", () -> "com.luckypets.logistics.shared.events,com.luckypets.logistics.notificationviewservice.model");
-        registry.add("spring.kafka.consumer.properties.spring.json.use.type.headers", () -> true);
-        registry.add("spring.kafka.consumer.properties.spring.json.value.default.type", () -> "java.lang.Object");
-        
-        // Producer configuration
+
+        // Producer configuration - WITH TYPE HEADERS
         registry.add("spring.kafka.producer.key-serializer", () -> "org.apache.kafka.common.serialization.StringSerializer");
         registry.add("spring.kafka.producer.value-serializer", () -> "org.springframework.kafka.support.serializer.JsonSerializer");
         registry.add("spring.kafka.producer.properties.spring.json.add.type.headers", () -> true);
-        
+
         // Listener configuration
         registry.add("spring.kafka.listener.auto-startup", () -> true);
         registry.add("spring.kafka.listener.ack-mode", () -> "manual_immediate");
 
         // Topic configuration
-        registry.add("kafka.topic.notification-sent", () -> "notification-sent-test");
+        registry.add("spring.kafka.topic.shipment-created", () -> "shipment-created");
+        registry.add("spring.kafka.topic.shipment-scanned", () -> "shipment-scanned");
+        registry.add("spring.kafka.topic.shipment-delivered", () -> "shipment-delivered");
 
-        logger.info("Configured Kafka with bootstrap-servers: {}", bootstrapServers);
+        logger.info("🔧 Configured Kafka with bootstrap-servers: {}", bootstrapServers);
     }
 
     @BeforeAll
@@ -126,15 +117,15 @@ class NotificationViewServiceIntegrationTest {
                     try {
                         Set<String> topics = adminClient.listTopics().names().get();
                         return topics.contains("shipment-created") &&
-                               topics.contains("shipment-scanned") &&
-                               topics.contains("shipment-delivered");
+                                topics.contains("shipment-scanned") &&
+                                topics.contains("shipment-delivered");
                     } catch (Exception e) {
                         logger.warn("Waiting for topics: {}", e.getMessage());
                         return false;
                     }
                 });
 
-        logger.info("Topics created successfully");
+        logger.info("✅ Topics created successfully");
     }
 
     private void createTopics() throws Exception {
@@ -147,19 +138,17 @@ class NotificationViewServiceIntegrationTest {
 
         try {
             adminClient.createTopics(topics).all().get(10, TimeUnit.SECONDS);
-            logger.info("Topics created: shipment-created, shipment-scanned, shipment-delivered, notification-sent-test");
+            logger.info("📝 Topics created: shipment-created, shipment-scanned, shipment-delivered, notification-sent-test");
         } catch (Exception e) {
-            logger.info("Topics may already exist: {}", e.getMessage());
+            logger.info("ℹ️ Topics may already exist: {}", e.getMessage());
         }
     }
 
     @BeforeEach
     void setUp() {
         testRunId = UUID.randomUUID().toString().substring(0, 8);
-
         setupProducer();
-
-        logger.info("Starting test with ID: {}", testRunId);
+        logger.info("🚀 Starting test with ID: {}", testRunId);
     }
 
     @AfterEach
@@ -167,9 +156,9 @@ class NotificationViewServiceIntegrationTest {
         if (producer != null) {
             try {
                 producer.close();
-                logger.info("Producer closed for test: {}", testRunId);
+                logger.info("🔒 Producer closed for test: {}", testRunId);
             } catch (Exception e) {
-                logger.warn("Error closing producer: {}", e.getMessage());
+                logger.warn("⚠️ Error closing producer: {}", e.getMessage());
             }
         }
     }
@@ -186,12 +175,16 @@ class NotificationViewServiceIntegrationTest {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.springframework.kafka.support.serializer.JsonSerializer");
+
+        // CRITICAL: Add type headers for proper deserialization
+        props.put("spring.json.add.type.headers", true);
+
         props.put(ProducerConfig.ACKS_CONFIG, "1");
         props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 10000);
         props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 15000);
-        props.put("spring.json.add.type.headers", true);
 
         producer = new KafkaProducer<>(props);
+        logger.info("🔧 Producer configured with type headers enabled");
     }
 
     @Test
@@ -204,6 +197,8 @@ class NotificationViewServiceIntegrationTest {
 
         ShipmentCreatedEvent event = new ShipmentCreatedEvent(
                 shipmentId, destination, createdAt, "corr-" + testRunId);
+
+        logger.info("📦 Created event: {}", event);
 
         // Act
         sendEventAndVerifyDelivery("shipment-created", event, shipmentId);
@@ -224,6 +219,8 @@ class NotificationViewServiceIntegrationTest {
         ShipmentScannedEvent event = new ShipmentScannedEvent(
                 shipmentId, location, scannedAt, destination, "corr-" + testRunId);
 
+        logger.info("📍 Created event: {}", event);
+
         // Act
         sendEventAndVerifyDelivery("shipment-scanned", event, shipmentId);
 
@@ -241,6 +238,8 @@ class NotificationViewServiceIntegrationTest {
 
         ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
                 shipmentId, destination, destination, deliveredAt, "corr-" + testRunId);
+
+        logger.info("🚚 Created event: {}", event);
 
         // Act
         sendEventAndVerifyDelivery("shipment-delivered", event, shipmentId);
@@ -371,7 +370,7 @@ class NotificationViewServiceIntegrationTest {
         );
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getShipmentId()).isEqualTo(shipmentId);
         assertThat(response.getBody().getMessage()).isEqualTo(message);
@@ -386,16 +385,19 @@ class NotificationViewServiceIntegrationTest {
     private void sendEventAndVerifyDelivery(String topic, Object event, String shipmentId)
             throws ExecutionException, InterruptedException, TimeoutException {
 
-        logger.debug("Sending event to topic {}: {}", topic, shipmentId);
+        logger.info("📤 Sending event to topic {}: shipmentId={}", topic, shipmentId);
+        logger.debug("📄 Event content: {}", event);
 
         ProducerRecord<String, Object> record = new ProducerRecord<>(topic, shipmentId, event);
         producer.send(record).get(10, TimeUnit.SECONDS);
         producer.flush();
 
-        logger.debug("Event sent successfully to topic {}: {}", topic, shipmentId);
+        logger.info("✅ Event sent successfully to topic {}: {}", topic, shipmentId);
     }
 
     private void verifyNotificationCreated(String shipmentId, NotificationType expectedType, String expectedLocationOrDestination) {
+        logger.info("🔍 Verifying notification creation for shipment: {}", shipmentId);
+
         await("Notification should be created for shipment: " + shipmentId)
                 .atMost(NOTIFICATION_PROCESSING_TIMEOUT, TimeUnit.SECONDS)
                 .pollInterval(2, TimeUnit.SECONDS)
@@ -408,13 +410,13 @@ class NotificationViewServiceIntegrationTest {
 
                     boolean foundExpectedNotification = notifications.stream()
                             .anyMatch(n -> n.getType() == expectedType &&
-                                         n.getMessage().contains(expectedLocationOrDestination));
+                                    n.getMessage().contains(expectedLocationOrDestination));
 
                     assertThat(foundExpectedNotification)
                             .as("Should find notification of type %s containing %s", expectedType, expectedLocationOrDestination)
                             .isTrue();
 
-                    logger.debug("Verified notification created: shipmentId={}, type={}, location/destination={}",
+                    logger.info("✅ Verified notification created: shipmentId={}, type={}, location/destination={}",
                             shipmentId, expectedType, expectedLocationOrDestination);
                 });
     }
