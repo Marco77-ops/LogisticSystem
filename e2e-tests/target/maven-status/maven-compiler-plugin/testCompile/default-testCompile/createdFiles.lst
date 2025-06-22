@@ -1,0 +1,16 @@
+com\luckypets\logistics\e2e\EndToEndTestSuite.class
+com\luckypets\logistics\e2e\utils\KafkaTestUtils.class
+com\luckypets\logistics\e2e\model\ScanRequest.class
+com\luckypets\logistics\e2e\model\ShipmentRequest$ShipmentRequestBuilder.class
+com\luckypets\logistics\e2e\utils\ApiClient$ApiClientBuilder.class
+com\luckypets\logistics\e2e\SimpleE2ETest.class
+com\luckypets\logistics\e2e\model\ScanRequest$ScanRequestBuilder.class
+com\luckypets\logistics\e2e\model\ShipmentRequest.class
+com\luckypets\logistics\e2e\PerformanceE2ETest.class
+com\luckypets\logistics\e2e\BasicWorkflowE2ETest.class
+com\luckypets\logistics\e2e\AnalyticsE2ETest.class
+com\luckypets\logistics\e2e\config\E2ETestConfiguration.class
+com\luckypets\logistics\e2e\utils\ApiClient.class
+com\luckypets\logistics\e2e\model\TestDataBuilder.class
+com\luckypets\logistics\e2e\ErrorHandlingE2ETest.class
+com\luckypets\logistics\e2e\utils\TestAssertions.class

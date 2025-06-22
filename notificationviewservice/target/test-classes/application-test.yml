@@ -1,0 +1,20 @@
+spring:
+  kafka:
+    topic:
+      notification-sent: notification-sent-test
+    consumer:
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+    producer:
+      properties:
+        spring.json.add.type.headers: true
+    listener:
+      auto-startup: true
+
+# Logging
+logging:
+  level:
+    com.luckypets.logistics: DEBUG
+    org.springframework.kafka: DEBUG
+    org.apache.kafka: WARN

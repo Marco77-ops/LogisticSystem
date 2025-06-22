@@ -41,6 +41,8 @@ services:
       kafka:
         condition: service_healthy
     restart: on-failure
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 
 
   scanservice:
@@ -52,6 +54,8 @@ services:
       kafka:
         condition: service_healthy
     restart: on-failure
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 
 
   deliveryservice:
@@ -63,6 +67,8 @@ services:
       kafka:
         condition: service_healthy
     restart: on-failure
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 
 
   analyticservice:
@@ -89,6 +95,8 @@ services:
       kafka:
         condition: service_healthy
     restart: on-failure
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 
 volumes:
   pgdata:

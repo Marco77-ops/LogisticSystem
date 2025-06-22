@@ -1,0 +1,80 @@
+server:
+  port: 8083
+
+# Custom kafka topic configuration
+kafka:
+  topic:
+    delivered: shipment-delivered
+    scanned: shipment-scanned
+
+spring:
+  application:
+    name: delivery-service
+
+
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: delivery-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.luckypets.logistics.shared.events
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 10000
+        max.poll.records: 500
+        max.poll.interval.ms: 300000
+        enable.auto.commit: false
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: com.luckypets.logistics.shared.events
+        spring.json.add.type.headers: true
+        acks: all
+        retries: 3
+        batch.size: 16384
+        linger.ms: 5
+        buffer.memory: 33554432
+        enable.idempotence: true
+
+    listener:
+      ack-mode: manual_immediate
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.luckypets.logistics: INFO
+    org.springframework.kafka: INFO
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN} # This can stay, but will have no effect without JPA
+    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_BIND_LOG_LEVEL:WARN} # This can stay, but will have no effect without JPA
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  kafka:
+    bootstrap-servers: kafka:9092
+
+# Custom kafka topic configuration for docker profile
+kafka:
+  topic:
+    delivered: shipment-delivered
+    scanned: shipment-scanned
+
+logging:
+  level:
+    root: INFO
