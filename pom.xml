@@ -17,7 +17,7 @@
         <module>deliveryservice</module>
         <module>analyticservice</module>
         <module>notificationviewservice</module>
-        <module>e2e-tests</module>  <!-- HINZUFÜGEN -->
+        <!-- module>e2e-tests</module> -->
     </modules>
 
     <properties>

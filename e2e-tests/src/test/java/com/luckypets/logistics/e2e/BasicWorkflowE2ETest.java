@@ -1,261 +1,165 @@
 package com.luckypets.logistics.e2e;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.luckypets.logistics.e2e.utils.ServiceHealthChecker;
+import com.luckypets.logistics.e2e.utils.WorkflowTestHelper;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 
-import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static io.restassured.RestAssured.*;
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.luckypets.logistics.e2e.config.TestConstants.*;
 
 /**
- * Korrigierte BasicWorkflowE2ETest - testet gegen bereits laufende Services
- * KEIN TestContainers - verwendet die bereits gestarteten Container
+ * Verbesserte BasicWorkflowE2ETest mit standardisierten Timeouts und robustem Error-Handling
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Slf4j
 public class BasicWorkflowE2ETest {
-
-    private static final String BASE_URL = "http://localhost";
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeAll
     static void setUp() {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        ServiceHealthChecker.waitForAllServices();
     }
 
     @Test
     @Order(1)
-    @DisplayName("System Health Check - Funktionierende Services")
+    @DisplayName("System Health Check")
     void systemHealthCheck() {
-        // Nur die Services testen, die wir wissen dass sie funktionieren
-        assertAll("Health Checks",
-                () -> {
-                    given().when().get(BASE_URL + ":8081/actuator/health")
-                            .then().statusCode(200).body("status", equalTo("UP"));
-                    System.out.println("✅ ShipmentService healthy");
-                },
-                () -> {
-                    given().when().get(BASE_URL + ":8082/actuator/health")
-                            .then().statusCode(200).body("status", equalTo("UP"));
-                    System.out.println("✅ ScanService healthy");
-                },
-                () -> {
-                    given().when().get(BASE_URL + ":8085/actuator/health")
-                            .then().statusCode(200).body("status", equalTo("UP"));
-                    System.out.println("✅ NotificationService healthy");
-                }
-        );
+        log.info("🔍 System Health Check gestartet");
 
-        // DeliveryService und AnalyticsService nur informativ testen
-        try {
-            int deliveryStatus = given().when().get(BASE_URL + ":8083/actuator/health").getStatusCode();
-            System.out.println("ℹ️ DeliveryService Health-Status: " + deliveryStatus);
-        } catch (Exception e) {
-            System.out.println("⚠️ DeliveryService Health-Check nicht verfügbar (Service läuft trotzdem)");
-        }
+        // Health Check ist bereits in setUp() passiert
+        // Hier nur finale Bestätigung
+        Assertions.assertDoesNotThrow(() -> {
+            ServiceHealthChecker.waitForAllServices();
+        }, "Alle Services sollten healthy sein");
 
-        try {
-            int analyticsStatus = given().when().get(BASE_URL + ":8084/actuator/health").getStatusCode();
-            System.out.println("ℹ️ AnalyticsService Health-Status: " + analyticsStatus);
-        } catch (Exception e) {
-            System.out.println("⚠️ AnalyticsService Health-Check nicht verfügbar (Service läuft trotzdem)");
-        }
+        log.info("✅ System Health Check erfolgreich");
     }
 
     @Test
     @Order(2)
-    @DisplayName("Vollständiger Sendungsworkflow: Erstellung → Scan → Zustellung → Benachrichtigung")
+    @DisplayName("Vollständiger Sendungsworkflow")
     void completeShipmentWorkflow() {
+        log.info("🚀 Starte vollständigen Sendungsworkflow");
+
         // 1. Sendung erstellen
-        Response shipmentResponse = given()
-                .contentType("application/json")
-                .body("""
-                {
-                    "origin": "Berlin",
-                    "destination": "Munich",
-                    "customerId": "e2e-customer-123"
-                }
-                """)
-                .when().post(BASE_URL + ":8081/api/v1/shipments")
-                .then().statusCode(201)
-                .body("id", notNullValue())
-                .extract().response();
+        String shipmentId = WorkflowTestHelper.createShipment(
+                DEFAULT_ORIGIN, DEFAULT_DESTINATION, DEFAULT_CUSTOMER_PREFIX + "-complete");
 
-        String shipmentId = shipmentResponse.jsonPath().getString("id");
-        assertNotNull(shipmentId, "Sendungs-ID sollte nicht null sein");
-        System.out.println("✅ Sendung erstellt: " + shipmentId);
+        // 2. Am Ursprungsort scannen
+        WorkflowTestHelper.scanShipment(shipmentId, DEFAULT_ORIGIN);
 
-        // 2. Sendung am Ursprungsort scannen
-        given()
-                .contentType("application/json")
-                .body(String.format("""
-                {
-                    "shipmentId": "%s",
-                    "location": "Berlin"
-                }
-                """, shipmentId))
-                .when().post(BASE_URL + ":8082/api/v1/scans")
-                .then().statusCode(201);
-        System.out.println("✅ Sendung am Ursprungsort gescannt");
+        // 3. Am Zielort scannen (löst Zustellung aus)
+        WorkflowTestHelper.scanShipment(shipmentId, DEFAULT_DESTINATION);
 
-        // 3. Sendung am Zielort scannen (löst Zustellung aus)
-        given()
-                .contentType("application/json")
-                .body(String.format("""
-                {
-                    "shipmentId": "%s",
-                    "location": "Munich"
-                }
-                """, shipmentId))
-                .when().post(BASE_URL + ":8082/api/v1/scans")
-                .then().statusCode(201);
-        System.out.println("✅ Sendung am Zielort gescannt");
-
-        // 4. Warten auf Event-Processing und Zustellungsstatus prüfen
-        System.out.println("⏳ Warte auf DeliveryService Event-Processing...");
-
-        await("Zustellungsstatus")
-                .atMost(Duration.ofSeconds(20))
-                .pollInterval(Duration.ofSeconds(3))
-                .untilAsserted(() -> {
-                    try {
-                        Response deliveryResponse = given()
-                                .when().get(BASE_URL + ":8083/deliveries/" + shipmentId);
-
-                        if (deliveryResponse.getStatusCode() == 200) {
-                            String status = deliveryResponse.jsonPath().getString("status");
-                            assertEquals("DELIVERED", status);
-                            System.out.println("✅ Zustellung bestätigt: " + status);
-                        } else {
-                            fail("DeliveryService nicht erreichbar. Status: " + deliveryResponse.getStatusCode());
-                        }
-                    } catch (Exception e) {
-                        fail("DeliveryService nicht erreichbar: " + e.getMessage());
-                    }
-                });
+        // 4. Auf Zustellung warten
+        WorkflowTestHelper.waitForDelivery(shipmentId);
 
         // 5. Benachrichtigungen prüfen
-        await("Benachrichtigungen")
-                .atMost(Duration.ofSeconds(15))
-                .pollInterval(Duration.ofSeconds(2))
-                .untilAsserted(() -> {
-                    Response notificationResponse = given()
-                            .when().get(BASE_URL + ":8085/api/notifications")
-                            .then().statusCode(200)
-                            .extract().response();
+        WorkflowTestHelper.waitForNotifications(shipmentId, 1);
 
-                    JsonNode notifications = objectMapper.readTree(notificationResponse.getBody().asString());
-                    assertTrue(notifications.isArray(), "Benachrichtigungen sollten ein Array sein");
+        // 6. Analytics prüfen (optional)
+        WorkflowTestHelper.checkAnalytics(1);
 
-                    long shipmentNotificationCount = 0;
-                    for (JsonNode notification : notifications) {
-                        if (notification.has("shipmentId") &&
-                                shipmentId.equals(notification.get("shipmentId").asText())) {
-                            shipmentNotificationCount++;
-                        }
-                    }
-
-                    assertTrue(shipmentNotificationCount >= 1,
-                            "Mindestens 1 Benachrichtigung für Sendung " + shipmentId + " erwartet, aber nur " + shipmentNotificationCount + " gefunden");
-                });
-        System.out.println("✅ Benachrichtigungen validiert");
-
-        // 6. Analytics prüfen (optional - falls verfügbar)
-        try {
-            await("Analytics")
-                    .atMost(Duration.ofSeconds(15))
-                    .pollInterval(Duration.ofSeconds(3))
-                    .untilAsserted(() -> {
-                        Response analyticsResponse = given()
-                                .when().get(BASE_URL + ":8084/api/analytics/deliveries");
-
-                        if (analyticsResponse.getStatusCode() == 200) {
-                            JsonNode analytics = objectMapper.readTree(analyticsResponse.getBody().asString());
-
-                            if (analytics.isArray() && analytics.size() > 0) {
-                                System.out.println("✅ Analytics verfügbar mit " + analytics.size() + " Einträgen");
-                            } else {
-                                System.out.println("ℹ️ Analytics noch leer (normal bei ersten Tests)");
-                            }
-                        } else {
-                            System.out.println("⚠️ Analytics Service nicht verfügbar (Status: " + analyticsResponse.getStatusCode() + ")");
-                        }
-                    });
-        } catch (Exception e) {
-            System.out.println("⚠️ Analytics-Check übersprungen: " + e.getMessage());
-        }
-
-        System.out.println("🎉 Kompletter Workflow erfolgreich abgeschlossen für Sendung: " + shipmentId);
+        log.info("🎉 Vollständiger Workflow erfolgreich für Sendung: {}", shipmentId);
     }
 
     @Test
     @Order(3)
-    @DisplayName("Mehrere parallele Sendungen")
-    void multipleParallelShipments() {
-        String[] destinations = {"Hamburg", "Frankfurt", "Cologne"};
-        String[] shipmentIds = new String[destinations.length];
+    @DisplayName("Parallele Sendungsverarbeitung")
+    void parallelShipmentProcessing() {
+        log.info("🚀 Starte parallele Sendungsverarbeitung");
 
-        // Parallel Sendungen erstellen und scannen
-        for (int i = 0; i < destinations.length; i++) {
-            Response response = given()
-                    .contentType("application/json")
-                    .body(String.format("""
-                    {
-                        "origin": "Berlin",
-                        "destination": "%s",
-                        "customerId": "parallel-customer-%d"
+        String[] destinations = {"Hamburg", "Frankfurt", "Cologne", "Stuttgart", "Dresden"};
+        List<CompletableFuture<String>> futures = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(destinations.length);
+
+        try {
+            // Parallel Sendungen erstellen und verarbeiten
+            for (int i = 0; i < destinations.length; i++) {
+                final int index = i;
+                CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+                    try {
+                        String shipmentId = WorkflowTestHelper.createShipment(
+                                DEFAULT_ORIGIN, destinations[index],
+                                DEFAULT_CUSTOMER_PREFIX + "-parallel-" + index);
+
+                        // Sofort am Zielort scannen
+                        WorkflowTestHelper.scanShipment(shipmentId, destinations[index]);
+
+                        return shipmentId;
+                    } catch (Exception e) {
+                        log.error("Fehler bei paralleler Verarbeitung von Index {}", index, e);
+                        throw new RuntimeException(e);
                     }
-                    """, destinations[i], i))
-                    .when().post(BASE_URL + ":8081/api/v1/shipments")
-                    .then().statusCode(201)
-                    .body("id", notNullValue())
-                    .extract().response();
+                }, executor);
 
-            shipmentIds[i] = response.jsonPath().getString("id");
+                futures.add(future);
+            }
 
-            // Sofort am Zielort scannen
-            given()
-                    .contentType("application/json")
-                    .body(String.format("""
-                    {
-                        "shipmentId": "%s",
-                        "location": "%s"
-                    }
-                    """, shipmentIds[i], destinations[i]))
-                    .when().post(BASE_URL + ":8082/api/v1/scans")
-                    .then().statusCode(201);
+            // Alle Sendungen sammeln
+            List<String> shipmentIds = new ArrayList<>();
+            for (CompletableFuture<String> future : futures) {
+                shipmentIds.add(future.join());
+            }
 
-            System.out.println("✅ Sendung " + destinations[i] + ": " + shipmentIds[i]);
+            log.info("✅ {} Sendungen parallel erstellt", shipmentIds.size());
+
+            // Zustellungen validieren
+            for (String shipmentId : shipmentIds) {
+                WorkflowTestHelper.waitForDelivery(shipmentId);
+            }
+
+            log.info("🎉 Parallele Verarbeitung erfolgreich: {} Sendungen", destinations.length);
+
+        } finally {
+            executor.shutdown();
         }
+    }
 
-        // Zustellungen validieren (wenn DeliveryService verfügbar)
-        System.out.println("⏳ Prüfe Zustellungen...");
+    @Test
+    @Order(4)
+    @DisplayName("Bulk-Verarbeitung für Analytics")
+    void bulkProcessingForAnalytics() {
+        log.info("🚀 Starte Bulk-Verarbeitung für Analytics");
 
-        for (int i = 0; i < destinations.length; i++) {
-            final int index = i;
+        final int bulkSize = 10;
+        final String[] testDestinations = {"TestCity1", "TestCity2", "TestCity3"};
+
+        List<String> shipmentIds = new ArrayList<>();
+
+        // Bulk Sendungen erstellen
+        for (int i = 0; i < bulkSize; i++) {
+            String destination = testDestinations[i % testDestinations.length];
+            String shipmentId = WorkflowTestHelper.createShipment(
+                    "BulkOrigin", destination,
+                    DEFAULT_CUSTOMER_PREFIX + "-bulk-" + i);
+
+            shipmentIds.add(shipmentId);
+
+            // Sofort scannen für schnelle Verarbeitung
+            WorkflowTestHelper.scanShipment(shipmentId, destination);
+
+            // Kleine Pause zwischen Sendungen für realistische Simulation
             try {
-                await("Zustellung " + destinations[i])
-                        .atMost(Duration.ofSeconds(15))
-                        .pollInterval(Duration.ofSeconds(3))
-                        .untilAsserted(() -> {
-                            Response deliveryResponse = given()
-                                    .when().get(BASE_URL + ":8083/deliveries/" + shipmentIds[index]);
-
-                            if (deliveryResponse.getStatusCode() == 200) {
-                                assertEquals("DELIVERED", deliveryResponse.jsonPath().getString("status"));
-                            }
-                        });
-                System.out.println("✅ Zustellung " + destinations[i] + " bestätigt");
-            } catch (Exception e) {
-                System.out.println("⚠️ Zustellung " + destinations[i] + " nicht überprüfbar: " + e.getMessage());
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
             }
         }
 
-        System.out.println("🎉 Parallele Sendungen erfolgreich verarbeitet");
+        log.info("✅ {} Bulk-Sendungen erstellt und gescannt", bulkSize);
+
+        // Analytics sollten die Bulk-Daten enthalten
+        WorkflowTestHelper.checkAnalytics(bulkSize);
+
+        log.info("🎉 Bulk-Verarbeitung erfolgreich");
     }
 }

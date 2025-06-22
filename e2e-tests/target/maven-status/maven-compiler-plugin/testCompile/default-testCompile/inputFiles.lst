@@ -1,13 +1,17 @@
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\AnalyticsE2ETest.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\BasicWorkflowE2ETest.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\config\E2ETestConfiguration.java
+C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\config\TestConstants.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\EndToEndTestSuite.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\ErrorHandlingE2ETest.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\model\ScanRequest.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\model\ShipmentRequest.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\model\TestDataBuilder.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\PerformanceE2ETest.java
+C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\RobustE2ETest.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\SimpleE2ETest.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\utils\ApiClient.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\utils\KafkaTestUtils.java
+C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\utils\ServiceHealthChecker.java
 C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\utils\TestAssertions.java
+C:\Users\Marco Kaul\LogisticSystem\e2e-tests\src\test\java\com\luckypets\logistics\e2e\utils\WorkflowTestHelper.java

@@ -37,6 +37,8 @@ public class PerformanceE2ETest {
             .withExposedService("deliveryservice", 8083,
                     Wait.forHttp("/actuator/health").withStartupTimeout(Duration.ofMinutes(3)))
             .withExposedService("analyticservice", 8084,
+                    Wait.forHttp("/actuator/health").withStartupTimeout(Duration.ofMinutes(3)))
+            .withExposedService("notificationviewservice", 8085,
                     Wait.forHttp("/actuator/health").withStartupTimeout(Duration.ofMinutes(3)));
 
     private static ApiClient apiClient;

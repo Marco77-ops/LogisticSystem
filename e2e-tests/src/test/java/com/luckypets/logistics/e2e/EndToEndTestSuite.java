@@ -1,15 +1,15 @@
 package com.luckypets.logistics.e2e;
 
-import org.junit.platform.suite.api.SelectClasses;
-import org.junit.platform.suite.api.Suite;
+import org.junit.platform.suite.api.*;
 
 @Suite
 @SelectClasses({
-        SimpleE2ETest.class,           // Einfache Tests
-        BasicWorkflowE2ETest.class,    // Vollständige Tests
-        AnalyticsE2ETest.class,        // Analytics Tests
-        ErrorHandlingE2ETest.class     // Error Tests
+        RobustE2ETest.class,           // Robuste Tests zuerst
+        BasicWorkflowE2ETest.class,    // Hauptfunktionalität
+        ErrorHandlingE2ETest.class,    // Error-Handling
+        AnalyticsE2ETest.class         // Analytics (falls vorhanden)
 })
+@SuiteDisplayName("LuckyPets Logistics E2E Test Suite")
 public class EndToEndTestSuite {
-    // Test Suite Runner - führt alle E2E Tests aus
+    // Verbesserte Test Suite mit logischer Reihenfolge
 }

@@ -1,5 +1,6 @@
 package com.luckypets.logistics.e2e;
 
+import com.luckypets.logistics.e2e.utils.ApiClient;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 
@@ -37,45 +38,17 @@ public class SimpleE2ETest {
                 .then().statusCode(200).body("status", equalTo("UP"));
         System.out.println("✅ NotificationService healthy");
 
-        // DeliveryService - intelligente Prüfung
+        // DeliveryService - robuste Prüfung
         System.out.println("🔍 Prüfe DeliveryService...");
-        try {
-            given().when().get(BASE_URL + ":8083/actuator/health")
-                    .then().statusCode(200).body("status", equalTo("UP"));
-            System.out.println("✅ DeliveryService healthy (Health-Endpoint funktioniert)");
-        } catch (AssertionError e) {
-            // Health-Endpoint nicht verfügbar, teste Service-Funktionalität
-            try {
-                int status = given().when().get(BASE_URL + ":8083/deliveries/test-probe").getStatusCode();
-                if (status == 404 || status == 400) {
-                    System.out.println("✅ DeliveryService läuft (Service antwortet, nur Health-Endpoint fehlt)");
-                } else {
-                    System.out.println("⚠️ DeliveryService unerwarteter Status: " + status);
-                }
-            } catch (Exception ex) {
-                fail("❌ DeliveryService nicht erreichbar: " + ex.getMessage());
-            }
-        }
+        given().when().get(BASE_URL + ":8083/actuator/health")
+                .then().statusCode(200).body("status", equalTo("UP"));
+        System.out.println("✅ DeliveryService healthy");
 
-        // AnalyticsService - intelligente Prüfung
+        // AnalyticsService - robuste Prüfung
         System.out.println("🔍 Prüfe AnalyticsService...");
-        try {
-            given().when().get(BASE_URL + ":8084/actuator/health")
-                    .then().statusCode(200).body("status", equalTo("UP"));
-            System.out.println("✅ AnalyticsService healthy (Health-Endpoint funktioniert)");
-        } catch (AssertionError e) {
-            // Health-Endpoint nicht verfügbar, teste Service-Funktionalität
-            try {
-                int status = given().when().get(BASE_URL + ":8084/api/analytics/deliveries").getStatusCode();
-                if (status == 200 || status == 404) {
-                    System.out.println("✅ AnalyticsService läuft (Service antwortet, nur Health-Endpoint fehlt)");
-                } else {
-                    System.out.println("⚠️ AnalyticsService unerwarteter Status: " + status);
-                }
-            } catch (Exception ex) {
-                System.out.println("⚠️ AnalyticsService nicht erreichbar, aber Kafka Streams läuft möglicherweise noch an");
-            }
-        }
+        given().when().get(BASE_URL + ":8084/actuator/health")
+                .then().statusCode(200).body("status", equalTo("UP"));
+        System.out.println("✅ AnalyticsService healthy");
 
         System.out.println("🎉 Service-Prüfung abgeschlossen!");
     }
@@ -86,37 +59,51 @@ public class SimpleE2ETest {
     void completeWorkflowTest() {
         System.out.println("🚀 Starte kompletten Workflow-Test...");
 
-        // 1. Sendung erstellen
-        Response shipmentResponse = given()
-                .contentType("application/json")
-                .body("""
-                {
-                    "origin": "TestOrigin",
-                    "destination": "TestDestination",
-                    "customerId": "test-customer"
-                }
-                """)
-                .when().post(BASE_URL + ":8081/api/v1/shipments")
-                .then().statusCode(201)
-                .body("id", notNullValue())
-                .extract().response();
+        ApiClient apiClient = ApiClient.builder()
+                .host("localhost")
+                .shipmentPort(8081)
+                .scanPort(8082)
+                .deliveryPort(8083)
+                .notificationPort(8085)
+                .build();
 
-        String shipmentId = shipmentResponse.jsonPath().getString("id");
-        assertNotNull(shipmentId);
+        // 1. Sendung erstellen
+        com.luckypets.logistics.e2e.model.ShipmentRequest shipmentRequest = new com.luckypets.logistics.e2e.model.ShipmentRequest();
+        shipmentRequest.setOrigin("TestOrigin");
+        shipmentRequest.setDestination("TestDestination");
+        shipmentRequest.setCustomerId("test-customer");
+
+        Response shipmentResponse = apiClient.createShipment(shipmentRequest);
+        
+        // Debug: Response-Inhalt loggen
+        System.out.println("📄 ShipmentService Response Body: " + shipmentResponse.getBody().asString());
+        System.out.println("📄 ShipmentService Response Status: " + shipmentResponse.getStatusCode());
+
+        // Robuste ID-Extraktion - versuche verschiedene Feldnamen
+        String shipmentId = shipmentResponse.jsonPath().getString("shipmentId");
+
+        assertNotNull(shipmentId, "ShipmentId sollte nicht null sein. Response: " + shipmentResponse.getBody().asString());
         System.out.println("✅ Sendung erstellt: " + shipmentId);
 
         // 2. Sendung scannen
-        given()
-                .contentType("application/json")
-                .body(String.format("""
-                {
-                    "shipmentId": "%s",
-                    "location": "TestDestination"
-                }
-                """, shipmentId))
-                .when().post(BASE_URL + ":8082/api/v1/scans")
-                .then().statusCode(201);
-        System.out.println("✅ Sendung gescannt");
+        boolean scanned = false;
+        for (int i = 0; i < 10; i++) {
+            try {
+                com.luckypets.logistics.e2e.model.ScanRequest scanRequest = new com.luckypets.logistics.e2e.model.ScanRequest();
+                scanRequest.setShipmentId(shipmentId);
+                scanRequest.setLocation("TestDestination");
+                apiClient.scanShipment(scanRequest);
+                scanned = true;
+                System.out.println("✅ Sendung gescannt");
+                break;
+            } catch (Exception e) {
+                System.out.println("⏳ Warte auf ScanService Event-Processing... (Versuch " + (i + 1) + "/10)");
+                try { Thread.sleep(1000); } catch (InterruptedException ie) {}
+            }
+        }
+        if (!scanned) {
+            fail("❌ Sendung konnte nicht gescannt werden");
+        }
 
         // 3. Zustellung prüfen (robustes Retry)
         System.out.println("⏳ Warte auf DeliveryService Event-Processing...");
@@ -124,8 +111,7 @@ public class SimpleE2ETest {
 
         for (int i = 0; i < 15; i++) {  // 15 Versuche = bis zu 15 Sekunden
             try {
-                Response deliveryResponse = given()
-                        .when().get(BASE_URL + ":8083/deliveries/" + shipmentId);
+                Response deliveryResponse = apiClient.getDeliveryStatusRaw(shipmentId); // Verwende Raw-Methode für bessere Fehlerbehandlung
 
                 if (deliveryResponse.getStatusCode() == 200) {
                     String status = deliveryResponse.jsonPath().getString("status");
@@ -138,6 +124,9 @@ public class SimpleE2ETest {
                     }
                 } else {
                     System.out.println("⏳ DeliveryService Status: " + deliveryResponse.getStatusCode() + " (Versuch " + (i+1) + "/15)");
+                    if (i == 5) { // Nach 5 Versuchen die Response loggen
+                        System.out.println("📄 DeliveryService Response: " + deliveryResponse.getBody().asString());
+                    }
                 }
             } catch (Exception e) {
                 if (i == 14) {
@@ -160,10 +149,7 @@ public class SimpleE2ETest {
 
         // 4. Benachrichtigungen prüfen
         try {
-            given()
-                    .when().get(BASE_URL + ":8085/api/notifications")
-                    .then().statusCode(200)
-                    .body("$", not(empty()));
+            apiClient.getNotifications();
             System.out.println("✅ Benachrichtigungen vorhanden");
         } catch (Exception e) {
             System.out.println("⚠️ Benachrichtigungen noch nicht verfügbar (normal bei async Processing)");
@@ -196,7 +182,7 @@ public class SimpleE2ETest {
 
         // DeliveryService Endpunkte erkunden
         System.out.println("\n--- DeliveryService Endpunkte ---");
-        String[] deliveryEndpoints = {"/deliveries", "/api/deliveries", "/health", "/", "/actuator"};
+        String[] deliveryEndpoints = {"/deliveries", "/health", "/", "/actuator"};
         for (String endpoint : deliveryEndpoints) {
             try {
                 int status = given().when().get(BASE_URL + ":8083" + endpoint).getStatusCode();
@@ -208,7 +194,7 @@ public class SimpleE2ETest {
 
         // AnalyticsService Endpunkte erkunden
         System.out.println("\n--- AnalyticsService Endpunkte ---");
-        String[] analyticsEndpoints = {"/api/analytics/deliveries", "/api/analytics", "/health", "/", "/actuator"};
+        String[] analyticsEndpoints = {"/health", "/", "/actuator"};
         for (String endpoint : analyticsEndpoints) {
             try {
                 int status = given().when().get(BASE_URL + ":8084" + endpoint).getStatusCode();

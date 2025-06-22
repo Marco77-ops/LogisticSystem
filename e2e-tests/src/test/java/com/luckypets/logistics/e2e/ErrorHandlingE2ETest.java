@@ -1,130 +1,164 @@
 package com.luckypets.logistics.e2e;
 
+import com.luckypets.logistics.e2e.utils.ServiceHealthChecker;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 
-import static io.restassured.RestAssured.*;
+import static com.luckypets.logistics.e2e.config.TestConstants.*;
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Slf4j
 public class ErrorHandlingE2ETest {
 
-    private static final String BASE_URL = "http://localhost";
-
-    // Pre-defined JSON strings als Konstanten
+    // Vordefinierte Test-Daten als Konstanten für bessere Lesbarkeit
     private static final String EMPTY_JSON = "{}";
     private static final String INVALID_JSON = "invalid json";
-    private static final String INCOMPLETE_JSON = "{invalid";
-    private static final String PARTIAL_SHIPMENT = "{\"origin\":\"Berlin\"}";
-    private static final String PARTIAL_SCAN = "{\"location\":\"TestLocation\"}";
+    private static final String INCOMPLETE_JSON = "{\"incomplete\":";
+    private static final String MISSING_REQUIRED_FIELDS = "{\"origin\":\"Berlin\"}";
+    private static final String INVALID_SHIPMENT_ID = "non-existent-id-12345";
+
+    @BeforeAll
+    static void setUp() {
+        ServiceHealthChecker.waitForAllServices();
+    }
 
     @Test
     @Order(1)
-    @DisplayName("Error: Leere Requests")
-    void emptyRequests() {
-        // Test 1: Leere Sendungsdaten
+    @DisplayName("Error: Ungültige JSON-Strukturen")
+    void invalidJsonStructures() {
+        log.info("🧪 Teste ungültige JSON-Strukturen");
+
+        // Test 1: Komplett leeres JSON
         given()
                 .contentType("application/json")
                 .body(EMPTY_JSON)
-                .when()
-                .post(BASE_URL + ":8081/api/v1/shipments")
-                .then()
-                .statusCode(anyOf(equalTo(400), equalTo(422)));
+                .when().post(BASE_URL + ":" + SHIPMENT_PORT + "/api/v1/shipments")
+                .then().statusCode(anyOf(equalTo(400), equalTo(422)));
 
-        // Test 2: Leere Scan-Daten
+        // Test 2: Ungültiges JSON Format
         given()
                 .contentType("application/json")
-                .body(EMPTY_JSON)
-                .when()
-                .post(BASE_URL + ":8082/api/v1/scans")
-                .then()
-                .statusCode(anyOf(equalTo(400), equalTo(422)));
+                .body(INVALID_JSON)
+                .when().post(BASE_URL + ":" + SHIPMENT_PORT + "/api/v1/shipments")
+                .then().statusCode(anyOf(equalTo(400), equalTo(422)));
 
-        System.out.println("✅ Leere Requests korrekt abgelehnt");
+        // Test 3: Unvollständiges JSON
+        given()
+                .contentType("application/json")
+                .body(INCOMPLETE_JSON)
+                .when().post(BASE_URL + ":" + SHIPMENT_PORT + "/api/v1/shipments")
+                .then().statusCode(anyOf(equalTo(400), equalTo(422)));
+
+        log.info("✅ Ungültige JSON-Strukturen korrekt abgelehnt");
     }
 
     @Test
     @Order(2)
-    @DisplayName("Error: Nicht-existierende IDs")
-    void nonExistentIds() {
-        // Test: Zustellungsstatus für nicht-existierende Sendung
-        given()
-                .when()
-                .get(BASE_URL + ":8083/deliveries/non-existent-id-12345")
-                .then()
-                .statusCode(anyOf(equalTo(400), equalTo(404)));
+    @DisplayName("Error: Fehlende Pflichtfelder")
+    void missingRequiredFields() {
+        log.info("🧪 Teste fehlende Pflichtfelder");
 
-        System.out.println("✅ Nicht-existierende IDs korrekt behandelt");
+        // Sendung mit fehlenden Feldern
+        given()
+                .contentType("application/json")
+                .body(MISSING_REQUIRED_FIELDS)
+                .when().post(BASE_URL + ":" + SHIPMENT_PORT + "/api/v1/shipments")
+                .then().statusCode(anyOf(equalTo(400), equalTo(422)));
+
+        // Scan mit fehlender shipmentId
+        given()
+                .contentType("application/json")
+                .body("{\"location\":\"TestLocation\"}")
+                .when().post(BASE_URL + ":" + SCAN_PORT + "/api/v1/scans")
+                .then().statusCode(anyOf(equalTo(400), equalTo(422)));
+
+        log.info("✅ Fehlende Pflichtfelder korrekt abgelehnt");
     }
 
     @Test
     @Order(3)
-    @DisplayName("Error: Ungültiges JSON")
-    void invalidJson() {
-        // Test 1: Komplett ungültiges JSON
+    @DisplayName("Error: Nicht-existierende Ressourcen")
+    void nonExistentResources() {
+        log.info("🧪 Teste nicht-existierende Ressourcen");
+
+        // Test 1: Zustellungsstatus für nicht-existierende Sendung
+        given()
+                .when().get(BASE_URL + ":" + DELIVERY_PORT + "/deliveries/" + INVALID_SHIPMENT_ID)
+                .then().statusCode(anyOf(equalTo(400), equalTo(404)));
+
+        // Test 2: Scan für nicht-existierende Sendung (sollte trotzdem 201 zurückgeben)
         given()
                 .contentType("application/json")
-                .body(INVALID_JSON)
-                .when()
-                .post(BASE_URL + ":8081/api/v1/shipments")
-                .then()
-                .statusCode(anyOf(equalTo(400), equalTo(422)));
+                .body(String.format("""
+                {
+                    "shipmentId": "%s",
+                    "location": "TestLocation"
+                }
+                """, INVALID_SHIPMENT_ID))
+                .when().post(BASE_URL + ":" + SCAN_PORT + "/api/v1/scans")
+                .then().statusCode(201); // ScanService akzeptiert alle Scans
 
-        // Test 2: Unvollständiges JSON
-        given()
-                .contentType("application/json")
-                .body(INCOMPLETE_JSON)
-                .when()
-                .post(BASE_URL + ":8081/api/v1/shipments")
-                .then()
-                .statusCode(anyOf(equalTo(400), equalTo(422)));
-
-        System.out.println("✅ Ungültiges JSON korrekt abgelehnt");
+        log.info("✅ Nicht-existierende Ressourcen korrekt behandelt");
     }
 
     @Test
     @Order(4)
-    @DisplayName("Error: Service Health nach Fehlern")
-    void serviceHealthAfterErrors() {
-        // Prüfe, dass Services nach Fehlern weiterhin funktionieren
-        given()
-                .when()
-                .get(BASE_URL + ":8081/actuator/health")
-                .then()
-                .statusCode(200)
-                .body("status", equalTo("UP"));
+    @DisplayName("Error: Service-Resilience nach Fehlern")
+    void serviceResilienceAfterErrors() {
+        log.info("🧪 Teste Service-Resilience nach Fehlern");
 
-        given()
-                .when()
-                .get(BASE_URL + ":8083/actuator/health")
-                .then()
-                .statusCode(200)
-                .body("status", equalTo("UP"));
+        // Mehrere fehlerhafte Requests senden
+        for (int i = 0; i < 5; i++) {
+            given()
+                    .contentType("application/json")
+                    .body(INVALID_JSON)
+                    .when().post(BASE_URL + ":" + SHIPMENT_PORT + "/api/v1/shipments")
+                    .then().statusCode(anyOf(equalTo(400), equalTo(422)));
+        }
 
-        System.out.println("✅ Services sind nach Fehlern weiterhin healthy");
+        // Services sollten weiterhin healthy sein
+        Assertions.assertDoesNotThrow(() -> {
+            ServiceHealthChecker.waitForAllServices();
+        }, "Services sollten nach Fehlern weiterhin erreichbar sein");
+
+        // Normaler Request sollte weiterhin funktionieren
+        given()
+                .contentType("application/json")
+                .body("""
+                {
+                    "origin": "ErrorTestOrigin",
+                    "destination": "ErrorTestDestination",
+                    "customerId": "error-test-customer"
+                }
+                """)
+                .when().post(BASE_URL + ":" + SHIPMENT_PORT + "/api/v1/shipments")
+                .then().statusCode(201)
+                .body("id", notNullValue());
+
+        log.info("✅ Services sind nach Fehlern weiterhin funktionsfähig");
     }
 
     @Test
     @Order(5)
-    @DisplayName("Error: Unvollständige Daten")
-    void incompleteData() {
-        // Test mit partiellen Sendungsdaten
-        given()
-                .contentType("application/json")
-                .body(PARTIAL_SHIPMENT)
-                .when()
-                .post(BASE_URL + ":8081/api/v1/shipments")
-                .then()
-                .statusCode(anyOf(equalTo(400), equalTo(422)));
+    @DisplayName("Error: Verschiedene Content-Types")
+    void invalidContentTypes() {
+        log.info("🧪 Teste verschiedene ungültige Content-Types");
 
-        // Test mit partiellen Scan-Daten
+        // Test 1: Ohne Content-Type
         given()
-                .contentType("application/json")
-                .body(PARTIAL_SCAN)
-                .when()
-                .post(BASE_URL + ":8082/api/v1/scans")
-                .then()
-                .statusCode(anyOf(equalTo(400), equalTo(422)));
+                .body("{\"origin\":\"Test\"}")
+                .when().post(BASE_URL + ":" + SHIPMENT_PORT + "/api/v1/shipments")
+                .then().statusCode(anyOf(equalTo(400), equalTo(415)));
 
-        System.out.println("✅ Unvollständige Daten korrekt abgelehnt");
+        // Test 2: Falscher Content-Type
+        given()
+                .contentType("text/plain")
+                .body("{\"origin\":\"Test\"}")
+                .when().post(BASE_URL + ":" + SHIPMENT_PORT + "/api/v1/shipments")
+                .then().statusCode(anyOf(equalTo(400), equalTo(415)));
+
+        log.info("✅ Ungültige Content-Types korrekt abgelehnt");
     }
 }

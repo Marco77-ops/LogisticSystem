@@ -1,8 +1,5 @@
 package com.luckypets.logistics.notificationviewservice.integrationtest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.luckypets.logistics.notificationviewservice.model.Notification;
 import com.luckypets.logistics.notificationviewservice.model.NotificationType;
 import com.luckypets.logistics.notificationviewservice.service.NotificationService;
@@ -33,6 +30,7 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.*;

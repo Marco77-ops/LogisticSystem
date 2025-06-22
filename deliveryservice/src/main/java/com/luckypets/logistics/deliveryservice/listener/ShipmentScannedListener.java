@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,7 @@ public class ShipmentScannedListener {
     }
 
     @KafkaListener(topics = "${kafka.topic.scanned:shipment-scanned}")
-    public void onShipmentScanned(ShipmentScannedEvent event) {
+    public void onShipmentScanned(ShipmentScannedEvent event, Acknowledgment acknowledgment) {
         log.info("Received scan event: {}", event);
 
         // Retrieve from in-memory storage or create a new entity
@@ -90,5 +91,8 @@ public class ShipmentScannedListener {
 
         // Save updated entity to in-memory storage via service method
         deliveryService.updateShipmentState(entity); // Use the new updateShipmentState method
+
+        // Acknowledge the message
+        acknowledgment.acknowledge();
     }
 }
