@@ -3,16 +3,17 @@ package com.luckypets.logistics.deliveryservice;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication(exclude = {
         DataSourceAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class
 })
-// Removed @EntityScan as it's not applicable for a no-database service
+@ComponentScan(basePackages = {
+        "com.luckypets.logistics.deliveryservice",
+        "com.luckypets.logistics.shared.config"
+})
 public class DeliveryServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(DeliveryServiceApplication.class, args);

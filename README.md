@@ -1,11 +1,24 @@
 # LuckyPets Logistics System
 
-## Motivation & Anwendungsgebiete von Event Streaming mit Apache Kafka
+## Table of Contents
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Event Model](#standardized-event-model)
+- [Kafka Streams Analytics](#kafka-streams-analytics)
+- [REST Interfaces](#rest-interfaces)
+- [Containerization & Orchestration](#containerization--orchestration)
+- [Getting Started](#getting-started)
+- [Testing](#testing)
+- [API Documentation](#api-documentation)
+- [Reflection & Outlook](#reflection--outlook)
+- [Additional Resources](#additional-resources)
 
-Moderne Unternehmen stehen vor der Herausforderung, immer größere Datenmengen in Echtzeit zu verarbeiten und flexibel auf Ereignisse reagieren zu können. **Event Streaming** mit Apache Kafka ist mittlerweile ein zentraler Baustein vieler Software-Architekturen.
+## Motivation & Use Cases for Event Streaming with Apache Kafka
 
-**Was kann ich mit Event Streaming (Kafka) machen?**
-Laut der offiziellen Dokumentation von Apache Kafka werden Event-Streaming-Plattformen für vielfältige Anwendungsfälle eingesetzt, zum Beispiel:
+Modern enterprises face the challenge of processing increasingly large amounts of data in real-time and responding flexibly to events. **Event Streaming** with Apache Kafka has become a central building block of many software architectures.
+
+**What can I do with Event Streaming (Kafka)?**
+According to the official Apache Kafka documentation, event streaming platforms are used for a variety of use cases, such as:
 - **Messaging:** Zuverlässige, skalierbare Kommunikation zwischen Applikationen
 - **Website-Aktivitäten tracken:** Z. B. Klicks, Anmeldungen, Nutzeraktionen in Echtzeit analysieren
 - **Metriken sammeln:** System- und Applikationsmetriken aggregieren
