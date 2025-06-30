@@ -3,6 +3,7 @@ package com.luckypets.logistics.notificationviewservice.listener;
 import com.luckypets.logistics.notificationviewservice.model.Notification;
 import com.luckypets.logistics.notificationviewservice.model.NotificationType;
 import com.luckypets.logistics.notificationviewservice.service.NotificationService;
+import com.luckypets.logistics.notificationviewservice.service.ServerlessNotificationService;
 import com.luckypets.logistics.shared.events.ShipmentCreatedEvent;
 import com.luckypets.logistics.shared.events.ShipmentDeliveredEvent;
 import com.luckypets.logistics.shared.events.ShipmentScannedEvent;
@@ -20,10 +21,12 @@ public class ShipmentEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(ShipmentEventListener.class);
     private final NotificationService service;
+    private final ServerlessNotificationService serverlessService;
 
-    public ShipmentEventListener(NotificationService service) {
+    public ShipmentEventListener(NotificationService service, ServerlessNotificationService serverlessService) {
         this.service = service;
-        logger.info("ShipmentEventListener initialized");
+        this.serverlessService = serverlessService;
+        logger.info("ShipmentEventListener initialized with Serverless support");
     }
 
     @KafkaListener(
@@ -39,44 +42,41 @@ public class ShipmentEventListener {
             Acknowledgment acknowledgment) {
 
         logger.info("🎯 RECEIVED ShipmentCreatedEvent from topic: {}, partition: {}, offset: {}", topic, partition, offset);
-        logger.info("📦 Event details: {}", event);
+        logger.info("📦 Event details: shipmentId={}, destination={}",
+                event != null ? event.getShipmentId() : "null",
+                event != null ? event.getDestination() : "null");
 
-        // Validation mit sofortigem Acknowledge bei Invalid Data
-        if (event == null) {
-            logger.error("❌ Received null event for shipment created");
-            acknowledgment.acknowledge();
-            return;
-        }
-
-        if (event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
-            logger.error("❌ Received event with null or empty shipmentId: {}", event);
+        if (event == null || event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
+            logger.warn("⚠️ Received invalid ShipmentCreatedEvent - skipping");
             acknowledgment.acknowledge();
             return;
         }
 
         try {
-            logger.info("🔄 Processing ShipmentCreatedEvent for shipment: {}", event.getShipmentId());
-
             Notification notification = new Notification(
                     event.getShipmentId(),
-                    String.format("Shipment %s has been created with destination %s",
-                            event.getShipmentId(), event.getDestination()),
+                    generateShipmentCreatedMessage(event),
                     NotificationType.SHIPMENT_CREATED
             );
 
             Notification saved = service.save(notification);
-            logger.info("✅ Successfully saved notification: {}", saved.getId());
+            logger.info("✅ Notification created: id={}, shipmentId={}", saved.getId(), saved.getShipmentId());
 
-            // Debug: Log current notification count
-            long totalCount = service.getNotificationCount();
-            logger.info("📊 Total notifications in system: {}", totalCount);
+            // SERVERLESS FUNCTION TRIGGERN - KORRIGIERTE PARAMETER
+            serverlessService.triggerServerlessFunction(
+                    "shipment-created",
+                    event.getShipmentId(),
+                    null, // customerId nicht im Event
+                    null, // origin nicht im Event - nur destination
+                    event.getDestination()
+            );
 
             acknowledgment.acknowledge();
+            logger.info("📨 Event processed successfully");
 
         } catch (Exception e) {
-            logger.error("❌ Error processing shipment created event: {}", event, e);
-            // Nicht acknowledgen - lass den Error Handler das DLQ Pattern handhaben
-            throw new RuntimeException("Failed to process shipment created event", e);
+            logger.error("❌ Error processing ShipmentCreatedEvent: shipmentId={}", event.getShipmentId(), e);
+            throw e;
         }
     }
 
@@ -93,41 +93,42 @@ public class ShipmentEventListener {
             Acknowledgment acknowledgment) {
 
         logger.info("🎯 RECEIVED ShipmentScannedEvent from topic: {}, partition: {}, offset: {}", topic, partition, offset);
-        logger.info("📍 Event details: {}", event);
+        logger.info("📍 Event details: shipmentId={}, location={}, destination={}",
+                event != null ? event.getShipmentId() : "null",
+                event != null ? event.getLocation() : "null",
+                event != null ? event.getDestination() : "null");
 
-        if (event == null) {
-            logger.error("❌ Received null event for shipment scanned");
-            acknowledgment.acknowledge();
-            return;
-        }
-
-        if (event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
-            logger.error("❌ Received event with null or empty shipmentId: {}", event);
+        if (event == null || event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
+            logger.warn("⚠️ Received invalid ShipmentScannedEvent - skipping");
             acknowledgment.acknowledge();
             return;
         }
 
         try {
-            logger.info("🔄 Processing ShipmentScannedEvent for shipment: {}", event.getShipmentId());
-
             Notification notification = new Notification(
                     event.getShipmentId(),
-                    String.format("Shipment %s has been scanned at location %s",
-                            event.getShipmentId(), event.getLocation()),
+                    generateShipmentScannedMessage(event),
                     NotificationType.SHIPMENT_SCANNED
             );
 
             Notification saved = service.save(notification);
-            logger.info("✅ Successfully saved notification: {}", saved.getId());
+            logger.info("✅ Notification created: id={}, shipmentId={}", saved.getId(), saved.getShipmentId());
 
-            long totalCount = service.getNotificationCount();
-            logger.info("📊 Total notifications in system: {}", totalCount);
+            // SERVERLESS FUNCTION TRIGGERN - KORRIGIERTE PARAMETER
+            serverlessService.triggerServerlessFunction(
+                    "shipment-scanned",
+                    event.getShipmentId(),
+                    null, // customerId nicht im Event
+                    event.getLocation(), // location als origin verwenden
+                    event.getDestination()
+            );
 
             acknowledgment.acknowledge();
+            logger.info("📨 Event processed successfully");
 
         } catch (Exception e) {
-            logger.error("❌ Error processing shipment scanned event: {}", event, e);
-            throw new RuntimeException("Failed to process shipment scanned event", e);
+            logger.error("❌ Error processing ShipmentScannedEvent: shipmentId={}", event.getShipmentId(), e);
+            throw e;
         }
     }
 
@@ -144,41 +145,57 @@ public class ShipmentEventListener {
             Acknowledgment acknowledgment) {
 
         logger.info("🎯 RECEIVED ShipmentDeliveredEvent from topic: {}, partition: {}, offset: {}", topic, partition, offset);
-        logger.info("🚚 Event details: {}", event);
+        logger.info("🚚 Event details: shipmentId={}, location={}, destination={}",
+                event != null ? event.getShipmentId() : "null",
+                event != null ? event.getLocation() : "null",
+                event != null ? event.getDestination() : "null");
 
-        if (event == null) {
-            logger.error("❌ Received null event for shipment delivered");
-            acknowledgment.acknowledge();
-            return;
-        }
-
-        if (event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
-            logger.error("❌ Received event with null or empty shipmentId: {}", event);
+        if (event == null || event.getShipmentId() == null || event.getShipmentId().trim().isEmpty()) {
+            logger.warn("⚠️ Received invalid ShipmentDeliveredEvent - skipping");
             acknowledgment.acknowledge();
             return;
         }
 
         try {
-            logger.info("🔄 Processing ShipmentDeliveredEvent for shipment: {}", event.getShipmentId());
-
             Notification notification = new Notification(
                     event.getShipmentId(),
-                    String.format("Shipment %s has been delivered to its destination %s",
-                            event.getShipmentId(), event.getDestination()),
+                    generateShipmentDeliveredMessage(event),
                     NotificationType.SHIPMENT_DELIVERED
             );
 
             Notification saved = service.save(notification);
-            logger.info("✅ Successfully saved notification: {}", saved.getId());
+            logger.info("✅ Notification created: id={}, shipmentId={}", saved.getId(), saved.getShipmentId());
 
-            long totalCount = service.getNotificationCount();
-            logger.info("📊 Total notifications in system: {}", totalCount);
+            // SERVERLESS FUNCTION TRIGGERN - KORRIGIERTE PARAMETER
+            serverlessService.triggerServerlessFunction(
+                    "shipment-delivered",
+                    event.getShipmentId(),
+                    null, // customerId nicht im Event
+                    null, // origin nicht im Event
+                    event.getLocation() // getLocation() statt getDeliveryLocation()!
+            );
 
             acknowledgment.acknowledge();
+            logger.info("📨 Event processed successfully");
 
         } catch (Exception e) {
-            logger.error("❌ Error processing shipment delivered event: {}", event, e);
-            throw new RuntimeException("Failed to process shipment delivered event", e);
+            logger.error("❌ Error processing ShipmentDeliveredEvent: shipmentId={}", event.getShipmentId(), e);
+            throw e;
         }
+    }
+
+    private String generateShipmentCreatedMessage(ShipmentCreatedEvent event) {
+        return String.format("Shipment %s has been created and is being prepared for transport to %s.",
+                event.getShipmentId(), event.getDestination());
+    }
+
+    private String generateShipmentScannedMessage(ShipmentScannedEvent event) {
+        return String.format("Shipment %s has been scanned at %s. Current destination: %s.",
+                event.getShipmentId(), event.getLocation(), event.getDestination());
+    }
+
+    private String generateShipmentDeliveredMessage(ShipmentDeliveredEvent event) {
+        return String.format("Shipment %s has been successfully delivered to %s.",
+                event.getShipmentId(), event.getLocation());
     }
 }

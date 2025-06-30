@@ -97,6 +97,8 @@ services:
     restart: on-failure
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      LUCKYPETS_SERVERLESS_WEBHOOK_URL: https://bpq9p3cax1.execute-api.eu-central-1.amazonaws.com/Prod/webhook
+
 
 volumes:
   pgdata:

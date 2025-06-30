@@ -1,0 +1,9 @@
+{
+  "name": "luckypets-lambda",
+  "version": "1.0.0",
+  "description": "LuckyPets Customer Notifications AWS Lambda",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1400.0"
+  }
+}

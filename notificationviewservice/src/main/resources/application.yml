@@ -84,3 +84,9 @@ logging:
   level:
     com.luckypets.logistics.notificationviewservice: DEBUG
     org.springframework.kafka: DEBUG
+
+    luckypets:
+      serverless:
+        enabled: true
+        webhook:
+          url: https://bpq9p3cax1.execute-api.eu-central-1.amazonaws.com/Prod/webhook
