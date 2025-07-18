@@ -62,7 +62,7 @@ public class StateStoreQueryService {
             }
         } catch (InvalidStateStoreException e) {
             logger.warn("State store not available for location query: {}", e.getMessage());
-            return results; // Return empty list for temporary issues
+            return results;
         } catch (Exception e) {
             logger.error("Unexpected error querying state store for location: {}", location, e);
             throw new RuntimeException("Failed to query delivery counts", e);
@@ -102,7 +102,7 @@ public class StateStoreQueryService {
             }
         } catch (InvalidStateStoreException e) {
             logger.warn("State store not available for all locations query: {}", e.getMessage());
-            return results; // Return empty list for temporary issues
+            return results;
         } catch (Exception e) {
             logger.error("Unexpected error querying state store for all locations", e);
             throw new RuntimeException("Failed to query all delivery counts", e);

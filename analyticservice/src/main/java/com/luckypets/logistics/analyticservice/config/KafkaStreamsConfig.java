@@ -39,12 +39,12 @@ public class KafkaStreamsConfig {
         props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, DeliveredAtTimestampExtractor.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         
-        // Korrigierte Timeout-Konfiguration
-        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10000);  // 10 Sekunden
-        props.put(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, 60000); // 60 Sekunden (erhöht)
+
+        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10000);
+        props.put(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, 60000);
         
-        // Cache wieder aktivieren für bessere Performance
-        props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 10 * 1024 * 1024); // 10MB
+
+        props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 10 * 1024 * 1024);
         
         return new KafkaStreamsConfiguration(props);
     }

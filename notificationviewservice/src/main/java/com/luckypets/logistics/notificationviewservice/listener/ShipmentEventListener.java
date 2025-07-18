@@ -62,12 +62,12 @@ public class ShipmentEventListener {
             Notification saved = service.save(notification);
             logger.info("✅ Notification created: id={}, shipmentId={}", saved.getId(), saved.getShipmentId());
 
-            // SERVERLESS FUNCTION TRIGGERN - KORRIGIERTE PARAMETER
+
             serverlessService.triggerServerlessFunction(
                     "shipment-created",
                     event.getShipmentId(),
-                    null, // customerId nicht im Event
-                    null, // origin nicht im Event - nur destination
+                    null,
+                    null,
                     event.getDestination()
             );
 
@@ -114,12 +114,12 @@ public class ShipmentEventListener {
             Notification saved = service.save(notification);
             logger.info("✅ Notification created: id={}, shipmentId={}", saved.getId(), saved.getShipmentId());
 
-            // SERVERLESS FUNCTION TRIGGERN - KORRIGIERTE PARAMETER
+
             serverlessService.triggerServerlessFunction(
                     "shipment-scanned",
                     event.getShipmentId(),
-                    null, // customerId nicht im Event
-                    event.getLocation(), // location als origin verwenden
+                    null,
+                    event.getLocation(),
                     event.getDestination()
             );
 
@@ -166,13 +166,13 @@ public class ShipmentEventListener {
             Notification saved = service.save(notification);
             logger.info("✅ Notification created: id={}, shipmentId={}", saved.getId(), saved.getShipmentId());
 
-            // SERVERLESS FUNCTION TRIGGERN - KORRIGIERTE PARAMETER
+
             serverlessService.triggerServerlessFunction(
                     "shipment-delivered",
                     event.getShipmentId(),
-                    null, // customerId nicht im Event
-                    null, // origin nicht im Event
-                    event.getLocation() // getLocation() statt getDeliveryLocation()!
+                    null,
+                    null,
+                    event.getLocation()
             );
 
             acknowledgment.acknowledge();

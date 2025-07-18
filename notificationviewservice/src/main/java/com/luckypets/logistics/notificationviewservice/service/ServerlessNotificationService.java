@@ -26,7 +26,7 @@ public class ServerlessNotificationService {
         this.restTemplate = restTemplate;
     }
 
-    // KORRIGIERTE Methode mit 5 Parametern (wie im ShipmentEventListener verwendet)
+
     public void triggerServerlessFunction(String eventType, String shipmentId, String customerId, String origin, String destination) {
         if (!serverlessEnabled) {
             logger.debug("🚀 Serverless disabled - skipping function call");
@@ -60,7 +60,7 @@ public class ServerlessNotificationService {
         }
     }
 
-    // ZUSÄTZLICHE Überladung mit 3 Parametern (falls irgendwo anders verwendet)
+
     public void triggerServerlessFunction(String eventType, String shipmentId, String destination) {
         triggerServerlessFunction(eventType, shipmentId, null, null, destination);
     }

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class ScanController {
     private static final Logger logger = LoggerFactory.getLogger(ScanController.class);
     private final ScanService scanService;
-    private final ScanServiceImpl scanServiceImpl; // Inject the implementation to access findById
+    private final ScanServiceImpl scanServiceImpl;
 
     public ScanController(ScanService scanService, ScanServiceImpl scanServiceImpl) {
         this.scanService = scanService;
@@ -43,9 +43,7 @@ public class ScanController {
         }
     }
 
-    // New Endpoint for E2E Test Polling
-    // Added a regex to the path variable to ensure it's correctly interpreted as a dynamic path segment.
-    // FIX: Explicitly specify the name for @PathVariable to ensure proper mapping.
+
     @GetMapping("/{shipmentId:^[a-zA-Z0-9-]+$}")
     public ResponseEntity<?> getShipmentStatusForScan(@PathVariable("shipmentId") String shipmentId) {
         if (scanServiceImpl.findById(shipmentId).isPresent()) {

@@ -22,7 +22,7 @@ public class DeliveryController {
         this.deliveryService = deliveryService;
     }
 
-    /** Get all shipments from the database */
+
     @GetMapping
     public List<DeliveryResponse> getAll() {
         return deliveryService.getAllShipments();

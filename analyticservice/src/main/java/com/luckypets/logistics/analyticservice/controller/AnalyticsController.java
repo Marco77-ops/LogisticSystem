@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/analytics") // 🔧 FIX: Geändert zu /api/analytics für E2E Tests
+@RequestMapping("/api/analytics")
 public class AnalyticsController {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsController.class);
@@ -24,13 +24,12 @@ public class AnalyticsController {
     @Autowired
     private AnalyticsService analyticsService;
 
-    // 🔥 NEUER ENDPUNKT: Für E2E Tests - einfacher Zugriff auf alle Deliveries
+
     @GetMapping("/deliveries")
     public ResponseEntity<List<DeliveryCount>> getAllDeliveries() {
         logger.info("E2E Test request for all deliveries (last 24 hours)");
 
         try {
-            // Verwende letzte 24 Stunden als Default für E2E Tests
             LocalDateTime to = LocalDateTime.now();
             LocalDateTime from = to.minusHours(24);
 
@@ -45,7 +44,7 @@ public class AnalyticsController {
         }
     }
 
-    // 🔥 WEITERER ENDPUNKT: Für detailliertere Analytics mit Parametern
+
     @GetMapping("/deliveries/detailed")
     public ResponseEntity<List<DeliveryCount>> getAllDeliveriesWithParams(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
@@ -62,7 +61,7 @@ public class AnalyticsController {
         }
     }
 
-    // Bestehende Endpunkte bleiben unverändert
+
     @GetMapping("/location")
     public ResponseEntity<DeliveryAnalytics> getLocationAnalytics(
             @RequestParam String location,
@@ -101,13 +100,13 @@ public class AnalyticsController {
         return ResponseEntity.ok("Analytics Service is running");
     }
 
-    // 🔥 ZUSÄTZLICHER DEBUG ENDPUNKT
+
     @GetMapping("/status")
     public ResponseEntity<?> getStatus() {
         try {
             logger.info("Status check requested");
 
-            // Teste ob Service funktioniert
+
             LocalDateTime to = LocalDateTime.now();
             LocalDateTime from = to.minusHours(1);
             List<DeliveryCount> recentData = analyticsService.getAllLocationAnalytics(from, to);

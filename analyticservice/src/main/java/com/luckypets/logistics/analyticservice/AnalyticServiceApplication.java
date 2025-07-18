@@ -11,7 +11,7 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
         DataSourceAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class
 })
-@EnableKafkaStreams  // ← Für Kafka Streams
+@EnableKafkaStreams
 @ComponentScan(basePackages = {
         "com.luckypets.logistics.analyticservice",
         "com.luckypets.logistics.shared.config"

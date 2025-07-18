@@ -65,16 +65,16 @@ public class ErrorHandlingConfig {
         return new DeadLetterPublishingRecoverer(deadLetterKafkaTemplate(),
                 (consumerRecord, exception) -> {
                     // Enhanced logging for failed message details
-                    logger.error("🚨 MESSAGE PROCESSING FAILED!");
-                    logger.error("📍 Topic: {}", consumerRecord.topic());
-                    logger.error("📍 Partition: {}", consumerRecord.partition());
-                    logger.error("📍 Offset: {}", consumerRecord.offset());
-                    logger.error("📍 Key: {}", consumerRecord.key());
-                    logger.error("📍 Value: {}", consumerRecord.value());
-                    logger.error("📍 Headers: {}", consumerRecord.headers());
-                    logger.error("❌ Exception: {}", exception.getClass().getSimpleName());
-                    logger.error("❌ Message: {}", exception.getMessage());
-                    logger.error("❌ Stack trace:", exception);
+                    logger.error(" MESSAGE PROCESSING FAILED!");
+                    logger.error(" Topic: {}", consumerRecord.topic());
+                    logger.error(" Partition: {}", consumerRecord.partition());
+                    logger.error(" Offset: {}", consumerRecord.offset());
+                    logger.error(" Key: {}", consumerRecord.key());
+                    logger.error(" Value: {}", consumerRecord.value());
+                    logger.error(" Headers: {}", consumerRecord.headers());
+                    logger.error(" Exception: {}", exception.getClass().getSimpleName());
+                    logger.error(" Message: {}", exception.getMessage());
+                    logger.error(" Stack trace:", exception);
 
                     // Custom logic to determine dead letter topic name
                     String deadLetterTopic = consumerRecord.topic() + ".DLT";
@@ -106,18 +106,18 @@ public class ErrorHandlingConfig {
 
         // Enhanced logging for retry attempts
         errorHandler.setRetryListeners((consumerRecord, exception, deliveryAttempt) -> {
-            logger.warn("🔄 RETRY ATTEMPT {} for failed message", deliveryAttempt);
-            logger.warn("📍 Topic: {}, Partition: {}, Offset: {}",
+            logger.warn(" RETRY ATTEMPT {} for failed message", deliveryAttempt);
+            logger.warn(" Topic: {}, Partition: {}, Offset: {}",
                     consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
-            logger.warn("❌ Exception: {} - {}", exception.getClass().getSimpleName(), exception.getMessage());
+            logger.warn(" Exception: {} - {}", exception.getClass().getSimpleName(), exception.getMessage());
 
             if (deliveryAttempt >= 3) {
-                logger.error("💀 Max retries exceeded - message will be sent to DLT");
+                logger.error(" Max retries exceeded - message will be sent to DLT");
             }
         });
 
         // Add logging when error handler is invoked
-        logger.info("🔧 Configured Kafka error handler with 3 retries and 2s delay");
+        logger.info(" Configured Kafka error handler with 3 retries and 2s delay");
 
         return errorHandler;
     }
@@ -130,12 +130,12 @@ public class ErrorHandlingConfig {
         private static final Logger log = LoggerFactory.getLogger(CustomDeadLetterHandler.class);
 
         public static void handleDeadLetter(ConsumerRecord<String, Object> record, Exception exception) {
-            log.error("💀 DEAD LETTER PROCESSING");
-            log.error("📍 Record: topic={}, partition={}, offset={}, key={}",
+            log.error(" DEAD LETTER PROCESSING");
+            log.error(" Record: topic={}, partition={}, offset={}, key={}",
                     record.topic(), record.partition(), record.offset(), record.key());
-            log.error("📄 Value: {}", record.value());
-            log.error("❌ Exception: {} - {}", exception.getClass().getSimpleName(), exception.getMessage());
-            log.error("🔧 Headers: {}", record.headers());
+            log.error(" Value: {}", record.value());
+            log.error(" Exception: {} - {}", exception.getClass().getSimpleName(), exception.getMessage());
+            log.error(" Headers: {}", record.headers());
 
             // TODO: Implement custom dead letter handling logic
             // Examples:
@@ -153,7 +153,7 @@ public class ErrorHandlingConfig {
      * Debugging method to log current error handler configuration
      */
     public void logErrorHandlerConfig() {
-        logger.info("🔧 Error Handler Configuration:");
+        logger.info(" Error Handler Configuration:");
         logger.info("   - Bootstrap Servers: {}", bootstrapServers);
         logger.info("   - Retry Attempts: 3");
         logger.info("   - Retry Delay: 2000ms");

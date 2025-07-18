@@ -27,7 +27,7 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        spring.json.add.type.headers: true     # <-- WICHTIG!
+        spring.json.add.type.headers: true
         acks: all
         retries: 3
         batch.size: 16384

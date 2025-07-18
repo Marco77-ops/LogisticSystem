@@ -1,4 +1,4 @@
-# analyticservice/src/main/resources/application.yml
+
 
 server:
   port: 8084

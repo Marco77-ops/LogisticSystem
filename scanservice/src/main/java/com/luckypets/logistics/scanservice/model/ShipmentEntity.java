@@ -1,20 +1,19 @@
 package com.luckypets.logistics.scanservice.model;
 
-import com.luckypets.logistics.shared.model.ShipmentStatus; // Import the shared ShipmentStatus
+import com.luckypets.logistics.shared.model.ShipmentStatus;
 import java.time.LocalDateTime;
 
-// This is a plain Java object (POJO) for the scanservice's internal representation.
-// It does NOT have JPA annotations as this service is not using a database.
+
 public class ShipmentEntity {
     private String shipmentId;
-    private String origin;      // Might be populated from ShipmentCreatedEvent
-    private String destination; // Populated from ShipmentCreatedEvent
-    private String customerId;  // Might be populated from ShipmentCreatedEvent
+    private String origin;
+    private String destination;
+    private String customerId;
     private String lastLocation;
-    private LocalDateTime createdAt; // Populated from ShipmentCreatedEvent
+    private LocalDateTime createdAt;
     private LocalDateTime lastScannedAt;
-    private LocalDateTime deliveredAt; // Might be populated from ShipmentDeliveredEvent
-    private ShipmentStatus status; // Uses the shared ShipmentStatus enum
+    private LocalDateTime deliveredAt;
+    private ShipmentStatus status;
 
     public ShipmentEntity() {}
 

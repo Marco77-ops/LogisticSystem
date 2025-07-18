@@ -23,18 +23,17 @@ import java.util.stream.Collectors;
 public class DeliveryServiceImpl implements DeliveryService {
 
     private static final Logger logger = LoggerFactory.getLogger(DeliveryServiceImpl.class);
-    // Replace ShipmentRepository with in-memory storage
+
     private final ConcurrentHashMap<String, ShipmentEntity> inMemoryStorage = new ConcurrentHashMap<>();
     private final ShipmentDeliveredEventProducer eventProducer;
 
-    // Update constructor to no longer take ShipmentRepository
+
     public DeliveryServiceImpl(ShipmentDeliveredEventProducer eventProducer) {
         this.eventProducer = eventProducer;
     }
 
     @Override
     public List<DeliveryResponse> getAllShipments() {
-        // Retrieve all from in-memory storage
         return new ArrayList<>(inMemoryStorage.values()).stream()
                 .map(this::mapToDeliveryResponse)
                 .collect(Collectors.toList());
@@ -54,23 +53,22 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public String getShipmentStatus(String shipmentId) {
-        // Retrieve from in-memory storage
         return Optional.ofNullable(inMemoryStorage.get(shipmentId))
                 .map(shipment -> shipment.getStatus().name())
                 .orElse("Unknown");
     }
 
     @Override
-    @Transactional // Keep for logical transaction, even if no DB transaction
+    @Transactional
     public DeliveryResponse markAsDelivered(DeliveryRequest request) {
         if (request == null) {
-            return DeliveryResponse.error("Request must not be null"); // Changed to return error
+            return DeliveryResponse.error("Request must not be null");
         }
         if (request.getShipmentId() == null || request.getShipmentId().isBlank()) {
-            return DeliveryResponse.error("shipmentId must not be null or empty"); // Changed to return error
+            return DeliveryResponse.error("shipmentId must not be null or empty");
         }
         if (request.getLocation() == null || request.getLocation().isBlank()) {
-            return DeliveryResponse.error("location must not be null or empty"); // Changed to return error
+            return DeliveryResponse.error("location must not be null or empty");
         }
 
         // Retrieve from in-memory storage
@@ -86,7 +84,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         // Save updated shipment to in-memory storage
         inMemoryStorage.put(shipment.getShipmentId(), shipment);
-        ShipmentEntity savedShipment = shipment; // In-memory, so just reference the updated object
+        ShipmentEntity savedShipment = shipment;
 
         // Send event
         ShipmentDeliveredEvent event = new ShipmentDeliveredEvent(
@@ -106,17 +104,16 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Optional<ShipmentEntity> findShipmentEntityById(String shipmentId) {
         if (shipmentId == null || shipmentId.isBlank()) {
-            return Optional.empty(); // Defensive: Null/leer => leer zurück
+            return Optional.empty();
         }
         return Optional.ofNullable(inMemoryStorage.get(shipmentId));
     }
 
     @Override
-    // New public method for listeners to update/add shipment entities
     public void updateShipmentState(ShipmentEntity shipment) {
         if (shipment == null || shipment.getShipmentId() == null || shipment.getShipmentId().isBlank()) {
             logger.warn("Attempted to update shipment state with null or invalid shipment entity/ID. Skipping update.");
-            return; // Important: ensure this return prevents putting null/invalid keys
+            return;
         }
         inMemoryStorage.put(shipment.getShipmentId(), shipment);
         logger.debug("Shipment {} state updated in in-memory storage of DeliveryService.", shipment.getShipmentId());

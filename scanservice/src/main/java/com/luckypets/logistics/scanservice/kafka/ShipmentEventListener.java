@@ -28,17 +28,9 @@ public class ShipmentEventListener {
         shipment.setShipmentId(event.getShipmentId());
         shipment.setDestination(event.getDestination());
         shipment.setCreatedAt(event.getCreatedAt());
-        // Populate origin and customerId if available in ShipmentCreatedEvent, otherwise null
-        // Assuming ShipmentCreatedEvent doesn't contain origin/customerId currently,
-        // so they will remain null in scanservice.model.ShipmentEntity.
-        // If your ShipmentCreatedEvent does contain them, retrieve them here:
-        // shipment.setOrigin(event.getOrigin());
-        // shipment.setCustomerId(event.getCustomerId());
 
-        // --- FIX START ---
-        // Set the initial status to CREATED for the ScanService's in-memory representation.
         shipment.setStatus(ShipmentStatus.CREATED);
-        // --- FIX END ---
+
 
         scanService.addShipmentForTest(shipment);
 

@@ -1,5 +1,4 @@
-# deliveryservice/src/main/resources/application.yml
-# Kopiere den ScanService Ansatz
+
 
 server:
   port: 8083
@@ -18,7 +17,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        spring.json.add.type.headers: true     # <-- WICHTIG!
+        spring.json.add.type.headers: true
         session.timeout.ms: 30000
         heartbeat.interval.ms: 10000
         max.poll.records: 500
@@ -30,7 +29,7 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.trusted.packages: com.luckypets.logistics.shared.events
-        spring.json.add.type.headers: true     # <-- WICHTIG!
+        spring.json.add.type.headers: true
         acks: all
         retries: 3
         batch.size: 16384
@@ -38,7 +37,7 @@ spring:
         buffer.memory: 33554432
         enable.idempotence: true
 
-    # 🔥 DAS IST DER SCHLÜSSEL - genau wie im ScanService!
+
     listener:
       ack-mode: manual_immediate
 

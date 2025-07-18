@@ -42,7 +42,7 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
         // Critical JSON deserializer configuration for proper typing
-        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*"); // Allow all packages for now
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         configProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, true); // Use type headers from producer
         configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "java.lang.Object");
 

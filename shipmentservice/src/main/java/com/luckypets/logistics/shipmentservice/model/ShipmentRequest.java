@@ -2,7 +2,7 @@ package com.luckypets.logistics.shipmentservice.model;
 
 import jakarta.validation.constraints.NotBlank;
 
-// Fügen Sie hier ggf. Validierungsannotationen hinzu (z.B. @NotBlank)
+
 public class ShipmentRequest {
 
 
@@ -14,7 +14,7 @@ public class ShipmentRequest {
 
     @NotBlank(message = "CustomerId must not be blank")
     private String customerId;
-    // Fügen Sie weitere Felder hinzu, die für die Erstellung eines Shipments benötigt werden
+
 
     public String getOrigin() {
         return origin;

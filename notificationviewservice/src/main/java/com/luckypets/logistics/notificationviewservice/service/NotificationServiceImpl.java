@@ -108,8 +108,8 @@ public class NotificationServiceImpl implements NotificationService {
             logger.error("❌ Failed to send NotificationSentEvent for notification {} after retry",
                     savedNotification.getId(), e);
             // TODO: Implement dead letter queue for failed events
-            // For now, we log the error but don't fail the notification save operation
-            throw e; // Re-throw to trigger retry mechanism
+
+            throw e;
         }
     }
 

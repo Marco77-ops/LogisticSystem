@@ -4,20 +4,19 @@ import com.luckypets.logistics.shared.model.ShipmentStatus;
 // Removed jakarta.persistence imports as this entity will no longer be JPA-managed
 import java.time.LocalDateTime;
 
-// This is a plain Java object (POJO) for the deliveryservice's internal in-memory representation.
-// It does NOT have JPA annotations.
+
 public class ShipmentEntity {
 
     private String shipmentId;
-    private String origin; // Added for completeness, if it comes from ShipmentCreatedEvent
+    private String origin;
     private String destination;
-    private String customerId; // Added for completeness, if it comes from ShipmentCreatedEvent
+    private String customerId;
     private String lastLocation;
     private LocalDateTime createdAt;
     private LocalDateTime lastScannedAt;
     private LocalDateTime deliveredAt;
 
-    private ShipmentStatus status; // Uses the shared ShipmentStatus enum
+    private ShipmentStatus status;
 
     public ShipmentEntity() {}
 

@@ -16,7 +16,7 @@ public class AnalyticsService {
     
     private final StateStoreQueryService stateStoreQueryService;
     
-    // Constructor Injection statt Field Injection
+
     public AnalyticsService(StateStoreQueryService stateStoreQueryService) {
         this.stateStoreQueryService = stateStoreQueryService;
     }

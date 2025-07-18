@@ -4,7 +4,7 @@ public class ScanRequest {
     private String shipmentId;
     private String location;
 
-    // Standard-Konstruktor (wichtig für Jackson!)
+
     public ScanRequest() {}
 
     public String getShipmentId() { return shipmentId; }

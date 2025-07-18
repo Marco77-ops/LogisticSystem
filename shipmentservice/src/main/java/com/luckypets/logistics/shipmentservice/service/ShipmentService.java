@@ -10,6 +10,5 @@ public interface ShipmentService {
     ShipmentEntity createShipment(ShipmentRequest request);
     Optional<ShipmentEntity> getShipmentById(String shipmentId);
     List<ShipmentEntity> getAllShipments();
-    boolean deleteShipment(String shipmentId); // Gibt true zurück, wenn erfolgreich, false wenn nicht gefunden
-    // Fügen Sie hier ggf. eine updateShipment Methode hinzu
+    boolean deleteShipment(String shipmentId);
 }

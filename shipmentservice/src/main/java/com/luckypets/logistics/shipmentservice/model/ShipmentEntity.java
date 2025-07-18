@@ -10,13 +10,10 @@ import com.luckypets.logistics.shared.model.ShipmentStatus;
 // import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
-// Remove @Entity and @Table
-// @Entity
-// @Table(name = "shipments")
+
 public class ShipmentEntity {
 
-    // Remove @Id
-    // @Id
+
     private String shipmentId;
 
     private String origin;
@@ -27,9 +24,7 @@ public class ShipmentEntity {
     private LocalDateTime lastScannedAt;
     private LocalDateTime deliveredAt;
 
-    // Remove @Enumerated and @Column
-    // @Enumerated(EnumType.STRING)
-    // @Column(nullable = false)
+
     private ShipmentStatus status;
 
     public ShipmentEntity() {
@@ -41,7 +36,7 @@ public class ShipmentEntity {
         this.createdAt = createdAt;
     }
 
-    // Getter & Setter (keep these as they are needed for your service logic)
+    // Getter & Setter
 
     public String getShipmentId() {
         return shipmentId;

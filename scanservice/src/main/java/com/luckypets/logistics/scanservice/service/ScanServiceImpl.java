@@ -75,7 +75,7 @@ public class ScanServiceImpl implements ScanService {
         return ScanResult.success(shipmentId);
     }
 
-    // For tests: add shipment directly
+
     public void addShipmentForTest(ShipmentEntity shipment) {
         inMemoryStorage.put(shipment.getShipmentId(), shipment);
     }
